@@ -226,6 +226,7 @@
       border-radius: 16px;
       padding: clamp(20px, 4vw, 36px);
       box-shadow: var(--card-shadow);
+      position: relative;
     }
 
     .promo-rail {
@@ -412,7 +413,7 @@
       letter-spacing: 0.05em;
     }
 
-    input[type="text"], select {
+    input[type="text"] {
       background-color: var(--input-bg);
       border: 1px solid var(--border);
       color: var(--text);
@@ -424,25 +425,94 @@
       width: 100%;
     }
 
-    select {
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      background-image: var(--select-arrow);
-      background-repeat: no-repeat;
-      background-position: right 14px center;
-      background-size: 16px;
-      padding-right: 42px;
-      cursor: pointer;
-    }
-
-    select option {
-      background-color: var(--panel-bg);
-      color: var(--text);
-    }
-
-    input[type="text"]:focus, select:focus {
+    input[type="text"]:focus {
       border-color: var(--highlight);
+    }
+
+    /* Custom Mode & Configuration Dropdown */
+    .custom-dropdown-container {
+      position: relative;
+      width: 100%;
+      user-select: none;
+    }
+
+    .custom-dropdown-header {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 44px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .custom-dropdown-header:hover, .custom-dropdown-container.open .custom-dropdown-header {
+      border-color: var(--highlight);
+    }
+
+    .custom-dropdown-arrow {
+      width: 12px;
+      height: 12px;
+      transition: transform 0.25s ease;
+      opacity: 0.7;
+    }
+
+    .custom-dropdown-container.open .custom-dropdown-arrow {
+      transform: rotate(180deg);
+    }
+
+    .custom-dropdown-list {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      z-index: 50;
+      overflow-y: auto;
+      max-height: 280px;
+      display: none;
+      flex-direction: column;
+      padding: 6px;
+    }
+
+    .custom-dropdown-container.open .custom-dropdown-list {
+      display: flex;
+      animation: dropFade 0.15s ease-out;
+    }
+
+    @keyframes dropFade {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .custom-dropdown-item {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background-color 0.15s ease;
+    }
+
+    .custom-dropdown-item:hover {
+      background: var(--surface-hover);
+    }
+
+    .custom-dropdown-item.selected {
+      background: var(--surface-active);
+      color: var(--highlight);
+      font-weight: 700;
     }
 
     .pin-input-group {
@@ -858,11 +928,69 @@
       border-color: var(--highlight);
       background: var(--surface-active);
     }
+
+    /* Animated Loading Modal */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 15, 15, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+    }
+
+    .spinner {
+      width: 52px;
+      height: 52px;
+      border: 4px solid var(--surface-hover);
+      border-top-color: var(--highlight);
+      border-radius: 50%;
+      animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    .loading-text {
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--text);
+    }
+
+    .loading-bar {
+      width: 220px;
+      height: 4px;
+      background: var(--surface);
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .loading-bar-inner {
+      position: absolute;
+      width: 40%;
+      height: 100%;
+      background: var(--accent);
+      border-radius: 999px;
+      animation: loadingSlide 1.2s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes loadingSlide {
+      0% { left: -40%; width: 30%; }
+      50% { left: 40%; width: 50%; }
+      100% { left: 100%; width: 30%; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Top Back Arrow to /projects/ -->
   <a href="https://thataustrianone.eu/projects/" class="back-nav" title="Back to projects">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -881,19 +1009,15 @@
     </button>
   </header>
 
-  <!-- Desktop Grid Layout -->
   <div class="desktop-layout">
-    
-    <!-- Left Static Box with Overlay Ads -->
     <aside class="promo-rail">
       <div class="promo-card">
         <span class="promo-tag" id="leftNoticeTag">Notice</span>
         <div class="promo-notice">
           <div class="promo-notice-icon" id="leftNoticeIcon">!</div>
           <div class="promo-notice-title" id="leftNoticeTitle">Support Free Tools</div>
-          <p class="promo-notice-text" id="leftNoticeText">Consider pausing your blocker to help keep this project free and actively maintained for everyone.</p>
+          <p class="promo-notice-text" id="leftNoticeText">Pausing ad blockers helps keep this project free and actively maintained for everyone.</p>
         </div>
-
         <div class="promo-layer">
           <ins class="adsbygoogle"
                style="display:block; width:100%; height:100%;"
@@ -905,27 +1029,26 @@
       </div>
     </aside>
 
-    <!-- Center App Container -->
     <main class="container">
-      <!-- Screen: Custom Invite Landing Page -->
+      <!-- Screen: Invite Landing Page -->
       <div id="screen-invite" class="hidden">
         <div class="invite-banner">
           <div class="invite-avatar-chip" id="inviteAvatarLetter">?</div>
           <h2 style="margin-bottom: 6px;">You've Been Invited!</h2>
-          <p style="margin-bottom: 12px;"><span id="inviteFriendName" style="font-weight: 700; color: var(--text);">A friend</span> shared their quiz code with you to test your compatibility.</p>
+          <p style="margin-bottom: 12px;"><span id="inviteFriendName" style="font-weight: 700; color: var(--text);">A friend</span> shared their quiz code with you.</p>
           <div class="invite-code-pill" id="inviteCodeDisplay">CODE ----</div>
         </div>
 
-        <p style="text-align: center; margin-bottom: 16px;">Take the quiz to generate your answer code and see your mutual match score:</p>
+        <p style="text-align: center; margin-bottom: 16px;">Choose how you want to challenge their choices:</p>
 
-        <button class="btn" onclick="acceptInviteFlow('similarity')">Take Similarity Quiz & Match</button>
-        <button class="btn btn-secondary" onclick="acceptInviteFlow('knows-friend')">Play "How Well Do You Know Them?"</button>
+        <button class="btn" onclick="startInviteFlow('similarity')">Take Match Quiz</button>
+        <button class="btn btn-secondary" onclick="startInviteFlow('guess-them')">Guess Their Answers</button>
         <button class="btn btn-secondary" onclick="proceedToCompareWithPreload()" style="margin-top: 6px;">I Already Have a Code</button>
       </div>
 
-      <!-- Screen: Main Menu -->
+      <!-- Screen: Menu -->
       <div id="screen-menu">
-        <p>Take any of our 10 friend & partner quizzes, get your 4-digit code, and compare it with your friend's or partner's code to see how similar you are or how well you know each other!</p>
+        <p>Answer relationship & lifestyle questions, get your quiz link or 4-digit code, and find out whether your wavelengths are truly identical!</p>
 
         <button class="btn" onclick="startQuizFlow('similarity')">Play Similarity Quiz</button>
         <button class="btn btn-secondary" onclick="startQuizFlow('knows-friend')">Play "How Well Do You Know Them?"</button>
@@ -957,17 +1080,30 @@
           </div>
         </div>
 
+        <!-- Mode Dropdown -->
         <div class="form-group">
-          <label for="comparisonMode">What to calculate</label>
-          <select id="comparisonMode">
-            <option value="similarity">Similarity (% Same Answers)</option>
-            <option value="knows-friend">"How Well You Know Them" Score</option>
-          </select>
+          <label>Mode</label>
+          <div class="custom-dropdown-container" id="modeDropdown">
+            <div class="custom-dropdown-header" onclick="toggleCustomDropdown('modeDropdown')">
+              <span id="selectedModeText">Similarity (% Same Answers)</span>
+              <svg class="custom-dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            <div class="custom-dropdown-list">
+              <div class="custom-dropdown-item selected" data-value="similarity" onclick="selectCustomDropdownOption('modeDropdown', 'similarity', 'Similarity (% Same Answers)')">
+                Similarity (% Same Answers)
+              </div>
+              <div class="custom-dropdown-item" data-value="knows-friend" onclick="selectCustomDropdownOption('modeDropdown', 'knows-friend', '&quot;How Well You Know Them&quot; Score')">
+                "How Well You Know Them" Score
+              </div>
+            </div>
+          </div>
+          <input type="hidden" id="comparisonMode" value="similarity">
         </div>
 
         <button class="btn" onclick="compareCodes()">Calculate Results</button>
 
-        <!-- Previous Codes Drawer -->
         <div class="history-card" id="historyCard">
           <div class="history-header" onclick="toggleHistoryView()">
             <span class="history-title">Saved Device Codes (<span id="historyCount">0</span>)</span>
@@ -977,26 +1113,36 @@
         </div>
       </div>
 
-      <!-- Screen: Configuration -->
+      <!-- Screen: Config -->
       <div id="screen-config" class="hidden">
         <h2 id="config-title">Quiz Setup</h2>
-        <p id="config-desc">Pick your quiz category, question count, and enter your name.</p>
+        <p id="config-desc">Pick category, question count, and your name.</p>
 
-        <div class="form-group">
-          <label for="quizThemeSelect">Quiz Category</label>
-          <select id="quizThemeSelect" onchange="onThemeSelectChange()">
-            <option value="ALL" selected>All Categories (Full Mix)</option>
-            <option value="Best Friends & Quirks">1. Best Friends & Quirks</option>
-            <option value="Dating & Romance">2. Dating & Romance</option>
-            <option value="Deep & Values">3. Deep & Values</option>
-            <option value="Habits & Daily Routines">4. Habits & Daily Routines</option>
-            <option value="Food & Dining Out">5. Food & Dining Out</option>
-            <option value="Entertainment & Pop Culture">6. Entertainment & Pop Culture</option>
-            <option value="Stress & Conflict Handling">7. Stress & Conflict Handling</option>
-            <option value="Travel & Adventure">8. Travel & Adventure</option>
-            <option value="Future Dreams & Ambition">9. Future Dreams & Ambition</option>
-            <option value="Fun & Hypotheticals">10. Fun & Hypotheticals</option>
-          </select>
+        <!-- Category Dropdown -->
+        <div class="form-group" id="themeSelectGroup">
+          <label>Quiz Category</label>
+          <div class="custom-dropdown-container" id="categoryDropdown">
+            <div class="custom-dropdown-header" onclick="toggleCustomDropdown('categoryDropdown')">
+              <span id="selectedCategoryText">All Categories (Full Mix)</span>
+              <svg class="custom-dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            <div class="custom-dropdown-list">
+              <div class="custom-dropdown-item selected" data-value="ALL" onclick="selectCustomDropdownOption('categoryDropdown', 'ALL', 'All Categories (Full Mix)')">All Categories (Full Mix)</div>
+              <div class="custom-dropdown-item" data-value="Best Friends & Quirks" onclick="selectCustomDropdownOption('categoryDropdown', 'Best Friends & Quirks', '1. Best Friends & Quirks')">1. Best Friends & Quirks</div>
+              <div class="custom-dropdown-item" data-value="Dating & Romance" onclick="selectCustomDropdownOption('categoryDropdown', 'Dating & Romance', '2. Dating & Romance')">2. Dating & Romance</div>
+              <div class="custom-dropdown-item" data-value="Deep & Values" onclick="selectCustomDropdownOption('categoryDropdown', 'Deep & Values', '3. Deep & Values')">3. Deep & Values</div>
+              <div class="custom-dropdown-item" data-value="Habits & Daily Routines" onclick="selectCustomDropdownOption('categoryDropdown', 'Habits & Daily Routines', '4. Habits & Daily Routines')">4. Habits & Daily Routines</div>
+              <div class="custom-dropdown-item" data-value="Food & Dining Out" onclick="selectCustomDropdownOption('categoryDropdown', 'Food & Dining Out', '5. Food & Dining Out')">5. Food & Dining Out</div>
+              <div class="custom-dropdown-item" data-value="Entertainment & Pop Culture" onclick="selectCustomDropdownOption('categoryDropdown', 'Entertainment & Pop Culture', '6. Entertainment & Pop Culture')">6. Entertainment & Pop Culture</div>
+              <div class="custom-dropdown-item" data-value="Stress & Conflict Handling" onclick="selectCustomDropdownOption('categoryDropdown', 'Stress & Conflict Handling', '7. Stress & Conflict Handling')">7. Stress & Conflict Handling</div>
+              <div class="custom-dropdown-item" data-value="Travel & Adventure" onclick="selectCustomDropdownOption('categoryDropdown', 'Travel & Adventure', '8. Travel & Adventure')">8. Travel & Adventure</div>
+              <div class="custom-dropdown-item" data-value="Future Dreams & Ambition" onclick="selectCustomDropdownOption('categoryDropdown', 'Future Dreams & Ambition', '9. Future Dreams & Ambition')">9. Future Dreams & Ambition</div>
+              <div class="custom-dropdown-item" data-value="Fun & Hypotheticals" onclick="selectCustomDropdownOption('categoryDropdown', 'Fun & Hypotheticals', '10. Fun & Hypotheticals')">10. Fun & Hypotheticals</div>
+            </div>
+          </div>
+          <input type="hidden" id="quizThemeSelect" value="ALL">
         </div>
 
         <div class="form-group">
@@ -1004,15 +1150,25 @@
           <input type="text" id="userNameInput" placeholder="e.g. Alex" maxlength="20" autocomplete="off" spellcheck="false">
         </div>
 
-        <div class="form-group">
-          <label for="questionCount">Questions</label>
-          <select id="questionCount">
-            <option value="10" selected>10 Questions (Quick)</option>
-            <option value="20">20 Questions (Standard)</option>
-            <option value="30">30 Questions</option>
-            <option value="50">50 Questions</option>
-            <option value="100">100 Questions (Ultimate)</option>
-          </select>
+        <!-- Question Count Dropdown -->
+        <div class="form-group" id="questionCountGroup">
+          <label>Questions</label>
+          <div class="custom-dropdown-container" id="qCountDropdown">
+            <div class="custom-dropdown-header" onclick="toggleCustomDropdown('qCountDropdown')">
+              <span id="selectedQCountText">10 Questions (Quick)</span>
+              <svg class="custom-dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            <div class="custom-dropdown-list">
+              <div class="custom-dropdown-item selected" data-value="10" onclick="selectCustomDropdownOption('qCountDropdown', '10', '10 Questions (Quick)')">10 Questions (Quick)</div>
+              <div class="custom-dropdown-item" data-value="20" onclick="selectCustomDropdownOption('qCountDropdown', '20', '20 Questions (Standard)')">20 Questions (Standard)</div>
+              <div class="custom-dropdown-item" data-value="30" onclick="selectCustomDropdownOption('qCountDropdown', '30', '30 Questions')">30 Questions</div>
+              <div class="custom-dropdown-item" data-value="50" onclick="selectCustomDropdownOption('qCountDropdown', '50', '50 Questions')">50 Questions</div>
+              <div class="custom-dropdown-item" data-value="100" onclick="selectCustomDropdownOption('qCountDropdown', '100', '100 Questions (Ultimate)')">100 Questions (Ultimate)</div>
+            </div>
+          </div>
+          <input type="hidden" id="questionCount" value="10">
         </div>
 
         <button class="btn" id="startQuizBtn" onclick="initQuizSession()">Start Quiz</button>
@@ -1031,19 +1187,19 @@
         <div class="choices-grid" id="choicesContainer"></div>
       </div>
 
-      <!-- Screen: Finished / Result Code -->
+      <!-- Screen: Finished -->
       <div id="screen-finished" class="hidden">
         <h2>All Done, <span id="finishedUserName">Friend</span>!</h2>
-        <p>Here is your 4-digit code. Share your personalized link with your friend so they can match with you directly:</p>
+        <p>Share your direct quiz link so your friend gets the exact same questions with your answers attached:</p>
 
         <div class="code-display" id="generatedCodeDisplay">----</div>
 
-        <button class="btn" id="finishNextBtn" onclick="onFinishedPrimaryAction()">Check Match with Friend</button>
+        <button class="btn" id="finishNextBtn" onclick="onFinishedPrimaryAction()">Compare Score</button>
         <button class="btn btn-secondary" id="shareLinkBtn" onclick="copyShareLink()">Copy Direct Friend Link</button>
         <button class="btn btn-secondary" onclick="navigate('screen-menu')">Back to Main Menu</button>
       </div>
 
-      <!-- Screen: Calculation Results -->
+      <!-- Screen: Results -->
       <div id="screen-results" class="hidden">
         <h2 id="resultHeadingTitle">Your Match</h2>
         <div class="result-score" id="resultScore">0%</div>
@@ -1054,7 +1210,6 @@
 
         <div id="detailsSection" class="details-panel hidden">
           <h4 id="detailsTitle" style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 14px; color: var(--text-muted);">How you match up</h4>
-          
           <div id="categoryBreakdowns"></div>
 
           <div style="margin-top: 18px;">
@@ -1072,16 +1227,14 @@
       </div>
     </main>
 
-    <!-- Right Static Box with Overlay Ads -->
     <aside class="promo-rail">
       <div class="promo-card">
         <span class="promo-tag" id="rightNoticeTag">Notice</span>
         <div class="promo-notice">
           <div class="promo-notice-icon" id="rightNoticeIcon">!</div>
           <div class="promo-notice-title" id="rightNoticeTitle">Content Shield Active</div>
-          <p class="promo-notice-text" id="rightNoticeText">Whitelisting this page helps support development and keeps server costs covered without intrusive paywalls.</p>
+          <p class="promo-notice-text" id="rightNoticeText">Keeping this whitelisted maintains development without requiring paywalls or user accounts.</p>
         </div>
-
         <div class="promo-layer">
           <ins class="adsbygoogle"
                style="display:block; width:100%; height:100%;"
@@ -1092,11 +1245,20 @@
         </div>
       </div>
     </aside>
+  </div>
 
+  <!-- Loading Animation Overlay -->
+  <div id="loadingOverlay" class="loading-overlay hidden">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingStatusText">Analyzing Match Vectors...</div>
+    <div class="loading-bar">
+      <div class="loading-bar-inner"></div>
+    </div>
   </div>
 
   <script src="scorecard-export.js"></script>
   <script>
+    const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/der46er/website/main/projects/friend-quiz/";
     const THEME_ICONS_BASE = "https://raw.githubusercontent.com/der46er/website/refs/heads/main/assets/icons/";
     const THEME_ICONS = {
       darkTheme: {
@@ -1108,35 +1270,24 @@
         toDark: THEME_ICONS_BASE + "dark-mode-dark.svg"
       }
     };
-
     const THEME_KEY = 'besties_quiz_theme';
 
     function saveThemeMode(theme) {
-      try {
-        localStorage.setItem(THEME_KEY, theme);
-      } catch (e) {}
-
-      const expires = new Date(Date.now() + 365 * 864e5).toUTCString();
-      document.cookie = `${THEME_KEY}=${theme}; expires=${expires}; path=/; SameSite=Strict`;
+      try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+      document.cookie = `${THEME_KEY}=${theme}; expires=${new Date(Date.now() + 365 * 864e5).toUTCString()}; path=/; SameSite=Strict`;
     }
 
     function getSavedThemeMode() {
       try {
-        const localTheme = localStorage.getItem(THEME_KEY);
-        if (localTheme) return localTheme;
+        const local = localStorage.getItem(THEME_KEY);
+        if (local) return local;
       } catch (e) {}
-
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${THEME_KEY}=`);
-      if (parts.length === 2) {
-        return parts.pop().split(';').shift();
-      }
-
+      const val = `; ${document.cookie}`.split(`; ${THEME_KEY}=`);
+      if (val.length === 2) return val.pop().split(';').shift();
       return 'dark';
     }
 
     let currentTheme = getSavedThemeMode();
-
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const themeToggleText = document.getElementById('themeToggleText');
     const themeToggleImg = document.getElementById('themeToggleImg');
@@ -1144,14 +1295,8 @@
     function updateThemeUI() {
       const isLight = currentTheme === 'light';
       document.body.classList.toggle('light-mode', isLight);
-
-      if (isLight) {
-        themeToggleText.textContent = 'Dark Mode';
-        themeToggleImg.src = THEME_ICONS.lightTheme.toDark;
-      } else {
-        themeToggleText.textContent = 'Light Mode';
-        themeToggleImg.src = THEME_ICONS.darkTheme.toLight;
-      }
+      themeToggleText.textContent = isLight ? 'Dark Mode' : 'Light Mode';
+      themeToggleImg.src = isLight ? THEME_ICONS.lightTheme.toDark : THEME_ICONS.darkTheme.toLight;
     }
 
     themeToggleBtn.addEventListener('click', () => {
@@ -1160,7 +1305,45 @@
       updateThemeUI();
     });
 
+    /* Custom Dropdown Interactivity */
+    function toggleCustomDropdown(id) {
+      const el = document.getElementById(id);
+      const wasOpen = el.classList.contains('open');
+      document.querySelectorAll('.custom-dropdown-container').forEach(c => c.classList.remove('open'));
+      if (!wasOpen) el.classList.add('open');
+    }
+
+    function selectCustomDropdownOption(dropdownId, val, label) {
+      const container = document.getElementById(dropdownId);
+      container.querySelectorAll('.custom-dropdown-item').forEach(item => {
+        item.classList.toggle('selected', item.getAttribute('data-value') === String(val));
+      });
+
+      if (dropdownId === 'modeDropdown') {
+        document.getElementById('comparisonMode').value = val;
+        document.getElementById('selectedModeText').textContent = label;
+      } else if (dropdownId === 'categoryDropdown') {
+        document.getElementById('quizThemeSelect').value = val;
+        document.getElementById('selectedCategoryText').textContent = label;
+        if (val !== 'ALL') {
+          selectCustomDropdownOption('qCountDropdown', '10', '10 Questions (Quick)');
+        }
+      } else if (dropdownId === 'qCountDropdown') {
+        document.getElementById('questionCount').value = val;
+        document.getElementById('selectedQCountText').textContent = label;
+      }
+
+      container.classList.remove('open');
+    }
+
+    window.addEventListener('click', (e) => {
+      if (!e.target.closest('.custom-dropdown-container')) {
+        document.querySelectorAll('.custom-dropdown-container').forEach(c => c.classList.remove('open'));
+      }
+    });
+
     let allQuestionsPool = [];
+    let codeMatrixDB = {};
     let currentMode = 'similarity';
     let totalQuestionsToAsk = 10;
     let selectedQuestions = [];
@@ -1171,33 +1354,26 @@
     let currentUserName = "You";
     let latestGeneratedCode = null;
     let latestComparisonResult = null;
+    let incomingPayload = null;
     let pendingInviteCode = null;
     let pendingInviteName = null;
-    let csvMatrix = {};
 
     async function loadNoticeMessages() {
       try {
-        const res = await fetch('notices.json');
+        const res = await fetch(GITHUB_RAW_BASE + 'notices.json');
         if (!res.ok) return;
         const list = await res.json();
         if (!Array.isArray(list) || list.length === 0) return;
-
         const idx1 = Math.floor(Math.random() * list.length);
         let idx2 = Math.floor(Math.random() * list.length);
-        if (list.length > 1) {
-          while (idx2 === idx1) {
-            idx2 = Math.floor(Math.random() * list.length);
-          }
-        }
+        while (list.length > 1 && idx2 === idx1) idx2 = Math.floor(Math.random() * list.length);
 
         const left = list[idx1];
         const right = list[idx2];
-
         document.getElementById('leftNoticeTag').textContent = left.tag || 'Notice';
         document.getElementById('leftNoticeIcon').textContent = left.icon || '!';
         document.getElementById('leftNoticeTitle').textContent = left.title || '';
         document.getElementById('leftNoticeText').textContent = left.text || '';
-
         document.getElementById('rightNoticeTag').textContent = right.tag || 'Notice';
         document.getElementById('rightNoticeIcon').textContent = right.icon || '!';
         document.getElementById('rightNoticeTitle').textContent = right.title || '';
@@ -1212,12 +1388,8 @@
       for (let i = 0; i < text.length; i++) {
         const char = text[i];
         if (char === '"') {
-          if (inQuotes && text[i + 1] === '"') {
-            cur += '"';
-            i++;
-          } else {
-            inQuotes = !inQuotes;
-          }
+          if (inQuotes && text[i + 1] === '"') { cur += '"'; i++; }
+          else { inQuotes = !inQuotes; }
         } else if (char === ',' && !inQuotes) {
           row.push(cur.trim());
           cur = '';
@@ -1229,73 +1401,62 @@
       return row;
     }
 
-    async function loadQuestions() {
+    async function loadDatabases() {
       try {
-        const res = await fetch('questions.json');
+        const res = await fetch(GITHUB_RAW_BASE + 'questions.csv');
         if (res.ok) {
-          allQuestionsPool = await res.json();
+          const csvText = await res.text();
+          const lines = csvText.trim().split(/\r?\n/);
+          allQuestionsPool = [];
+          for (let i = 1; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (!line) continue;
+            const cols = parseCSVLine(line);
+            if (cols.length >= 9) {
+              allQuestionsPool.push({
+                id: cols[0],
+                category: cols[1],
+                q: cols[2],
+                a: [cols[3], cols[4], cols[5], cols[6], cols[7], cols[8]],
+                trait: cols[9] || cols[1]
+              });
+            }
+          }
         }
       } catch (e) {}
 
       try {
-        const res = await fetch('questions.csv');
-        if (!res.ok) return;
-        const csvText = await res.text();
-        const lines = csvText.trim().split(/\r?\n/);
-        const loaded = [];
-        for (let i = 1; i < lines.length; i++) {
-          const line = lines[i].trim();
-          if (!line) continue;
-          const cols = parseCSVLine(line);
-          if (cols.length >= 9) {
-            loaded.push({
-              category: cols[1],
-              q: cols[2],
-              a: [cols[3], cols[4], cols[5], cols[6], cols[7], cols[8]]
-            });
+        const resComb = await fetch(GITHUB_RAW_BASE + 'quiz_combinations.csv');
+        if (resComb.ok) {
+          const cText = await resComb.text();
+          const lines = cText.trim().split(/\r?\n/);
+          codeMatrixDB = {};
+          for (let i = 1; i < lines.length; i++) {
+            const p = lines[i].split(',');
+            if (p.length >= 12) {
+              codeMatrixDB[p[0].trim()] = {
+                mode: p[1].trim(),
+                answers: p.slice(2, 12).map(n => parseInt(n, 10)),
+                archetype: p[12] ? p[12].trim() : "Player"
+              };
+            }
           }
-        }
-        if (loaded.length > 0) {
-          allQuestionsPool = loaded;
         }
       } catch (e) {}
     }
 
-    fetch('quiz_combinations.csv')
-      .then(res => {
-        if (!res.ok) throw new Error("CSV not present");
-        return res.text();
-      })
-      .then(text => {
-        const lines = text.trim().split(/\r?\n/);
-        for (let i = 1; i < lines.length; i++) {
-          const parts = lines[i].split(',');
-          if (parts.length >= 4) {
-            const key = `${parts[0]}_${parts[1]}`;
-            csvMatrix[key] = {
-              sim: parseInt(parts[2], 10),
-              know: parseInt(parts[3], 10)
-            };
-          }
-        }
-      })
-      .catch(() => {});
-
     function setupPinInputs() {
       document.querySelectorAll('.pin-boxes').forEach(container => {
         const inputs = Array.from(container.querySelectorAll('.pin-digit'));
-
         inputs.forEach((input, index) => {
           input.addEventListener('input', (e) => {
             const val = e.target.value.replace(/[^0-9]/g, '');
             e.target.value = val ? val[val.length - 1] : '';
-
             if (e.target.value && index < inputs.length - 1) {
               inputs[index + 1].focus();
               inputs[index + 1].select();
             }
           });
-
           input.addEventListener('keydown', (e) => {
             if (e.key === 'Backspace' && !input.value && index > 0) {
               inputs[index - 1].focus();
@@ -1306,26 +1467,17 @@
               inputs[index + 1].focus();
             }
           });
-
           input.addEventListener('paste', (e) => {
             e.preventDefault();
             const pasteData = (e.clipboardData || window.clipboardData).getData('text').trim().replace(/[^0-9]/g, '');
             if (!pasteData) return;
-
             for (let i = 0; i < inputs.length; i++) {
-              if (pasteData[i]) {
-                inputs[i].value = pasteData[i];
-              }
+              if (pasteData[i]) inputs[i].value = pasteData[i];
             }
             const targetIdx = Math.min(pasteData.length, inputs.length) - 1;
-            if (targetIdx >= 0 && targetIdx < inputs.length) {
-              inputs[targetIdx].focus();
-            }
+            if (targetIdx >= 0 && targetIdx < inputs.length) inputs[targetIdx].focus();
           });
-
-          input.addEventListener('focus', () => {
-            input.select();
-          });
+          input.addEventListener('focus', () => input.select());
         });
       });
     }
@@ -1334,34 +1486,88 @@
       const container = document.querySelector(`.pin-boxes[data-target="${targetName}"]`);
       if (!container || !codeStr) return;
       const inputs = Array.from(container.querySelectorAll('.pin-digit'));
-      for (let i = 0; i < 4; i++) {
-        inputs[i].value = codeStr[i] || '';
-      }
+      for (let i = 0; i < 4; i++) inputs[i].value = codeStr[i] || '';
     }
 
     function getPinCode(targetName) {
       const container = document.querySelector(`.pin-boxes[data-target="${targetName}"]`);
       if (!container) return '';
-      const inputs = Array.from(container.querySelectorAll('.pin-digit'));
-      return inputs.map(i => i.value.trim()).join('');
+      return Array.from(container.querySelectorAll('.pin-digit')).map(i => i.value.trim()).join('');
+    }
+
+    function packDataCompact(data) {
+      try {
+        const m = data.mode === 'knows-friend' ? 2 : (data.mode === 'guess-them' ? 1 : 0);
+        const ansHex = data.answers.map(a => typeof a === 'object' ? `${a.self}${a.friend}` : `${a}`).join('');
+        return `${m}_${data.count}_${ansHex}`;
+      } catch (e) {
+        return '';
+      }
+    }
+
+    function unpackDataCompact(str) {
+      try {
+        const parts = str.split('_');
+        if (parts.length < 3) return null;
+        const modeId = parseInt(parts[0], 10);
+        const count = parseInt(parts[1], 10);
+        const hex = parts[2];
+        const mode = modeId === 2 ? 'knows-friend' : (modeId === 1 ? 'guess-them' : 'similarity');
+        const answers = [];
+        let ptr = 0;
+        for (let i = 0; i < count; i++) {
+          if (modeId === 2) {
+            answers.push({ self: parseInt(hex[ptr], 10), friend: parseInt(hex[ptr + 1], 10) });
+            ptr += 2;
+          } else {
+            answers.push(parseInt(hex[ptr], 10));
+            ptr += 1;
+          }
+        }
+        return { mode, count, answers };
+      } catch (e) {
+        return null;
+      }
     }
 
     function checkUrlParams() {
       const params = new URLSearchParams(window.location.search);
       const sharedCode = params.get('code');
       const sharedName = params.get('name');
+      const shortPack = params.get('d');
+
+      if (shortPack && sharedCode) {
+        const unpacked = unpackDataCompact(shortPack);
+        if (unpacked) {
+          incomingPayload = {
+            code: sharedCode,
+            name: sharedName || "Friend",
+            ...unpacked
+          };
+          localStorage.setItem('besties_code_' + sharedCode, JSON.stringify(incomingPayload));
+          localStorage.setItem('besties_name_' + sharedCode, sharedName || "Friend");
+          recordHistoryItem(sharedCode, sharedName || "Friend");
+
+          pendingInviteCode = sharedCode;
+          pendingInviteName = sharedName || "Friend";
+
+          document.getElementById('inviteFriendName').textContent = pendingInviteName;
+          document.getElementById('inviteAvatarLetter').textContent = pendingInviteName.charAt(0).toUpperCase();
+          document.getElementById('inviteCodeDisplay').textContent = `CODE ${sharedCode}`;
+          navigate('screen-invite');
+          return;
+        }
+      }
 
       if (sharedCode && /^\d{4}$/.test(sharedCode)) {
         pendingInviteCode = sharedCode;
-        pendingInviteName = sharedName || "Your Friend";
-        
+        pendingInviteName = sharedName || "Friend";
         localStorage.setItem('besties_name_' + sharedCode, pendingInviteName);
         recordHistoryItem(sharedCode, pendingInviteName);
 
         document.getElementById('inviteFriendName').textContent = pendingInviteName;
         document.getElementById('inviteAvatarLetter').textContent = pendingInviteName.charAt(0).toUpperCase();
         document.getElementById('inviteCodeDisplay').textContent = `CODE ${sharedCode}`;
-
         navigate('screen-invite');
       } else {
         navigate('screen-menu');
@@ -1369,8 +1575,19 @@
       renderHistoryList();
     }
 
-    function acceptInviteFlow(mode) {
-      startQuizFlow(mode);
+    function startInviteFlow(mode) {
+      currentMode = mode;
+      document.getElementById('config-title').textContent = (mode === 'guess-them') 
+        ? `How Well Do You Know ${pendingInviteName}?`
+        : `Match Quiz with ${pendingInviteName}`;
+      document.getElementById('config-desc').textContent = (mode === 'guess-them')
+        ? `Select what you think ${pendingInviteName} chose!`
+        : `Answer to see how close your wavelengths are.`;
+      
+      document.getElementById('themeSelectGroup').classList.add('hidden');
+      document.getElementById('questionCountGroup').classList.add('hidden');
+      document.getElementById('userNameInput').value = '';
+      navigate('screen-config');
     }
 
     function proceedToCompareWithPreload() {
@@ -1394,13 +1611,8 @@
 
     function recordHistoryItem(code, name) {
       if (!code || !/^\d{4}$/.test(code)) return;
-      let history = getHistoryItems();
-      history = history.filter(item => item.code !== code);
-      history.unshift({
-        code,
-        name: name || "Player",
-        date: Date.now()
-      });
+      let history = getHistoryItems().filter(item => item.code !== code);
+      history.unshift({ code, name: name || "Player", date: Date.now() });
       if (history.length > 15) history = history.slice(0, 15);
       localStorage.setItem('besties_code_history', JSON.stringify(history));
       renderHistoryList();
@@ -1465,50 +1677,49 @@
 
     function startQuizFlow(mode) {
       currentMode = mode;
+      incomingPayload = null;
+      document.getElementById('themeSelectGroup').classList.remove('hidden');
+      document.getElementById('questionCountGroup').classList.remove('hidden');
+
       const title = document.getElementById('config-title');
       const desc = document.getElementById('config-desc');
 
       if (mode === 'similarity') {
         title.textContent = "Similarity Quiz Setup";
-        desc.textContent = "Choose your theme, enter your name, answer questions, and get a code to share!";
+        desc.textContent = "Choose category, question count, and enter your name.";
       } else {
         title.textContent = "How Well Do You Know Them?";
-        desc.textContent = "Answer once for you and once for your friend/partner, and see your score!";
+        desc.textContent = "Answer for yourself, then guess what your friend would pick!";
       }
 
       document.getElementById('userNameInput').value = '';
       navigate('screen-config');
     }
 
-    function onThemeSelectChange() {
-      const theme = document.getElementById('quizThemeSelect').value;
-      const qCountSelect = document.getElementById('questionCount');
-      if (theme !== 'ALL') {
-        qCountSelect.value = "10";
-      }
-    }
-
     function initQuizSession() {
       const nameInput = document.getElementById('userNameInput').value.trim();
       currentUserName = nameInput || "You";
 
-      const selectedCategory = document.getElementById('quizThemeSelect').value;
-      let filtered = (selectedCategory === 'ALL') 
-        ? [...allQuestionsPool] 
-        : allQuestionsPool.filter(item => item.category === selectedCategory);
-
-      if (!filtered.length) {
-        filtered = [...allQuestionsPool];
-      }
-
-      totalQuestionsToAsk = parseInt(document.getElementById('questionCount').value, 10);
-      if (selectedCategory !== 'ALL' && totalQuestionsToAsk > filtered.length) {
-        totalQuestionsToAsk = filtered.length;
+      if (incomingPayload && incomingPayload.count) {
+        totalQuestionsToAsk = incomingPayload.count;
+        selectedQuestions = allQuestionsPool.slice(0, totalQuestionsToAsk);
       } else {
-        totalQuestionsToAsk = Math.min(totalQuestionsToAsk, filtered.length);
+        const selectedCategory = document.getElementById('quizThemeSelect').value;
+        let filtered = (selectedCategory === 'ALL') 
+          ? [...allQuestionsPool] 
+          : allQuestionsPool.filter(item => item.category === selectedCategory);
+
+        if (!filtered.length) filtered = [...allQuestionsPool];
+
+        totalQuestionsToAsk = parseInt(document.getElementById('questionCount').value, 10);
+        if (selectedCategory !== 'ALL' && totalQuestionsToAsk > filtered.length) {
+          totalQuestionsToAsk = filtered.length;
+        } else {
+          totalQuestionsToAsk = Math.min(totalQuestionsToAsk, filtered.length);
+        }
+        selectedQuestions = filtered.slice(0, totalQuestionsToAsk);
       }
 
-      selectedQuestions = filtered.slice(0, totalQuestionsToAsk);
       currentIndex = 0;
       currentAnswers = [];
       subStep = 'self';
@@ -1519,7 +1730,7 @@
     function renderQuestion() {
       if (!selectedQuestions || selectedQuestions.length === 0) return;
       const qObj = selectedQuestions[currentIndex];
-      const progress = ((currentIndex) / totalQuestionsToAsk) * 100;
+      const progress = (currentIndex / totalQuestionsToAsk) * 100;
       document.getElementById('progressBar').style.width = `${progress}%`;
 
       const badge = document.getElementById('quizBadge');
@@ -1530,14 +1741,17 @@
       if (currentMode === 'similarity') {
         badge.textContent = `Q ${currentIndex + 1}/${totalQuestionsToAsk} — ${qObj.category || 'General'}`;
         qText.textContent = qObj.q;
+      } else if (currentMode === 'guess-them') {
+        const partnerName = pendingInviteName || "Friend";
+        badge.textContent = `Q ${currentIndex + 1}/${totalQuestionsToAsk} — Guess for ${partnerName}`;
+        qText.textContent = `What would ${partnerName} choose: "${qObj.q}"`;
       } else {
         if (subStep === 'self') {
-          badge.textContent = `Q ${currentIndex + 1}/${totalQuestionsToAsk} — ${currentUserName}`;
+          badge.textContent = `Q ${currentIndex + 1}/${totalQuestionsToAsk} — Your Choice`;
           qText.textContent = `About you: ${qObj.q}`;
         } else {
-          const partnerName = pendingInviteName || "Partner / Friend";
-          badge.textContent = `Q ${currentIndex + 1}/${totalQuestionsToAsk} — For ${partnerName}`;
-          qText.textContent = `What would they choose: ${qObj.q}`;
+          badge.textContent = `Q ${currentIndex + 1}/${totalQuestionsToAsk} — Guess Friend's Choice`;
+          qText.textContent = `What would your friend pick: ${qObj.q}`;
         }
       }
 
@@ -1551,14 +1765,11 @@
     }
 
     function selectChoice(index) {
-      if (currentMode === 'similarity') {
+      if (currentMode === 'similarity' || currentMode === 'guess-them') {
         currentAnswers.push(index);
         currentIndex++;
-        if (currentIndex < totalQuestionsToAsk) {
-          renderQuestion();
-        } else {
-          finishQuiz();
-        }
+        if (currentIndex < totalQuestionsToAsk) renderQuestion();
+        else finishQuiz();
       } else {
         if (subStep === 'self') {
           tempSelfAnswer = index;
@@ -1568,17 +1779,14 @@
           currentAnswers.push({ self: tempSelfAnswer, friend: index });
           subStep = 'self';
           currentIndex++;
-          if (currentIndex < totalQuestionsToAsk) {
-            renderQuestion();
-          } else {
-            finishQuiz();
-          }
+          if (currentIndex < totalQuestionsToAsk) renderQuestion();
+          else finishQuiz();
         }
       }
     }
 
     function generateConsistent4DigitCode(answers, count, mode) {
-      let hash = (mode === 'similarity' ? 7919 : 6271) + count * 131;
+      let hash = (mode === 'knows-friend' ? 6271 : 7919) + count * 131;
       answers.forEach((ans, idx) => {
         const val = typeof ans === 'object' ? (ans.self * 7 + ans.friend * 11) : ans;
         hash = (hash * 37 + (val + 1) * (idx + 17)) % 9000;
@@ -1589,13 +1797,16 @@
     function finishQuiz() {
       const code = generateConsistent4DigitCode(currentAnswers, totalQuestionsToAsk, currentMode);
       latestGeneratedCode = code;
-      
-      localStorage.setItem('besties_code_' + code, JSON.stringify({
+
+      const sessionData = {
+        code,
         name: currentUserName,
         mode: currentMode,
         count: totalQuestionsToAsk,
         answers: currentAnswers
-      }));
+      };
+
+      localStorage.setItem('besties_code_' + code, JSON.stringify(sessionData));
       localStorage.setItem('besties_name_' + code, currentUserName);
       recordHistoryItem(code, currentUserName);
 
@@ -1627,11 +1838,15 @@
 
     function copyShareLink() {
       if (!latestGeneratedCode) return;
-      const url = new URL(window.location.href);
+      const stored = localStorage.getItem('besties_code_' + latestGeneratedCode);
+      if (!stored) return;
+
+      const obj = JSON.parse(stored);
+      const url = new URL(window.location.href.split('?')[0]);
       url.searchParams.set('code', latestGeneratedCode);
-      if (currentUserName && currentUserName !== "You") {
-        url.searchParams.set('name', currentUserName);
-      }
+      url.searchParams.set('name', currentUserName);
+      url.searchParams.set('d', packDataCompact(obj));
+
       navigator.clipboard.writeText(url.toString()).then(() => {
         const btn = document.getElementById('shareLinkBtn');
         btn.textContent = "Link Copied!";
@@ -1639,137 +1854,30 @@
       });
     }
 
-    function evaluatePairScores(c1, c2) {
-      const csvKey1 = `${c1}_${c2}`;
-      const csvKey2 = `${c2}_${c1}`;
-      if (csvMatrix[csvKey1]) return csvMatrix[csvKey1];
-      if (csvMatrix[csvKey2]) return csvMatrix[csvKey2];
-
-      const n1 = parseInt(c1, 10);
-      const n2 = parseInt(c2, 10);
-
-      if (c1 === c2) {
-        return { sim: 100, know: 100 };
-      }
-
-      const diff = Math.abs(n1 - n2);
-      const seed = (n1 * 31 + n2 * 17) % 1000;
-      const wave = Math.sin(seed) * 14;
-
-      let sim = Math.round(92 - ((diff % 100) * 0.72) + wave);
-      sim = Math.max(18, Math.min(98, sim));
-
-      let know = Math.round(sim * 0.88 + Math.cos(diff) * 10);
-      know = Math.max(15, Math.min(97, know));
-
-      return { sim, know };
-    }
-
     function toggleDetailsView() {
       const section = document.getElementById('detailsSection');
       const btn = document.getElementById('toggleDetailsBtn');
       const isHidden = section.classList.contains('hidden');
-      
       section.classList.toggle('hidden', !isHidden);
       btn.textContent = isHidden ? 'Hide Details' : 'See Details';
     }
 
-    function generateDetailedBreakdown(c1, c2, score, mode, name1, name2) {
-      const n1 = parseInt(c1, 10);
-      const n2 = parseInt(c2, 10);
-      const seed = (n1 * 13 + n2 * 41);
-
-      const calcCat = (offset, weight) => {
-        const delta = Math.sin(seed + offset) * 15 * weight;
-        return Math.max(15, Math.min(100, Math.round(score + delta)));
-      };
-
-      const categories = [
-        { name: "Social Energy & Romance", val: calcCat(1, 1.0) },
-        { name: "Daily Routines & Shared Living", val: calcCat(2, 0.9) },
-        { name: "Hobbies, Tastes & Travel", val: calcCat(3, 1.1) },
-        { name: "Values & Conflict Handling", val: calcCat(4, 0.8) }
-      ];
-
-      let takeaways = [];
-      if (mode === 'similarity') {
-        if (score >= 80) {
-          takeaways = [
-            `Super Similar: ${name1} and ${name2} share identical wavelengths across plans, lifestyle, and values.`,
-            `Natural Chemistry: Spontaneous reactions and decision-making align almost effortlessly.`,
-            `Minimal Friction: Disagreements defuse quickly due to compatible conflict styles.`
-          ];
-        } else if (score >= 50) {
-          takeaways = [
-            `Complementary Match: You agree on the core fundamentals, while your daily habits provide variety.`,
-            `Diverse Interests: You introduce each other to completely fresh food, music, and perspectives.`,
-            `Strong Dynamic: One grounds the situation while the other brings excitement and action.`
-          ];
-        } else {
-          takeaways = [
-            `Opposites Attract: You have distinctly different habits, social rhythms, and preferences.`,
-            `Different Needs: One thrives on quiet autonomy while the other seeks constant motion.`,
-            `Growth Opportunity: Mutual curiosity and respecting boundaries turn differences into strengths.`
-          ];
-        }
-      } else {
-        if (score >= 80) {
-          takeaways = [
-            `Mind Reader: You anticipated nearly all of their choices with remarkable accuracy.`,
-            `Attentive Connection: You notice the subtle habits and instincts they rarely speak about.`,
-            `Deep Bond: Shows authentic care and observation in day-to-day moments.`
-          ];
-        } else if (score >= 50) {
-          takeaways = [
-            `Strong Intuition: You know their major preferences, though a few private quirks surprised you.`,
-            `Room for Curiosity: A great catalyst to talk through where your expectations differed.`,
-            `Honest Dynamic: Predicts the big picture well while keeping some mystery alive.`
-          ];
-        } else {
-          takeaways = [
-            `Surprise Answers: Many of their real selections caught you completely off guard.`,
-            `Hidden Depths: Their private habits and priorities are ready to be explored.`,
-            `Fresh Ground: Start by asking them why they made their specific choices!`
-          ];
-        }
+    function resolveAnswersForCode(code) {
+      const local = localStorage.getItem('besties_code_' + code);
+      if (local) {
+        const obj = JSON.parse(local);
+        return { answers: obj.answers, mode: obj.mode, name: obj.name };
       }
-
-      const qaItems = [];
-      const cached1 = localStorage.getItem('besties_code_' + c1);
-      const cached2 = localStorage.getItem('besties_code_' + c2);
-      const data1 = cached1 ? JSON.parse(cached1) : null;
-      const data2 = cached2 ? JSON.parse(cached2) : null;
-
-      const totalToShow = Math.min(10, allQuestionsPool.length || 10);
-      for (let i = 0; i < totalToShow; i++) {
-        let ans1Idx, ans2Idx;
-        if (data1 && data1.answers && data1.answers[i] !== undefined) {
-          ans1Idx = typeof data1.answers[i] === 'object' ? data1.answers[i].self : data1.answers[i];
-        } else {
-          ans1Idx = (n1 + i * 3) % 6;
-        }
-
-        if (data2 && data2.answers && data2.answers[i] !== undefined) {
-          ans2Idx = typeof data2.answers[i] === 'object' ? data2.answers[i].self : data2.answers[i];
-        } else {
-          const forceMatch = (i * 10) < score;
-          ans2Idx = forceMatch ? ans1Idx : (n2 + i * 7) % 6;
-        }
-
-        const isMatched = (ans1Idx === ans2Idx);
-        const itemObj = allQuestionsPool[i] || { q: `Question ${i+1}`, a: ["A", "B", "C", "D", "E", "F"] };
-        qaItems.push({
-          q: itemObj.q,
-          isMatched,
-          ans1: itemObj.a[ans1Idx] || "Choice",
-          ans2: itemObj.a[ans2Idx] || "Choice"
-        });
+      if (codeMatrixDB[code]) {
+        return { answers: codeMatrixDB[code].answers, mode: codeMatrixDB[code].mode, name: codeMatrixDB[code].archetype };
       }
-
-      return { categories, takeaways, qaItems };
+      const pseudo = [];
+      const num = parseInt(code, 10) || 1000;
+      for (let i = 0; i < 10; i++) pseudo.push((num * 7 + i * 13) % 6);
+      return { answers: pseudo, mode: 'similarity', name: 'Friend' };
     }
 
-    function compareCodes() {
+    async function compareCodes() {
       const code1 = getPinCode('code1');
       const code2 = getPinCode('code2');
       const selectedType = document.getElementById('comparisonMode').value;
@@ -1779,22 +1887,108 @@
         return;
       }
 
-      const name1 = localStorage.getItem('besties_name_' + code1) || "Player 1";
-      const name2 = localStorage.getItem('besties_name_' + code2) || pendingInviteName || "Player 2";
+      // Loading overlay activation
+      const overlay = document.getElementById('loadingOverlay');
+      const statusText = document.getElementById('loadingStatusText');
+      overlay.classList.remove('hidden');
+      statusText.textContent = "Loading Answer Vectors...";
+
+      await new Promise(r => setTimeout(r, 600));
+      statusText.textContent = "Comparing Selections...";
+      await new Promise(r => setTimeout(r, 450));
+
+      const data1 = resolveAnswersForCode(code1);
+      const data2 = resolveAnswersForCode(code2);
+
+      overlay.classList.add('hidden');
+
+      const name1 = (data1 && data1.name) || localStorage.getItem('besties_name_' + code1) || "Player 1";
+      const name2 = (data2 && data2.name) || pendingInviteName || localStorage.getItem('besties_name_' + code2) || "Player 2";
 
       recordHistoryItem(code1, name1);
       recordHistoryItem(code2, name2);
 
-      const scores = evaluatePairScores(code1, code2);
       let percentage = 0;
-      let details = "";
+      let qaItems = [];
+      let categoriesMap = {};
 
-      if (selectedType === 'similarity') {
-        percentage = scores.sim;
-        details = `${name1} and ${name2} match at ${percentage}%!`;
+      const resolveSelfAns = (ans) => (typeof ans === 'object' && ans !== null ? ans.self : ans);
+      const resolveFriendGuess = (ans) => (typeof ans === 'object' && ans !== null ? ans.friend : ans);
+
+      const total = Math.min(data1.answers.length, data2.answers.length, 10);
+      let matches = 0;
+
+      for (let i = 0; i < total; i++) {
+        const qObj = allQuestionsPool[i] || {
+          q: `Question ${i + 1}`,
+          category: "General",
+          a: ["A", "B", "C", "D", "E", "F"]
+        };
+
+        let val1, val2, isMatched = false;
+
+        if (selectedType === 'similarity') {
+          val1 = resolveSelfAns(data1.answers[i]);
+          val2 = resolveSelfAns(data2.answers[i]);
+          isMatched = (val1 === val2);
+        } else {
+          if (data2.mode === 'guess-them') {
+            val1 = resolveSelfAns(data1.answers[i]);
+            val2 = data2.answers[i];
+            isMatched = (val1 === val2);
+          } else if (data1.mode === 'knows-friend') {
+            val1 = resolveFriendGuess(data1.answers[i]);
+            val2 = resolveSelfAns(data2.answers[i]);
+            isMatched = (val1 === val2);
+          } else {
+            val1 = resolveSelfAns(data1.answers[i]);
+            val2 = resolveSelfAns(data2.answers[i]);
+            isMatched = (val1 === val2);
+          }
+        }
+
+        if (isMatched) matches++;
+
+        const catName = qObj.category || "General";
+        if (!categoriesMap[catName]) categoriesMap[catName] = { total: 0, matched: 0 };
+        categoriesMap[catName].total++;
+        if (isMatched) categoriesMap[catName].matched++;
+
+        qaItems.push({
+          q: qObj.q,
+          category: catName,
+          isMatched,
+          ans1: (qObj.a && qObj.a[val1]) ? qObj.a[val1] : `Option ${val1 + 1}`,
+          ans2: (qObj.a && qObj.a[val2]) ? qObj.a[val2] : `Option ${val2 + 1}`
+        });
+      }
+
+      percentage = total > 0 ? Math.round((matches / total) * 100) : 0;
+
+      const categories = Object.keys(categoriesMap).map(k => ({
+        name: k,
+        val: Math.round((categoriesMap[k].matched / categoriesMap[k].total) * 100)
+      }));
+
+      let takeaways = [];
+      if (percentage >= 80) {
+        takeaways = [
+          `Identical Wavelength: ${name1} and ${name2} share natural chemistry and direct alignment.`,
+          `Seamless Chemistry: Choices and instincts align spontaneously across key themes.`,
+          `Zero Friction: Values and daily approaches match almost 1-to-1.`
+        ];
+      } else if (percentage >= 50) {
+        takeaways = [
+          `Complementary Balance: Shared priorities on big choices, while distinct tastes keep variety alive.`,
+          `Dynamic Connection: Different daily preferences bring fresh perspective without friction.`,
+          `Strong Baseline: Mutual understanding in high-priority situations.`
+        ];
       } else {
-        percentage = scores.know;
-        details = `Knowledge accuracy between ${name1} and ${name2} is ${percentage}%!`;
+        takeaways = [
+          `Contrasting Perspectives: You approach decisions, routines, and instincts from very different angles.`,
+          `Independent Styles: Autonomous worldviews with distinct habits.`,
+          `Fresh Discovery: Plenty of space to uncover the thought process behind each choice.`
+        ];
       }
 
       latestComparisonResult = {
@@ -1803,18 +1997,19 @@
         name1,
         name2,
         percentage,
-        type: selectedType
+        type: selectedType,
+        breakdown: { categories, takeaways, qaItems }
       };
 
       document.getElementById('resultHeadingTitle').textContent = `${name1} & ${name2}`;
       document.getElementById('resultScore').textContent = `${percentage}%`;
-      document.getElementById('resultDetails').textContent = details;
+      document.getElementById('resultDetails').textContent = selectedType === 'similarity'
+        ? `${name1} and ${name2} matched ${percentage}% of questions identical!`
+        : `Answer accuracy between ${name1} and ${name2} is ${percentage}%!`;
 
-      const breakdown = generateDetailedBreakdown(code1, code2, percentage, selectedType, name1, name2);
-      
       const catContainer = document.getElementById('categoryBreakdowns');
       catContainer.innerHTML = '';
-      breakdown.categories.forEach(cat => {
+      categories.forEach(cat => {
         const item = document.createElement('div');
         item.className = 'trait-card';
         item.innerHTML = `
@@ -1831,7 +2026,7 @@
 
       const listContainer = document.getElementById('detailTakeaways');
       listContainer.innerHTML = '';
-      breakdown.takeaways.forEach(point => {
+      takeaways.forEach(point => {
         const li = document.createElement('li');
         li.textContent = point;
         listContainer.appendChild(li);
@@ -1839,12 +2034,12 @@
 
       const qaContainer = document.getElementById('qaBreakdownContainer');
       qaContainer.innerHTML = '';
-      breakdown.qaItems.forEach((item, idx) => {
+      qaItems.forEach((item, idx) => {
         const div = document.createElement('div');
         div.className = `qa-item ${item.isMatched ? 'matched' : ''}`;
         div.innerHTML = `
           <div class="qa-header">
-            <span>Question ${idx + 1}</span>
+            <span>Question ${idx + 1} • ${item.category}</span>
             <span class="qa-tag ${item.isMatched ? 'matched' : 'different'}">${item.isMatched ? 'Matched Choice' : 'Different Choice'}</span>
           </div>
           <div class="qa-question">${item.q}</div>
@@ -1858,12 +2053,11 @@
 
       document.getElementById('detailsSection').classList.add('hidden');
       document.getElementById('toggleDetailsBtn').textContent = 'See Details';
-
       navigate('screen-results');
     }
 
     loadNoticeMessages();
-    loadQuestions();
+    loadDatabases();
     updateThemeUI();
     setupPinInputs();
     checkUrlParams();
