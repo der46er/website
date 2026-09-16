@@ -1,0 +1,32 @@
+[
+  {
+    "tag": "Featured",
+    "icon": "!",
+    "title": "Support Free Tools",
+    "text": "Consider pausing your blocker to help keep this project free and actively maintained for everyone."
+  },
+  {
+    "tag": "Notice",
+    "icon": "✦",
+    "title": "Clean & Private",
+    "text": "We don't track your personal details or sell your answers. Whitelisting keeps the server running."
+  },
+  {
+    "tag": "Community",
+    "icon": "★",
+    "title": "Built for Fun",
+    "text": "Made with passion for friends and partners. Consider adding an exception to support future quiz updates."
+  },
+  {
+    "tag": "Friendly Tip",
+    "icon": "💡",
+    "title": "Did You Know?",
+    "text": "You can share your 4-digit code link directly with friends so they don't have to retype it."
+  },
+  {
+    "tag": "Support Us",
+    "icon": "☕",
+    "title": "Keep It Ad-Light",
+    "text": "We only display subtle sidebar units to offset hosting costs without intrusive overlays."
+  }
+]
