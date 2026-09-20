@@ -7,6 +7,82 @@
     
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/der46er/website/main/assets/favicon.png">
 
+    <!-- Structured Data (JSON-LD) for Search Engines & AI Knowledge Graphs -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Person",
+          "@id": "https://thataustrianone.eu/about-me#person",
+          "name": "Niklas Außerwöger",
+          "alternateName": ["Nick", "der_46er", "not_der46er"],
+          "url": "https://thataustrianone.eu/about-me",
+          "mainEntityOfPage": "https://thataustrianone.eu/about-me",
+          "jobTitle": ["IT System Technician", "Social Media Creator"],
+          "address": {
+            "@type": "PostalAddress",
+            "addressRegion": "Upper Austria",
+            "addressCountry": "AT"
+          },
+          "knowsAbout": [
+            "Hardware & Tech Repair",
+            "Computer Systems",
+            "AI-Assisted Web Design",
+            "Community Building"
+          ],
+          "sameAs": [
+            "https://github.com/der46er",
+            "https://www.tiktok.com/@der_46er",
+            "https://www.tiktok.com/@not_der46er",
+            "https://youtube.com/@der_46er",
+            "https://instagram.com/not_der46er",
+            "https://twitter.com/der_46er",
+            "https://bsky.app/profile/thataustrianone.eu",
+            "https://twitch.tv/der_46er",
+            "https://kick.com/der-46er",
+            "https://t.me/der_46er",
+            "https://vk.ru/der_46er",
+            "https://steamcommunity.com/id/thataustrianone",
+            "https://open.spotify.com/user/31sgsrlrsi2k635blq2rkgrymqva",
+            "https://pr0jectz3ro.eu",
+            "https://pr0jectz3ro.eu/discord",
+            "https://www.craftify-mc.eu"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://thataustrianone.eu/#website",
+          "url": "https://thataustrianone.eu",
+          "name": "ThatAustrianOne",
+          "publisher": {
+            "@id": "https://thataustrianone.eu/about-me#person"
+          }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://pr0jectz3ro.eu/#website",
+          "url": "https://pr0jectz3ro.eu",
+          "name": "pr0jectz3ro",
+          "description": "A platform dedicated to connecting people and featuring creators.",
+          "creator": {
+            "@id": "https://thataustrianone.eu/about-me#person"
+          }
+        },
+        {
+          "@type": "OnlineCommunity",
+          "@id": "https://pr0jectz3ro.eu/discord#community",
+          "name": "pr0jectz3ro Discord",
+          "url": "https://pr0jectz3ro.eu/discord",
+          "description": "An LGBTQ+-friendly, EU-based community hangout focused on voice calls, gaming, projects, and art.",
+          "founder": {
+            "@id": "https://thataustrianone.eu/about-me#person"
+          }
+        }
+      ]
+    }
+    </script>
+
     <!-- Performance Preconnects -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
@@ -166,7 +242,7 @@
                         <span class="text-zinc-600 text-xs">•</span>
                         <span id="discord-activity-pill" class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-zinc-500 truncate transition-colors duration-300">Connecting...</span>
                     </div>
-                    <h2 class="text-2xl sm:text-3xl font-black italic uppercase text-white tracking-tight leading-tight mb-2.5 pt-0.5">Nick</h2>
+                    <h2 class="text-2xl sm:text-3xl font-black italic uppercase text-white tracking-tight leading-tight mb-2.5 pt-0.5">Niklas Außerwöger (Nick)</h2>
                     <p id="profile-bio" class="text-zinc-300 text-xs sm:text-sm font-medium leading-relaxed max-w-4xl">
                     </p>
                 </div>
@@ -376,9 +452,9 @@
                 flag: "https://cdn.jsdelivr.net/gh/der46er/website@main/assets/flags/austria-flag.webp",
                 alt: "Austria Flag",
                 heroTitle: "Über Mich",
-                profileLocation: "Linz, Österreich",
-                profileRole: "IT-Techniker & Creator",
-                profileBio: "Fokussiert auf Hardware-Instandhaltung, Systemintegration und moderne Web-Anwendungen. Ich kombiniere technisches Detailwissen mit Content Creation und betreue eigene Open-Source-Projekte.",
+                profileLocation: "Oberösterreich, AT",
+                profileRole: "IT-Systemtechniker & Social Media Creator",
+                profileBio: "IT-Systemtechniker und Social Media Creator aus Oberösterreich. Spezialisiert auf Hardware-Instandhaltung, Computer-Systeme und KI-gestütztes modernes Webdesign. Online aktiv als @der_46er (Videos auf TikTok & YouTube) und @not_der46er (Fotografie auf Instagram & TikTok). Gründer der LGBTQ+-freundlichen Community pr0jectz3ro (Discord) und Betreiber von thataustrianone.eu sowie pr0jectz3ro.eu.",
                 statusNames: {
                     online: "ONLINE",
                     idle: "ABWESEND",
@@ -393,7 +469,7 @@
                 stackHeading: "Fähigkeiten & Tech Stack",
                 stackSubheading: "Betriebssysteme, Hardware-Technik & Produktions-Tools",
                 stackData: {
-                    "Systeme & OS": ["Windows 11 Pro", "Linux Mint", "Android 16", "iOS 27", "Google Wear OS 6"],
+                    "Systeme & OS": ["Windows 11 Pro", "Android 16", "iOS 27", "Google Wear OS 6"],
                     "Hardware & Bereitstellung": ["Systembau", "Hardware-Reparatur", "Kabelmanagement", "Gerätebereitstellung (Smartphones & PCs)"],
                     "Produktion & Creative": ["DaVinci Resolve", "OBS Studio", "Procreate", "Image Toolbox"]
                 },
@@ -418,7 +494,7 @@
                         { label: "Smartphones", val: "Xiaomi 17 Ultra & 14T Pro" }
                     ],
                     "Software": [
-                        { label: "Betriebssysteme", val: "Windows 11 Pro & Linux Mint" },
+                        { label: "Betriebssysteme", val: "Windows 11 Pro" },
                         { label: "Videoschnitt", val: "DaVinci Resolve 21" },
                         { label: "Browser", val: "Vivaldi" },
                         { label: "Sicherheit", val: "Proton Suite" },
@@ -444,9 +520,9 @@
                 flag: "https://cdn.jsdelivr.net/gh/der46er/website@main/assets/flags/united-kingdom-flag.webp",
                 alt: "UK Flag",
                 heroTitle: "About Me",
-                profileLocation: "Linz, Austria",
-                profileRole: "IT Technician & Creator",
-                profileBio: "Specializing in hardware repair, system optimization, and client-side web tools. Combining practical technical expertise with digital content creation and open-source development.",
+                profileLocation: "Upper Austria, AT",
+                profileRole: "IT System Technician & Social Media Creator",
+                profileBio: "IT system technician and social media creator based in Upper Austria. Skilled in hardware repair, computer systems, and AI-assisted modern web design. Online content creator under @der_46er (videos on TikTok & YouTube) and @not_der46er (photography on Instagram & TikTok). Founder of the LGBTQ+-friendly pr0jectz3ro Discord community, and developer behind thataustrianone.eu and pr0jectz3ro.eu.",
                 statusNames: {
                     online: "ONLINE",
                     idle: "IDLE",
@@ -461,7 +537,7 @@
                 stackHeading: "Skills & Tech Stack",
                 stackSubheading: "Operating systems, hardware engineering & production software",
                 stackData: {
-                    "Systems & OS": ["Windows 11 Pro", "Linux Mint", "Android 16", "iOS 27", "Google Wear OS 6"],
+                    "Systems & OS": ["Windows 11 Pro", "Android 16", "iOS 27", "Google Wear OS 6"],
                     "Hardware & Provisioning": ["System Assembly", "Computer Repair", "Cable Management", "Device Provisioning (Phones & PCs)"],
                     "Production & Creative": ["DaVinci Resolve", "OBS Studio", "Procreate", "Image Toolbox"]
                 },
@@ -486,7 +562,7 @@
                         { label: "Mobile", val: "Xiaomi 17 Ultra & 14T Pro" }
                     ],
                     "Software": [
-                        { label: "Operating Systems", val: "Windows 11 Pro & Linux Mint" },
+                        { label: "Operating Systems", val: "Windows 11 Pro" },
                         { label: "Editing Suite", val: "DaVinci Resolve 21" },
                         { label: "Primary Browser", val: "Vivaldi" },
                         { label: "Security", val: "Proton Suite" },
