@@ -69,11 +69,19 @@
             30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
             40%, 60% { transform: translate3d(4px, 0, 0); }
         }
+
+        .interactive-preview-el {
+            cursor: pointer;
+            transition: outline 0.15s ease;
+        }
+        .interactive-preview-el:hover {
+            outline: 2px dashed rgba(168, 85, 247, 0.8);
+            outline-offset: 4px;
+        }
     </style>
 </head>
 <body class="p-3 sm:p-5 flex flex-col h-screen overflow-hidden selection:bg-purple-500/20">
 
-    <!-- Access Gate Modal -->
     <div id="pin-gate-modal" class="fixed inset-0 z-[500] bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
         <div id="pin-box" class="glass-box rounded-2xl max-w-xs w-full p-6 text-center space-y-4 border border-white/20">
             <div>
@@ -91,7 +99,6 @@
         </div>
     </div>
 
-    <!-- Main Studio Workspace (hidden until PIN verified) -->
     <div id="studio-app" class="hidden flex-col h-full w-full">
         <header class="glass-box rounded-2xl px-5 py-3 mb-3 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 shrink-0">
             <div class="flex items-center gap-3">
@@ -100,7 +107,7 @@
                 </a>
                 <div>
                     <h1 class="text-lg sm:text-xl font-black italic uppercase tracking-tighter text-white">Tutorial Studio</h1>
-                    <p class="text-zinc-400 text-[11px] font-medium">Modular step builder with variable colors & custom symbol formatting</p>
+                    <p class="text-zinc-400 text-[11px] font-medium">Build light/dark responsive tutorials with fixed action bars and no purple background</p>
                 </div>
             </div>
 
@@ -143,7 +150,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
                             <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Slug / Folder Name</label>
-                            <input id="meta-slug" oninput="handleFieldChange()" type="text" placeholder="e.g. docker-setup" class="input-base">
+                            <input id="meta-slug" oninput="handleFieldChange()" type="text" placeholder="e.g. zello-maps" class="input-base">
                         </div>
                         <div>
                             <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Category (EN)</label>
@@ -177,32 +184,23 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                        <div>
-                            <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Difficulty</label>
-                            <select id="meta-difficulty" onchange="handleFieldChange()" class="input-base">
-                                <option value="">Select</option>
-                                <option value="Beginner">Beginner</option>
-                                <option value="Intermediate">Intermediate</option>
-                                <option value="Advanced">Advanced</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Estimated Time</label>
-                            <input id="meta-time" oninput="handleFieldChange()" type="text" placeholder="e.g. 15 Mins" class="input-base">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Platform</label>
-                            <input id="meta-os" oninput="handleFieldChange()" type="text" placeholder="e.g. Linux / Docker" class="input-base">
-                        </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
                             <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Author</label>
-                            <input id="meta-author" oninput="handleFieldChange()" type="text" placeholder="@der_46er" class="input-base">
+                            <input id="meta-author" oninput="handleFieldChange()" type="text" placeholder="Niklas Außerwöger" class="input-base">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Header Logo 1 URL (Optional)</label>
+                            <input id="meta-logo1" oninput="handleFieldChange()" type="text" placeholder="https://..." class="input-base">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Header Logo 2 URL (Optional)</label>
+                            <input id="meta-logo2" oninput="handleFieldChange()" type="text" placeholder="https://..." class="input-base">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Thumbnail / Header Image URL</label>
+                        <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Thumbnail Image URL (For tutorials listing card)</label>
                         <input id="meta-image" oninput="handleFieldChange()" type="text" placeholder="https://..." class="input-base">
                     </div>
                 </section>
@@ -251,25 +249,44 @@
                 </section>
             </div>
 
-            <div class="hidden lg:flex lg:col-span-5 flex-col glass-box rounded-2xl p-4 overflow-hidden">
+            <div class="hidden lg:flex lg:col-span-5 flex-col glass-box rounded-2xl p-4 overflow-hidden relative">
                 <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-white/10 shrink-0">
                     <div class="flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
-                        <span class="text-xs font-black uppercase tracking-wider text-zinc-300">Live Simulator</span>
+                        <span class="text-xs font-black uppercase tracking-wider text-zinc-300">Live Simulator (Output Preview)</span>
                     </div>
                     <div class="flex items-center gap-2">
+                        <button onclick="toggleSimTheme()" id="btn-sim-theme" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-white/10 text-zinc-300 border border-white/20">Dark Mode</button>
                         <button onclick="setSimLang('en')" id="btn-sim-en" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/30">EN</button>
                         <button onclick="setSimLang('de')" id="btn-sim-de" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-zinc-400 hover:text-white">DE</button>
                     </div>
                 </div>
 
-                <div class="flex-grow overflow-y-auto custom-scroll pr-1 space-y-4 text-left" id="live-simulator-content"></div>
+                <div class="flex-grow overflow-y-auto custom-scroll pr-1 space-y-4 text-left p-2 rounded-xl transition-colors duration-200" id="live-simulator-content" style="background-color: #0D0D0D; color: #f4f4f5;"></div>
             </div>
 
         </div>
     </div>
 
-    <!-- Clear Modal -->
+    <div id="scale-modal" class="hidden fixed inset-0 z-[600] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-box rounded-2xl max-w-xs w-full p-5 space-y-4 border border-white/20">
+            <div>
+                <h3 id="scale-modal-title" class="text-xs font-black uppercase tracking-wider text-purple-400">Resize Element</h3>
+                <p class="text-zinc-400 text-[11px] mt-0.5">Scale percentage (1% to 1000%)</p>
+            </div>
+            <div class="space-y-2">
+                <div class="flex items-center gap-2">
+                    <input type="range" id="scale-range" min="1" max="1000" step="1" class="w-full accent-purple-500" oninput="document.getElementById('scale-number').value = this.value">
+                    <input type="number" id="scale-number" min="1" max="1000" class="input-base w-20 text-center font-mono text-xs" oninput="document.getElementById('scale-range').value = this.value">
+                </div>
+            </div>
+            <div class="flex gap-2 justify-end pt-1">
+                <button onclick="closeScaleModal()" class="px-3 py-1.5 rounded-lg border border-white/10 text-zinc-400 hover:text-white text-xs font-bold uppercase">Cancel</button>
+                <button onclick="applyScaleModal()" class="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-black uppercase">Apply</button>
+            </div>
+        </div>
+    </div>
+
     <div id="clear-modal" class="hidden fixed inset-0 z-[400] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="glass-box rounded-2xl max-w-sm w-full p-6 text-center space-y-4 border border-white/20">
             <h3 class="text-base font-black italic uppercase tracking-wide text-white">Clear Canvas</h3>
@@ -282,7 +299,6 @@
     </div>
 
     <script>
-        // Set your PIN here
         const REQUIRED_PIN = "4646";
         const COOKIE_NAME = "studio_unlocked";
 
@@ -331,16 +347,14 @@
             }
         }
 
-        // Studio State & Handlers
         let tutorialData = {
             slug: "",
             category: { en: "", de: "" },
             title: { en: "", de: "" },
             description: { en: "", de: "" },
-            difficulty: "",
-            estTime: "",
-            os: "",
-            author: "",
+            author: "Niklas Außerwöger",
+            logo1: "",
+            logo2: "",
             image: "",
             variables: [],
             steps: []
@@ -350,6 +364,49 @@
         let historyIndex = -1;
         let isUndoRedoAction = false;
         let simLang = 'en';
+        let simTheme = 'dark'; // 'dark' = #0D0D0D, 'light' = #F0F0F0
+        let activeScaleTarget = null;
+
+        function toggleSimTheme() {
+            simTheme = simTheme === 'dark' ? 'light' : 'dark';
+            document.getElementById('btn-sim-theme').innerText = simTheme === 'dark' ? 'Dark Mode' : 'Light Mode';
+            renderSimulator();
+        }
+
+        function openScaleModal(sIdx, bIdx, type, currentVal) {
+            activeScaleTarget = { sIdx, bIdx, type };
+            const titleEl = document.getElementById('scale-modal-title');
+            titleEl.innerText = type === 'text' ? 'Resize Text Block' : (type === 'icon' ? 'Resize Step Icon' : 'Resize Image');
+            const val = currentVal || 100;
+            document.getElementById('scale-range').value = val;
+            document.getElementById('scale-number').value = val;
+            document.getElementById('scale-modal').classList.remove('hidden');
+        }
+
+        function closeScaleModal() {
+            document.getElementById('scale-modal').classList.add('hidden');
+            activeScaleTarget = null;
+        }
+
+        function applyScaleModal() {
+            if (!activeScaleTarget) return;
+            const { sIdx, bIdx, type } = activeScaleTarget;
+            const val = Math.min(1000, Math.max(1, parseInt(document.getElementById('scale-number').value) || 100));
+
+            if (type === 'icon') {
+                tutorialData.steps[sIdx].iconSize = val;
+            } else if (type === 'text') {
+                tutorialData.steps[sIdx].blocks[bIdx].textSize = val;
+            } else if (type === 'img1') {
+                tutorialData.steps[sIdx].blocks[bIdx].scale1 = val;
+            } else if (type === 'img2') {
+                tutorialData.steps[sIdx].blocks[bIdx].scale2 = val;
+            }
+
+            renderStepsEditor();
+            handleFieldChange();
+            closeScaleModal();
+        }
 
         function escapeHtml(str) {
             if (!str) return "";
@@ -370,7 +427,7 @@
                     const rawKey = (v.key || '').trim();
                     if (!rawKey) return;
                     const val = v.defaultVal || v.label || rawKey;
-                    const col = v.color || '#a855f7';
+                    const col = v.color || '#2563eb';
                     const styled = `<span style="color: ${col};" class="font-bold">${escapeHtml(val)}</span>`;
                     s = s.split(rawKey).join(styled);
                 });
@@ -389,12 +446,12 @@
                 return `<span style="color: ${color};" class="font-bold">${txt}</span>`;
             });
 
-            s = s.replace(/\*\*\*([^\*\n]+)\*\*\*/g, '<strong class="font-black text-white">$1</strong>');
-            s = s.replace(/\*\*([^\*\n]+)\*\*/g, '<strong class="font-bold text-white">$1</strong>');
+            s = s.replace(/\*\*\*([^\*\n]+)\*\*\*/g, '<strong class="font-black text-inherit">$1</strong>');
+            s = s.replace(/\*\*([^\*\n]+)\*\*/g, '<strong class="font-bold text-inherit">$1</strong>');
             s = s.replace(/\*([^\*\n]+)\*/g, '<em class="italic">$1</em>');
             s = s.replace(/__([^_\n]+)__/g, '<span class="underline underline-offset-2">$1</span>');
             s = s.replace(/~~([^~\n]+)~~/g, '<span class="line-through opacity-60">$1</span>');
-            s = s.replace(/'([^'\n]+)'/g, '<code class="font-mono text-purple-300 bg-black/40 px-1 py-0.5 rounded border border-white/10 text-[0.9em]">$1</code>');
+            s = s.replace(/'([^'\n]+)'/g, '<code class="font-mono text-purple-400 bg-black/40 px-1 py-0.5 rounded border border-white/10 text-[0.9em]">$1</code>');
 
             return s;
         }
@@ -467,10 +524,9 @@
                 category: { en: "", de: "" },
                 title: { en: "", de: "" },
                 description: { en: "", de: "" },
-                difficulty: "",
-                estTime: "",
-                os: "",
-                author: "",
+                author: "Niklas Außerwöger",
+                logo1: "",
+                logo2: "",
                 image: "",
                 variables: [],
                 steps: []
@@ -497,10 +553,9 @@
             document.getElementById('meta-title-de').value = tutorialData.title?.de || "";
             document.getElementById('meta-desc-en').value = tutorialData.description?.en || "";
             document.getElementById('meta-desc-de').value = tutorialData.description?.de || "";
-            document.getElementById('meta-difficulty').value = tutorialData.difficulty || "";
-            document.getElementById('meta-time').value = tutorialData.estTime || "";
-            document.getElementById('meta-os').value = tutorialData.os || "";
-            document.getElementById('meta-author').value = tutorialData.author || "";
+            document.getElementById('meta-author').value = tutorialData.author || "Niklas Außerwöger";
+            document.getElementById('meta-logo1').value = tutorialData.logo1 || "";
+            document.getElementById('meta-logo2').value = tutorialData.logo2 || "";
             document.getElementById('meta-image').value = tutorialData.image || "";
 
             renderVariables();
@@ -520,8 +575,8 @@
                     <input class="input-base text-xs flex-1" placeholder="Default / Value" value="${v.defaultVal || ''}" oninput="tutorialData.variables[${i}].defaultVal = this.value; handleFieldChange();">
                     
                     <div class="flex items-center gap-1 shrink-0 bg-black/50 px-2 py-1 rounded-lg border border-white/5">
-                        <input type="color" value="${v.color || '#a855f7'}" onchange="tutorialData.variables[${i}].color = this.value; handleFieldChange();" class="w-5 h-5 bg-transparent border-0 cursor-pointer rounded">
-                        <input type="text" value="${v.color || '#a855f7'}" oninput="tutorialData.variables[${i}].color = this.value; handleFieldChange();" class="w-16 bg-transparent text-[10px] font-mono text-zinc-300 uppercase outline-none">
+                        <input type="color" value="${v.color || '#2563eb'}" onchange="tutorialData.variables[${i}].color = this.value; handleFieldChange();" class="w-5 h-5 bg-transparent border-0 cursor-pointer rounded">
+                        <input type="text" value="${v.color || '#2563eb'}" oninput="tutorialData.variables[${i}].color = this.value; handleFieldChange();" class="w-16 bg-transparent text-[10px] font-mono text-zinc-300 uppercase outline-none">
                     </div>
 
                     <button onclick="removeVariableRow(${i})" class="text-zinc-500 hover:text-red-400 px-2 text-xs font-bold">Remove</button>
@@ -530,7 +585,7 @@
         }
 
         function addVariableRow() {
-            tutorialData.variables.push({ key: "", label: "", defaultVal: "", color: "#a855f7" });
+            tutorialData.variables.push({ key: "", label: "", defaultVal: "", color: "#2563eb" });
             renderVariables();
             handleFieldChange();
         }
@@ -567,6 +622,17 @@
                         </div>
                     </div>
 
+                    <div class="p-2.5 bg-black/30 border border-white/5 rounded-lg space-y-2">
+                        <span class="text-[10px] font-black uppercase tracking-wider text-purple-400 block">Step Header Icon</span>
+                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                            <input class="input-base text-xs font-mono sm:col-span-3" placeholder="Custom Icon URL" value="${step.iconUrl || ''}" oninput="tutorialData.steps[${sIdx}].iconUrl = this.value; handleFieldChange();">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] text-zinc-500 font-bold uppercase">Size %</span>
+                                <input type="number" min="1" max="1000" class="input-base text-xs text-center font-mono py-1" value="${step.iconSize || 100}" oninput="tutorialData.steps[${sIdx}].iconSize = parseInt(this.value) || 100; handleFieldChange();">
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         <input class="input-base text-xs font-semibold" placeholder="Step Title (EN)" value="${step.title?.en || ''}" oninput="tutorialData.steps[${sIdx}].title.en = this.value; handleFieldChange();">
                         <input class="input-base text-xs font-semibold" placeholder="Step Title (DE)" value="${step.title?.de || ''}" oninput="tutorialData.steps[${sIdx}].title.de = this.value; handleFieldChange();">
@@ -581,10 +647,11 @@
                         <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-white/5">
                             <span class="text-[10px] text-zinc-500 font-bold uppercase mr-1">+ Add:</span>
                             <button onclick="addBlock(${sIdx}, 'text')" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-[10px] font-bold text-zinc-300 uppercase">Text</button>
+                            <button onclick="addBlock(${sIdx}, 'image')" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-[10px] font-bold text-zinc-300 uppercase">Image Layout</button>
+                            <button onclick="addBlock(${sIdx}, 'download-badges')" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-[10px] font-bold text-zinc-300 uppercase">App Badges</button>
                             <button onclick="addBlock(${sIdx}, 'code')" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-[10px] font-bold text-zinc-300 uppercase">Code/Command</button>
                             <button onclick="addBlock(${sIdx}, 'callout')" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-[10px] font-bold text-zinc-300 uppercase">Callout</button>
-                            <button onclick="addBlock(${sIdx}, 'image')" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-[10px] font-bold text-zinc-300 uppercase">Image Layout</button>
-                            <button onclick="addBlock(${sIdx}, 'accordion')" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-[10px] font-bold text-zinc-300 uppercase">Collapsible Section</button>
+                            <button onclick="addBlock(${sIdx}, 'accordion')" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-[10px] font-bold text-zinc-300 uppercase">Collapsible</button>
                         </div>
                     </div>
                 </div>
@@ -597,12 +664,105 @@
                     return `
                     <div class="p-2.5 bg-black/40 border border-white/5 rounded-lg space-y-1.5 relative">
                         <div class="flex justify-between items-center text-[10px] text-zinc-500 font-bold uppercase">
-                            <span>Text Block</span>
+                            <div class="flex items-center gap-2">
+                                <span>Text Block</span>
+                                <div class="flex items-center gap-1">
+                                    <span class="text-[9px] text-zinc-500">Size:</span>
+                                    <input type="number" min="1" max="1000" class="input-base text-[10px] w-14 text-center py-0.5" value="${b.textSize || 100}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].textSize = parseInt(this.value) || 100; handleFieldChange();">
+                                    <span class="text-[9px] text-zinc-500">%</span>
+                                </div>
+                            </div>
                             <button onclick="deleteBlock(${sIdx}, ${bIdx})" class="hover:text-red-400 font-bold">Remove</button>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             <textarea rows="2" class="input-base text-xs" placeholder="Text (EN)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].textEn = this.value; handleFieldChange();">${b.textEn || ''}</textarea>
                             <textarea rows="2" class="input-base text-xs" placeholder="Text (DE)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].textDe = this.value; handleFieldChange();">${b.textDe || ''}</textarea>
+                        </div>
+                    </div>`;
+                }
+
+                if (b.type === 'image') {
+                    const layout = b.layout || 'center';
+                    return `
+                    <div class="p-3 bg-black/40 border border-white/10 rounded-lg space-y-2.5 relative">
+                        <div class="flex justify-between items-center text-[10px] text-zinc-500 font-bold uppercase border-b border-white/5 pb-1.5">
+                            <div class="flex items-center gap-2">
+                                <span class="text-purple-400">Image Layout</span>
+                                <select class="bg-black/60 border border-white/10 rounded px-2 py-0.5 text-[10px] text-zinc-300 font-bold" onchange="tutorialData.steps[${sIdx}].blocks[${bIdx}].layout = this.value; renderStepsEditor(); handleFieldChange();">
+                                    <option value="center" ${layout === 'center' ? 'selected' : ''}>Centered (Fit)</option>
+                                    <option value="left" ${layout === 'left' ? 'selected' : ''}>Image Left, Text Right (App Card style)</option>
+                                    <option value="right" ${layout === 'right' ? 'selected' : ''}>Text Left, Image Right</option>
+                                    <option value="side-by-side" ${layout === 'side-by-side' ? 'selected' : ''}>Side-by-Side (Img1 -> Img2)</option>
+                                    <option value="stacked-steps" ${layout === 'stacked-steps' ? 'selected' : ''}>Stacked Steps (Img1 -> Img2)</option>
+                                </select>
+                            </div>
+                            <button onclick="deleteBlock(${sIdx}, ${bIdx})" class="hover:text-red-400 font-bold">Remove</button>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                            <input class="input-base text-xs font-mono sm:col-span-3" placeholder="Image URL" value="${b.url1 || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].url1 = this.value; handleFieldChange();">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] text-zinc-500 font-bold uppercase">Size %</span>
+                                <input type="number" min="1" max="1000" class="input-base text-xs text-center font-mono py-1" value="${b.scale1 || (layout === 'left' || layout === 'right' ? 20 : 100)}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].scale1 = parseInt(this.value) || 100; handleFieldChange();">
+                            </div>
+                        </div>
+
+                        ${layout === 'center' ? `
+                            <input class="input-base text-xs" placeholder="Caption (optional)" value="${b.caption1 || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].caption1 = this.value; handleFieldChange();">
+                        ` : ''}
+
+                        ${(layout === 'left' || layout === 'right') ? `
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <textarea rows="2" class="input-base text-xs" placeholder="Text (EN)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1En = this.value; handleFieldChange();">${b.text1En || ''}</textarea>
+                                <textarea rows="2" class="input-base text-xs" placeholder="Text (DE)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1De = this.value; handleFieldChange();">${b.text1De || ''}</textarea>
+                            </div>
+                        ` : ''}
+
+                        ${layout === 'side-by-side' ? `
+                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                                <input class="input-base text-xs font-mono sm:col-span-3" placeholder="Image 2 URL" value="${b.url2 || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].url2 = this.value; handleFieldChange();">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] text-zinc-500 font-bold uppercase">Size %</span>
+                                    <input type="number" min="1" max="1000" class="input-base text-xs text-center font-mono py-1" value="${b.scale2 || 100}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].scale2 = parseInt(this.value) || 100; handleFieldChange();">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <textarea rows="2" class="input-base text-xs" placeholder="Description under images (EN)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1En = this.value; handleFieldChange();">${b.text1En || ''}</textarea>
+                                <textarea rows="2" class="input-base text-xs" placeholder="Beschreibung unter Bildern (DE)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1De = this.value; handleFieldChange();">${b.text1De || ''}</textarea>
+                            </div>
+                        ` : ''}
+
+                        ${layout === 'stacked-steps' ? `
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <textarea rows="2" class="input-base text-xs" placeholder="Stage 1 Text (EN)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1En = this.value; handleFieldChange();">${b.text1En || ''}</textarea>
+                                <textarea rows="2" class="input-base text-xs" placeholder="Stufe 1 Text (DE)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1De = this.value; handleFieldChange();">${b.text1De || ''}</textarea>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 pt-2 border-t border-white/5">
+                                <input class="input-base text-xs font-mono sm:col-span-3" placeholder="Image 2 URL" value="${b.url2 || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].url2 = this.value; handleFieldChange();">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] text-zinc-500 font-bold uppercase">Size %</span>
+                                    <input type="number" min="1" max="1000" class="input-base text-xs text-center font-mono py-1" value="${b.scale2 || 100}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].scale2 = parseInt(this.value) || 100; handleFieldChange();">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <textarea rows="2" class="input-base text-xs" placeholder="Stage 2 Text (EN)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text2En = this.value; handleFieldChange();">${b.text2En || ''}</textarea>
+                                <textarea rows="2" class="input-base text-xs" placeholder="Stufe 2 Text (DE)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text2De = this.value; handleFieldChange();">${b.text2De || ''}</textarea>
+                            </div>
+                        ` : ''}
+
+                    </div>`;
+                }
+
+                if (b.type === 'download-badges') {
+                    return `
+                    <div class="p-2.5 bg-black/40 border border-white/5 rounded-lg space-y-2 relative">
+                        <div class="flex justify-between items-center text-[10px] text-zinc-500 font-bold uppercase">
+                            <span>App Store / Play Store Card Grid</span>
+                            <button onclick="deleteBlock(${sIdx}, ${bIdx})" class="hover:text-red-400 font-bold">Remove</button>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <input class="input-base text-xs font-mono" placeholder="iOS App Store Link" value="${b.iosLink || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].iosLink = this.value; handleFieldChange();">
+                            <input class="input-base text-xs font-mono" placeholder="Android Play Store Link" value="${b.androidLink || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].androidLink = this.value; handleFieldChange();">
                         </div>
                     </div>`;
                 }
@@ -636,10 +796,9 @@
                             <div class="flex items-center gap-2">
                                 <span>Callout</span>
                                 <select class="bg-black/60 border border-white/10 rounded px-1.5 py-0.5 text-[10px] text-purple-300" onchange="tutorialData.steps[${sIdx}].blocks[${bIdx}].level = this.value; handleFieldChange();">
-                                    <option value="tip" ${b.level === 'tip' ? 'selected' : ''}>Tip (Purple)</option>
-                                    <option value="info" ${b.level === 'info' ? 'selected' : ''}>Info (Cyan)</option>
-                                    <option value="warning" ${b.level === 'warning' ? 'selected' : ''}>Warning (Amber)</option>
-                                    <option value="danger" ${b.level === 'danger' ? 'selected' : ''}>Danger (Rose)</option>
+                                    <option value="tip" ${b.level === 'tip' ? 'selected' : ''}>Tip (Blue)</option>
+                                    <option value="warning" ${b.level === 'warning' ? 'selected' : ''}>Warning (Orange)</option>
+                                    <option value="danger" ${b.level === 'danger' ? 'selected' : ''}>Danger (Red)</option>
                                 </select>
                             </div>
                             <button onclick="deleteBlock(${sIdx}, ${bIdx})" class="hover:text-red-400 font-bold">Remove</button>
@@ -648,70 +807,6 @@
                             <input class="input-base text-xs" placeholder="Message (EN)" value="${b.textEn || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].textEn = this.value; handleFieldChange();">
                             <input class="input-base text-xs" placeholder="Nachricht (DE)" value="${b.textDe || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].textDe = this.value; handleFieldChange();">
                         </div>
-                    </div>`;
-                }
-
-                if (b.type === 'image') {
-                    const layout = b.layout || 'center';
-                    return `
-                    <div class="p-3 bg-black/40 border border-white/10 rounded-lg space-y-2.5 relative">
-                        <div class="flex justify-between items-center text-[10px] text-zinc-500 font-bold uppercase border-b border-white/5 pb-1.5">
-                            <div class="flex items-center gap-2">
-                                <span class="text-purple-400">Image Layout</span>
-                                <select class="bg-black/60 border border-white/10 rounded px-2 py-0.5 text-[10px] text-zinc-300 font-bold" onchange="tutorialData.steps[${sIdx}].blocks[${bIdx}].layout = this.value; renderStepsEditor(); handleFieldChange();">
-                                    <option value="center" ${layout === 'center' ? 'selected' : ''}>Centered (Fit)</option>
-                                    <option value="left" ${layout === 'left' ? 'selected' : ''}>Image Left, Text Right</option>
-                                    <option value="right" ${layout === 'right' ? 'selected' : ''}>Text Left, Image Right</option>
-                                    <option value="side-by-side" ${layout === 'side-by-side' ? 'selected' : ''}>Side-by-Side (Img1 -> Img2)</option>
-                                    <option value="stacked-steps" ${layout === 'stacked-steps' ? 'selected' : ''}>Stacked Steps (Img1 -> Img2)</option>
-                                </select>
-                            </div>
-                            <button onclick="deleteBlock(${sIdx}, ${bIdx})" class="hover:text-red-400 font-bold">Remove</button>
-                        </div>
-
-                        ${layout === 'center' ? `
-                            <input class="input-base text-xs font-mono" placeholder="Image URL (https://...)" value="${b.url1 || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].url1 = this.value; handleFieldChange();">
-                            <input class="input-base text-xs" placeholder="Caption (optional)" value="${b.caption1 || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].caption1 = this.value; handleFieldChange();">
-                        ` : ''}
-
-                        ${(layout === 'left' || layout === 'right') ? `
-                            <input class="input-base text-xs font-mono" placeholder="Image URL (https://...)" value="${b.url1 || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].url1 = this.value; handleFieldChange();">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                <textarea rows="2" class="input-base text-xs" placeholder="Text (EN)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1En = this.value; handleFieldChange();">${b.text1En || ''}</textarea>
-                                <textarea rows="2" class="input-base text-xs" placeholder="Text (DE)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1De = this.value; handleFieldChange();">${b.text1De || ''}</textarea>
-                            </div>
-                        ` : ''}
-
-                        ${layout === 'side-by-side' ? `
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                <input class="input-base text-xs font-mono" placeholder="Image 1 URL" value="${b.url1 || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].url1 = this.value; handleFieldChange();">
-                                <input class="input-base text-xs font-mono" placeholder="Image 2 URL" value="${b.url2 || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].url2 = this.value; handleFieldChange();">
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                <textarea rows="2" class="input-base text-xs" placeholder="Description under images (EN)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1En = this.value; handleFieldChange();">${b.text1En || ''}</textarea>
-                                <textarea rows="2" class="input-base text-xs" placeholder="Beschreibung unter Bildern (DE)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1De = this.value; handleFieldChange();">${b.text1De || ''}</textarea>
-                            </div>
-                        ` : ''}
-
-                        ${layout === 'stacked-steps' ? `
-                            <div class="space-y-1.5 p-2 bg-black/30 rounded border border-white/5">
-                                <span class="text-[10px] text-zinc-400 font-bold uppercase">First Stage</span>
-                                <input class="input-base text-xs font-mono" placeholder="Image 1 URL" value="${b.url1 || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].url1 = this.value; handleFieldChange();">
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                    <textarea rows="2" class="input-base text-xs" placeholder="Stage 1 Text (EN)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1En = this.value; handleFieldChange();">${b.text1En || ''}</textarea>
-                                    <textarea rows="2" class="input-base text-xs" placeholder="Stufe 1 Text (DE)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1De = this.value; handleFieldChange();">${b.text1De || ''}</textarea>
-                                </div>
-                            </div>
-                            <div class="space-y-1.5 p-2 bg-black/30 rounded border border-white/5">
-                                <span class="text-[10px] text-zinc-400 font-bold uppercase">Second Stage</span>
-                                <input class="input-base text-xs font-mono" placeholder="Image 2 URL" value="${b.url2 || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].url2 = this.value; handleFieldChange();">
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                    <textarea rows="2" class="input-base text-xs" placeholder="Stage 2 Text (EN)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text2En = this.value; handleFieldChange();">${b.text2En || ''}</textarea>
-                                    <textarea rows="2" class="input-base text-xs" placeholder="Stufe 2 Text (DE)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text2De = this.value; handleFieldChange();">${b.text2De || ''}</textarea>
-                                </div>
-                            </div>
-                        ` : ''}
-
                     </div>`;
                 }
 
@@ -738,8 +833,10 @@
         function addNewStep() {
             tutorialData.steps.push({
                 id: Date.now(),
+                iconUrl: "",
+                iconSize: 100,
                 title: { en: "", de: "" },
-                blocks: [{ type: "text", textEn: "", textDe: "" }]
+                blocks: [{ type: "text", textEn: "", textDe: "", textSize: 100 }]
             });
             renderStepsEditor();
             handleFieldChange();
@@ -764,10 +861,11 @@
         function addBlock(sIdx, type) {
             const step = tutorialData.steps[sIdx];
             if (!step.blocks) step.blocks = [];
-            if (type === 'text') step.blocks.push({ type: 'text', textEn: '', textDe: '' });
+            if (type === 'text') step.blocks.push({ type: 'text', textEn: '', textDe: '', textSize: 100 });
+            if (type === 'download-badges') step.blocks.push({ type: 'download-badges', iosLink: '', androidLink: '' });
             if (type === 'code') step.blocks.push({ type: 'code', tabs: [{ label: 'Default', code: '' }] });
             if (type === 'callout') step.blocks.push({ type: 'callout', level: 'tip', textEn: '', textDe: '' });
-            if (type === 'image') step.blocks.push({ type: 'image', layout: 'center', url1: '', url2: '', caption1: '', text1En: '', text1De: '', text2En: '', text2De: '' });
+            if (type === 'image') step.blocks.push({ type: 'image', layout: 'left', scale1: 20, scale2: 20, url1: '', url2: '', caption1: '', text1En: '', text1De: '', text2En: '', text2De: '' });
             if (type === 'accordion') step.blocks.push({ type: 'accordion', headerEn: '', headerDe: '', contentEn: '', contentDe: '' });
             renderStepsEditor();
             handleFieldChange();
@@ -805,10 +903,9 @@
                 en: document.getElementById('meta-desc-en').value.trim(),
                 de: document.getElementById('meta-desc-de').value.trim()
             };
-            tutorialData.difficulty = document.getElementById('meta-difficulty').value;
-            tutorialData.estTime = document.getElementById('meta-time').value.trim();
-            tutorialData.os = document.getElementById('meta-os').value.trim();
-            tutorialData.author = document.getElementById('meta-author').value.trim();
+            tutorialData.author = document.getElementById('meta-author').value.trim() || "Niklas Außerwöger";
+            tutorialData.logo1 = document.getElementById('meta-logo1').value.trim();
+            tutorialData.logo2 = document.getElementById('meta-logo2').value.trim();
             tutorialData.image = document.getElementById('meta-image').value.trim();
         }
 
@@ -825,48 +922,110 @@
 
         function renderSimulator() {
             const isEn = simLang === 'en';
-            const cat = isEn ? tutorialData.category.en : tutorialData.category.de;
             const title = isEn ? tutorialData.title.en : tutorialData.title.de;
             const desc = isEn ? tutorialData.description.en : tutorialData.description.de;
 
             const container = document.getElementById('live-simulator-content');
+            const isDark = simTheme === 'dark';
+
+            container.style.backgroundColor = isDark ? '#0D0D0D' : '#F0F0F0';
+            container.style.color = isDark ? '#f4f4f5' : '#111827';
+
+            const cardBg = isDark ? '#18181b' : '#ffffff';
+            const cardBorder = isDark ? '#27272a' : '#d1d5db';
+            const subBoxBg = isDark ? '#27272a' : '#f3f4f6';
+            const mutedCol = isDark ? '#a1a1aa' : '#4b5563';
 
             let html = `
-                <div class="text-center py-2 border-b border-white/5 pb-4">
-                    ${cat ? `<span class="inline-block bg-purple-500/10 border border-purple-500/30 text-purple-400 text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded mb-2">${cat}</span>` : ''}
-                    <h2 class="text-lg font-black italic uppercase tracking-tight text-white mb-1.5 leading-snug">${processContent(title) || 'Tutorial Title'}</h2>
-                    ${desc ? `<p class="text-zinc-400 text-[11px] leading-relaxed max-w-md mx-auto">${processContent(desc)}</p>` : ''}
-                    
-                    <div class="flex items-center justify-center gap-2 mt-3 flex-wrap text-[10px] text-zinc-400 font-semibold">
-                        ${tutorialData.estTime ? `<span class="px-2 py-0.5 rounded bg-white/5 border border-white/10">Time: ${tutorialData.estTime}</span>` : ''}
-                        ${tutorialData.difficulty ? `<span class="px-2 py-0.5 rounded bg-white/5 border border-white/10">${tutorialData.difficulty}</span>` : ''}
-                        ${tutorialData.os ? `<span class="px-2 py-0.5 rounded bg-white/5 border border-white/10">${tutorialData.os}</span>` : ''}
-                        ${tutorialData.author ? `<span class="px-2 py-0.5 rounded bg-white/5 border border-white/10">${tutorialData.author}</span>` : ''}
+                <!-- Action Bar Simulator -->
+                <div class="flex items-center justify-end gap-2 mb-3">
+                    <div style="width: 44px; height: 44px; background: ${cardBg}; border: 2px solid ${cardBorder};" class="rounded-xl flex items-center justify-center shrink-0">
+                        ${isDark ? '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>' : '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>'}
+                    </div>
+                    <div style="width: 104px; height: 44px; background: ${subBoxBg}; border: 1px solid ${cardBorder};" class="rounded-xl p-1 flex items-center justify-between shrink-0">
+                        <div class="flex-1 text-center py-1 rounded text-xs font-bold ${simLang === 'de' ? 'bg-purple-600 text-white' : 'text-zinc-400'}">DE</div>
+                        <div class="flex-1 text-center py-1 rounded text-xs font-bold ${simLang === 'en' ? 'bg-purple-600 text-white' : 'text-zinc-400'}">EN</div>
+                    </div>
+                    <div style="width: 180px; height: 44px; background: ${cardBg}; border: 2px solid ${cardBorder};" class="rounded-xl flex items-center justify-center gap-1.5 px-3 text-xs font-bold shrink-0">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+                        <span>${isEn ? 'Download as PDF' : 'PDF herunterladen'}</span>
+                    </div>
+                </div>
+
+                <!-- Header Box -->
+                <div style="background: ${cardBg}; border: 2px solid ${cardBorder}; border-radius: 18px;" class="p-4 flex items-center gap-4">
+                    ${(tutorialData.logo1 || tutorialData.logo2) ? `
+                        <div class="flex gap-2 shrink-0">
+                            ${tutorialData.logo1 ? `<img src="${tutorialData.logo1}" class="w-12 h-12 rounded-xl object-contain border border-white/5">` : ''}
+                            ${tutorialData.logo2 ? `<img src="${tutorialData.logo2}" class="w-12 h-12 rounded-xl object-contain border border-white/5">` : ''}
+                        </div>
+                    ` : ''}
+                    <div>
+                        <h2 class="text-base font-extrabold tracking-tight">${processContent(title) || 'Tutorial Header Title'}</h2>
+                        <p style="color: ${mutedCol};" class="text-xs mt-0.5">${processContent(desc) || 'Guide summary will show here'}</p>
                     </div>
                 </div>
             `;
 
-            html += `<div class="space-y-3 pt-2">`;
+            html += `<div class="space-y-4 pt-2">`;
             (tutorialData.steps || []).forEach((step, idx) => {
                 const sTitle = isEn ? (step.title?.en || step.title?.de) : (step.title?.de || step.title?.en);
+                const iconSz = step.iconSize || 100;
+                const baseIconPx = Math.round(36 * (iconSz / 100));
+
                 html += `
-                    <div class="bg-black/40 border border-white/10 rounded-xl p-3.5 space-y-2.5">
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 rounded bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center text-[10px] font-black">${idx + 1}</span>
-                            <h3 class="text-xs font-bold text-white tracking-tight">${processContent(sTitle) || 'Step ' + (idx + 1)}</h3>
+                    <div style="background: ${cardBg}; border: 2px solid ${cardBorder}; border-radius: 18px;" class="p-4 sm:p-5 space-y-3.5">
+                        <div style="border-bottom: 2px solid ${cardBorder};" class="flex items-center gap-3 pb-3">
+                            ${step.iconUrl ? `
+                                <img src="${step.iconUrl}" 
+                                     onclick="openScaleModal(${idx}, -1, 'icon',${iconSz})" 
+                                     style="width: ${baseIconPx}px; height:${baseIconPx}px;" 
+                                     class="rounded-xl object-contain interactive-preview-el shrink-0 border border-white/10" 
+                                     title="Click to scale icon" alt="Step Icon">
+                            ` : `
+                                <div style="width: 32px; height: 32px; border: 2px solid #2563eb; color: #2563eb;" class="rounded-full flex items-center justify-center text-xs font-black shrink-0">${idx + 1}</div>
+                            `}
+                            <h3 class="text-base font-bold tracking-tight">${processContent(sTitle) || 'Step ' + (idx + 1)}</h3>
                         </div>
                 `;
 
-                (step.blocks || []).forEach(b => {
+                (step.blocks || []).forEach((b, bIdx) => {
                     if (b.type === 'text') {
                         const txt = isEn ? (b.textEn || b.textDe) : (b.textDe || b.textEn);
-                        if (txt) html += `<p class="text-zinc-300 text-[11px] leading-relaxed whitespace-pre-line">${processContent(txt)}</p>`;
+                        const tSz = b.textSize || 100;
+                        if (txt) {
+                            html += `
+                            <p onclick="openScaleModal(${idx}, ${bIdx}, 'text', ${tSz})" 
+                               style="font-size: ${(tSz / 100) * 0.9}rem; line-height: 1.6;" 
+                               class="text-inherit leading-relaxed whitespace-pre-line interactive-preview-el rounded p-1" 
+                               title="Click to scale text size">
+                                ${processContent(txt)}
+                            </p>`;
+                        }
+                    }
+
+                    if (b.type === 'download-badges') {
+                        html += `
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                            <div style="background: ${subBoxBg}; border: 1.5px solid ${cardBorder};" class="rounded-xl p-3 flex flex-col items-center text-center">
+                                <span class="text-xs font-bold mb-2">Apple iPhone</span>
+                                <a href="${b.iosLink || '#'}" target="_blank" class="block mb-1">
+                                    <img src="https://raw.githubusercontent.com/der46er/website/main/assets/tutorials/zello-maps/Download_on_the_App_Store_Badge.svg.png" class="h-8 object-contain">
+                                </a>
+                            </div>
+                            <div style="background: ${subBoxBg}; border: 1.5px solid ${cardBorder};" class="rounded-xl p-3 flex flex-col items-center text-center">
+                                <span class="text-xs font-bold mb-2">Android</span>
+                                <a href="${b.androidLink || '#'}" target="_blank" class="block mb-1">
+                                    <img src="https://raw.githubusercontent.com/der46er/website/main/assets/tutorials/zello-maps/Google_Play_Store_badge_EN.svg.png" class="h-8 object-contain">
+                                </a>
+                            </div>
+                        </div>`;
                     }
 
                     if (b.type === 'code') {
                         const firstTab = b.tabs?.[0] || { label: 'Code', code: '' };
                         html += `
-                        <div class="bg-black/80 border border-white/10 rounded-lg p-2 font-mono text-[10px] text-purple-300 relative">
+                        <div style="background: ${isDark ? '#000' : '#e5e7eb'}; border: 1px solid ${cardBorder};" class="rounded-xl p-3 font-mono text-xs text-purple-400 relative">
                             <span class="absolute top-1 right-2 text-[8px] uppercase tracking-wider text-zinc-500 font-bold">${firstTab.label}</span>
                             <code>${processContent(firstTab.code, true) || ''}</code>
                         </div>`;
@@ -874,61 +1033,76 @@
 
                     if (b.type === 'callout') {
                         const calloutColors = {
-                            tip: "border-purple-500 bg-purple-950/20 text-purple-200",
-                            info: "border-cyan-500 bg-cyan-950/20 text-cyan-200",
-                            warning: "border-amber-500 bg-amber-950/20 text-amber-200",
-                            danger: "border-rose-500 bg-rose-950/20 text-rose-200"
+                            tip: isDark ? "border-[#2563eb] bg-[#172554] text-[#bfdbfe]" : "border-[#2563eb] bg-[#eff6ff] text-[#1e3a8a]",
+                            warning: isDark ? "border-[#f97316] bg-[#271e17] text-[#fed7aa]" : "border-[#ea580c] bg-[#fffaf5] text-[#9a3412]",
+                            danger: isDark ? "border-[#ef4444] bg-[#450a0a] text-[#fca5a5]" : "border-[#dc2626] bg-[#fef2f2] text-[#991b1b]"
                         };
                         const cText = isEn ? (b.textEn || b.textDe) : (b.textDe || b.textEn);
                         if (cText) {
-                            html += `<div class="border-l-2 p-2 rounded-r text-[10px] ${calloutColors[b.level] || calloutColors.tip}">${processContent(cText)}</div>`;
+                            html += `<div class="border-l-4 p-3 rounded-r-xl text-xs ${calloutColors[b.level] || calloutColors.tip}">${processContent(cText)}</div>`;
                         }
                     }
 
                     if (b.type === 'image') {
                         const layout = b.layout || 'center';
+                        const s1 = b.scale1 || (layout === 'left' || layout === 'right' ? 20 : 100);
+                        const s2 = b.scale2 || 100;
                         const t1 = isEn ? (b.text1En || b.text1De) : (b.text1De || b.text1En);
                         const t2 = isEn ? (b.text2En || b.text2De) : (b.text2De || b.text2En);
 
                         if (layout === 'center' && b.url1) {
                             html += `
-                            <div class="rounded-lg overflow-hidden border border-white/10 bg-black/40 max-w-sm mx-auto">
-                                <img src="${b.url1}" class="w-full h-auto object-contain">
-                                ${b.caption1 ? `<div class="p-1 text-[9px] text-zinc-500 italic text-center">${processContent(b.caption1)}</div>` : ''}
+                            <div class="p-2 flex flex-col items-center">
+                                <img src="${b.url1}" 
+                                     onclick="openScaleModal(${idx}, ${bIdx}, 'img1', ${s1})" 
+                                     style="width: ${s1}%; max-width: 100%;" 
+                                     class="h-auto object-contain interactive-preview-el rounded-xl border border-white/10" 
+                                     title="Click to scale image size">
+                                ${b.caption1 ? `<div class="p-1 text-[11px] text-zinc-500 italic text-center">${processContent(b.caption1)}</div>` : ''}
                             </div>`;
                         } else if (layout === 'left' && b.url1) {
                             html += `
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center bg-black/20 p-2 rounded-lg border border-white/5">
-                                <div class="max-w-[200px] mx-auto rounded overflow-hidden border border-white/10"><img src="${b.url1}" class="w-full h-auto object-contain"></div>
-                                <div class="text-[11px] text-zinc-300 leading-relaxed whitespace-pre-line">${processContent(t1)}</div>
+                            <div style="background: ${subBoxBg}; border: 1.5px solid ${cardBorder};" class="flex items-center gap-3.5 p-3.5 rounded-xl">
+                                <div style="width: ${s1}%; min-width: 48px;" class="shrink-0 flex items-center justify-center">
+                                    <img src="${b.url1}" 
+                                         onclick="openScaleModal(${idx}, ${bIdx}, 'img1', ${s1})" 
+                                         class="w-full h-auto object-contain interactive-preview-el rounded-xl border border-white/10" 
+                                         title="Click to scale image size">
+                                </div>
+                                <div class="text-xs text-inherit leading-relaxed whitespace-pre-line flex-1">${processContent(t1)}</div>
                             </div>`;
                         } else if (layout === 'right' && b.url1) {
                             html += `
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center bg-black/20 p-2 rounded-lg border border-white/5">
-                                <div class="text-[11px] text-zinc-300 leading-relaxed whitespace-pre-line">${processContent(t1)}</div>
-                                <div class="max-w-[200px] mx-auto rounded overflow-hidden border border-white/10"><img src="${b.url1}" class="w-full h-auto object-contain"></div>
+                            <div style="background: ${subBoxBg}; border: 1.5px solid ${cardBorder};" class="flex items-center gap-3.5 p-3.5 rounded-xl">
+                                <div class="text-xs text-inherit leading-relaxed whitespace-pre-line flex-1">${processContent(t1)}</div>
+                                <div style="width: ${s1}%; min-width: 48px;" class="shrink-0 flex items-center justify-center">
+                                    <img src="${b.url1}" 
+                                         onclick="openScaleModal(${idx}, ${bIdx}, 'img1', ${s1})" 
+                                         class="w-full h-auto object-contain interactive-preview-el rounded-xl border border-white/10" 
+                                         title="Click to scale image size">
+                                </div>
                             </div>`;
                         } else if (layout === 'side-by-side' && (b.url1 || b.url2)) {
                             html += `
-                            <div class="space-y-2 bg-black/20 p-2.5 rounded-lg border border-white/5">
-                                <div class="flex items-center justify-center gap-2">
-                                    ${b.url1 ? `<div class="flex-1 max-w-[150px] rounded overflow-hidden border border-white/10"><img src="${b.url1}" class="w-full h-auto object-contain"></div>` : ''}
-                                    <span class="text-purple-400 font-bold text-xs">&rarr;</span>
-                                    ${b.url2 ? `<div class="flex-1 max-w-[150px] rounded overflow-hidden border border-white/10"><img src="${b.url2}" class="w-full h-auto object-contain"></div>` : ''}
+                            <div style="background: ${subBoxBg}; border: 1.5px solid ${cardBorder};" class="space-y-2 p-3 rounded-xl">
+                                <div class="flex items-center justify-center gap-3">
+                                    ${b.url1 ? `<div style="width: ${s1}%;" class="flex items-center justify-center"><img src="${b.url1}" onclick="openScaleModal(${idx}, ${bIdx}, 'img1',${s1})" class="w-full h-auto object-contain interactive-preview-el rounded-lg border border-white/10" title="Click to scale"></div>` : ''}
+                                    <span class="text-blue-500 font-bold text-sm">&rarr;</span>
+                                    ${b.url2 ? `<div style="width: ${s2}%;" class="flex items-center justify-center"><img src="${b.url2}" onclick="openScaleModal(${idx}, ${bIdx}, 'img2',${s2})" class="w-full h-auto object-contain interactive-preview-el rounded-lg border border-white/10" title="Click to scale"></div>` : ''}
                                 </div>
-                                ${t1 ? `<p class="text-[11px] text-zinc-300 text-center leading-relaxed">${processContent(t1)}</p>` : ''}
+                                ${t1 ? `<p class="text-xs text-center leading-relaxed text-inherit">${processContent(t1)}</p>` : ''}
                             </div>`;
                         } else if (layout === 'stacked-steps') {
                             html += `
-                            <div class="space-y-3 bg-black/20 p-2.5 rounded-lg border border-white/5">
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 items-center">
-                                    ${b.url1 ? `<div class="max-w-[180px] mx-auto rounded overflow-hidden border border-white/10"><img src="${b.url1}" class="w-full h-auto object-contain"></div>` : ''}
-                                    <div class="text-[11px] text-zinc-300">${processContent(t1)}</div>
+                            <div style="background: ${subBoxBg}; border: 1.5px solid ${cardBorder};" class="space-y-3 p-3 rounded-xl">
+                                <div class="flex items-center gap-3">
+                                    ${b.url1 ? `<div style="width: ${s1}%;" class="shrink-0 flex items-center justify-center"><img src="${b.url1}" onclick="openScaleModal(${idx}, ${bIdx}, 'img1',${s1})" class="w-full h-auto object-contain interactive-preview-el rounded-lg border border-white/10" title="Click to scale"></div>` : ''}
+                                    <div class="text-xs text-inherit flex-1">${processContent(t1)}</div>
                                 </div>
-                                <div class="text-center text-purple-400 text-xs font-bold">&darr;</div>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 items-center">
-                                    ${b.url2 ? `<div class="max-w-[180px] mx-auto rounded overflow-hidden border border-white/10"><img src="${b.url2}" class="w-full h-auto object-contain"></div>` : ''}
-                                    <div class="text-[11px] text-zinc-300">${processContent(t2)}</div>
+                                <div class="text-center text-blue-500 text-xs font-bold">&darr;</div>
+                                <div class="flex items-center gap-3">
+                                    ${b.url2 ? `<div style="width: ${s2}%;" class="shrink-0 flex items-center justify-center"><img src="${b.url2}" onclick="openScaleModal(${idx}, ${bIdx}, 'img2',${s2})" class="w-full h-auto object-contain interactive-preview-el rounded-lg border border-white/10" title="Click to scale"></div>` : ''}
+                                    <div class="text-xs text-inherit flex-1">${processContent(t2)}</div>
                                 </div>
                             </div>`;
                         }
@@ -938,9 +1112,9 @@
                         const head = isEn ? (b.headerEn || b.headerDe) : (b.headerDe || b.headerEn);
                         const cnt = isEn ? (b.contentEn || b.contentDe) : (b.contentDe || b.contentEn);
                         html += `
-                        <details class="bg-black/60 border border-white/5 rounded-lg p-2 text-[10px]">
-                            <summary class="font-bold text-zinc-300 cursor-pointer">${processContent(head) || 'Details'}</summary>
-                            <p class="text-zinc-400 mt-1 whitespace-pre-line">${processContent(cnt)}</p>
+                        <details style="background: ${subBoxBg}; border: 1.5px solid ${cardBorder};" class="rounded-xl p-3 text-xs">
+                            <summary class="font-bold cursor-pointer select-none">${processContent(head) || 'Details'}</summary>
+                            <p class="mt-2 whitespace-pre-line text-inherit opacity-90">${processContent(cnt)}</p>
                         </details>`;
                     }
                 });
@@ -958,10 +1132,9 @@
                 title: tutorialData.title,
                 category: tutorialData.category,
                 description: tutorialData.description,
-                difficulty: tutorialData.difficulty,
-                estTime: tutorialData.estTime,
-                os: tutorialData.os,
                 author: tutorialData.author,
+                logo1: tutorialData.logo1,
+                logo2: tutorialData.logo2,
                 image: tutorialData.image,
                 url: tutorialData.slug ? `https://thataustrianone.eu/tutorials/${tutorialData.slug}/` : "#",
                 variables: tutorialData.variables,
@@ -1008,13 +1181,15 @@
             }, null, 2);
 
             const generatedHtml = `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${data.title.en || 'Tutorial'} | Nick</title>
+    <meta name="author" content="${data.author || 'Niklas Außerwöger'}">
+    <meta name="copyright" content="${data.author || 'Niklas Außerwöger'}">
+    <title>${data.title.en || 'Tutorial'}</title>
     
-    <meta property="og:title" content="${data.title.en || 'Tutorial'} | Nick">
+    <meta property="og:title" content="${data.title.en || 'Tutorial'}">
     <meta property="og:description" content="${data.description.en || ''}">
     <meta property="og:image" content="${data.image || ''}">
     <meta property="og:type" content="article">
@@ -1026,57 +1201,195 @@
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/der46er/website/main/assets/favicon.png">
     
     <style>
-        @font-face {
-            font-family: 'Inter';
-            src: url('https://cdn.jsdelivr.net/gh/der46er/website@main/assets/fonts/inter-v12-latin-regular.woff2') format('woff2');
-            font-weight: 400;
-            font-display: swap;
+        :root {
+            --bg: #F0F0F0;
+            --card-bg: #ffffff;
+            --border: #d1d5db;
+            --text: #111827;
+            --muted: #4b5563;
+            --sub-box-bg: #f3f4f6;
+            --primary: #2563eb;
+            --accent: #ea580c;
         }
-        @font-face {
-            font-family: 'Inter';
-            src: url('https://cdn.jsdelivr.net/gh/der46er/website@main/assets/fonts/inter-v12-latin-900.woff2') format('woff2');
-            font-weight: 900;
-            font-display: swap;
+
+        [data-theme="dark"] {
+            --bg: #0D0D0D;
+            --card-bg: #18181b;
+            --border: #27272a;
+            --text: #f4f4f5;
+            --muted: #a1a1aa;
+            --sub-box-bg: #27272a;
+            --primary: #60a5fa;
+            --accent: #f97316;
         }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: 'Inter', system-ui, sans-serif;
-            background-color: #0b0d11;
-            color: white;
-            margin: 0; padding: 0;
-            position: relative;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 24px 16px 40px 16px;
+            transition: background-color 0.25s ease, color 0.25s ease;
         }
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: url("https://cdn.jsdelivr.net/gh/der46er/website@main/assets/backgounds/waves-purple-black.webp");
-            background-size: cover;
-            background-position: center;
-            filter: blur(8px);
-            transform: scale(1.05);
-            z-index: -2;
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
         }
-        body::after {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.015'/%3E%3C/svg%3E");
-            pointer-events: none;
-            z-index: -1;
+
+        /* Fixed dimension action buttons to guarantee no shifting */
+        .action-bar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
         }
-        .glass-box {
-            background: rgba(18, 18, 18, 0.88);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+
+        .btn-fixed-nav {
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            max-width: 44px;
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            cursor: pointer;
+            transition: transform 0.15s ease, border-color 0.15s ease;
+            text-decoration: none;
+            flex-shrink: 0;
         }
-        .progress-bar-glow {
-            box-shadow: 0 0 10px rgba(168, 85, 247, 0.8);
+        .btn-fixed-nav:hover {
+            border-color: var(--muted);
+            transform: translateY(-1px);
         }
-        .step-completed {
-            opacity: 0.6;
-            filter: grayscale(0.5);
+
+        .lang-switch {
+            width: 104px;
+            height: 44px;
+            min-width: 104px;
+            max-width: 104px;
+            background: var(--sub-box-bg);
+            border: 1px solid var(--border);
+            padding: 4px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .lang-btn {
+            width: 46px;
+            height: 34px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            color: var(--muted);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lang-btn.active {
+            background: var(--card-bg);
+            color: var(--primary);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-pdf {
+            width: 190px;
+            height: 44px;
+            min-width: 190px;
+            max-width: 190px;
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.15s ease, border-color 0.15s ease;
+            flex-shrink: 0;
+        }
+        .btn-pdf:hover {
+            border-color: var(--muted);
+            transform: translateY(-1px);
+        }
+
+        header {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            padding: 26px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        @media (max-width: 660px) {
+            .action-bar {
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }
+            .btn-pdf {
+                width: 100%;
+                min-width: 100%;
+                max-width: 100%;
+            }
+        }
+
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                padding: 0 !important;
+            }
+            .action-bar {
+                display: none !important;
+            }
+            .card {
+                border: 1px solid #d1d5db !important;
+                box-shadow: none !important;
+            }
         }
     </style>
     <script src="https://cdn.tailwindcss.com"><\/script>
@@ -1085,106 +1398,86 @@
     ${schemaJson}
     <\/script>
 </head>
-<body class="flex flex-col min-h-screen w-full overflow-x-hidden selection:bg-purple-500/20 relative">
+<body>
 
-    <div id="read-progress" class="fixed top-0 left-0 h-1 bg-gradient-to-r from-purple-600 to-fuchsia-500 z-[300] progress-bar-glow w-0 transition-all duration-75"></div>
+    <div class="container">
+        <!-- Top Action Bar with strict fixed sizing -->
+        <div class="action-bar">
+            <a href="https://thataustrianone.eu/tutorials/" aria-label="Back to Tutorials" class="btn-fixed-nav" title="Back">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </a>
 
-    <a href="../" aria-label="Back to Tutorials" class="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] w-10 h-10 rounded-xl glass-box hover:border-zinc-300/80 hover:shadow-[0_0_25px_rgba(212,212,216,0.3)] text-zinc-400 hover:text-white flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 group">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-0.5 transition-transform duration-200">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-        </svg>
-    </a>
+            <button class="btn-fixed-nav" onclick="toggleTheme()" aria-label="Toggle theme">
+                <svg id="theme-icon-sun" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
+                <svg id="theme-icon-moon" class="block" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
+            </button>
 
-    <main class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 w-full flex-grow flex flex-col justify-start pt-16 md:pt-14 pb-16">
-        
-        <header class="w-full text-center shrink-0 mb-8">
-            <span id="category-badge" class="inline-block bg-purple-500/10 border border-purple-500/30 text-purple-400 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-md mb-3">
-                ${data.category.en || ''}
-            </span>
-            <h1 id="tut-title" class="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-white mb-3"></h1>
-            <p id="tut-desc" class="text-zinc-400 text-xs sm:text-sm font-medium tracking-wide leading-relaxed max-w-2xl mx-auto mb-4"></p>
+            <div class="lang-switch" role="group" aria-label="Language selector">
+                <button class="lang-btn" id="btn-de" onclick="setLanguage('de')">DE</button>
+                <button class="lang-btn active" id="btn-en" onclick="setLanguage('en')">EN</button>
+            </div>
 
-            <div class="flex items-center justify-center gap-2 flex-wrap text-xs text-zinc-400 font-semibold mb-6">
-                ${data.estTime ? `<span class="px-3 py-1 rounded-lg bg-black/40 border border-white/10">Time: ${data.estTime}</span>` : ''}
-                ${data.difficulty ? `<span class="px-3 py-1 rounded-lg bg-black/40 border border-white/10">${data.difficulty}</span>` : ''}
-                ${data.os ? `<span class="px-3 py-1 rounded-lg bg-black/40 border border-white/10">${data.os}</span>` : ''}
-                ${data.author ? `<span class="px-3 py-1 rounded-lg bg-black/40 border border-white/10">${data.author}</span>` : ''}
+            <button class="btn-pdf" onclick="window.print()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+                <span id="pdf-btn-label">Download as PDF</span>
+            </button>
+        </div>
+
+        <!-- Header -->
+        <header>
+            ${(data.logo1 || data.logo2) ? `
+                <div class="flex gap-2.5 shrink-0">
+                    ${data.logo1 ? `<img src="${data.logo1}" class="w-14 h-14 rounded-2xl object-cover border border-white/10" alt="Logo">` : ''}
+                    ${data.logo2 ? `<img src="${data.logo2}" class="w-14 h-14 rounded-2xl object-cover border border-white/10" alt="Logo">` : ''}
+                </div>
+            ` : ''}
+            <div>
+                <h1 id="tut-title" class="text-xl sm:text-2xl font-black tracking-tight mb-1"></h1>
+                <p id="tut-desc" class="text-sm opacity-80"></p>
             </div>
         </header>
 
+        <!-- Placeholders -->
         ${data.variables && data.variables.length > 0 ? `
-        <div class="glass-box rounded-2xl p-4 sm:p-5 mb-8">
-            <div class="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
-                <h3 class="text-xs font-black uppercase tracking-wider text-purple-400">Placeholders & Variables</h3>
-                <span class="text-[10px] text-zinc-500 uppercase font-semibold">Change to personalize values across this tutorial</span>
-            </div>
+        <div style="background: var(--card-bg); border: 2px solid var(--border);" class="rounded-2xl p-4 sm:p-5 mb-6">
+            <h3 class="text-xs font-black uppercase tracking-wider text-blue-500 mb-3">Placeholders & Variables</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 ${data.variables.map(v => `
                     <div>
-                        <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">
+                        <label class="block text-[10px] uppercase font-bold opacity-75 mb-1">
                             ${v.label || v.key} 
-                            <span class="font-mono text-[9px] px-1 py-0.5 rounded border border-white/10" style="color: ${v.color || '#a855f7'}; background: ${v.color ? v.color + '15' : 'rgba(168,85,247,0.1)'}">${v.key}</span>
+                            <span class="font-mono text-[9px] px-1 py-0.5 rounded border border-white/10" style="color: ${v.color || '#2563eb'};">${v.key}</span>
                         </label>
-                        <input data-var-key="${v.key}" data-var-color="${v.color || '#a855f7'}" oninput="updateDynamicVariables()" class="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-purple-500" value="${v.defaultVal || ''}">
+                        <input data-var-key="${v.key}" data-var-color="${v.color || '#2563eb'}" oninput="updateDynamicVariables()" style="background: var(--sub-box-bg); border: 1.5px solid var(--border);" class="w-full rounded-lg px-3 py-1.5 text-xs text-inherit focus:outline-none" value="${v.defaultVal || ''}">
                     </div>
                 `).join('')}
             </div>
         </div>
         ` : ''}
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <div id="steps-wrapper" class="lg:col-span-8 space-y-6"></div>
+        <!-- Steps Stack -->
+        <main id="steps-wrapper" class="space-y-6"></main>
 
-            <aside class="hidden lg:block lg:col-span-4 sticky top-8">
-                <div class="glass-box rounded-2xl p-5 space-y-4">
-                    <div class="flex items-center justify-between border-b border-white/5 pb-2">
-                        <h4 class="text-xs font-black uppercase tracking-wider text-purple-400">Table of Contents</h4>
-                        <span id="completed-count" class="text-[10px] text-zinc-400 font-bold">0 / ${data.steps.length}</span>
-                    </div>
-                    <nav class="space-y-1.5 text-xs">
-                        ${data.steps.map((st, i) => `
-                            <a href="#step-${i + 1}" class="block px-2.5 py-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 truncate transition-colors">
-                                <span class="text-purple-400 font-bold mr-1.5">${i + 1}.</span>${st.title.en || 'Step ' + (i + 1)}
-                            </a>
-                        `).join('')}
-                    </nav>
-                </div>
-            </aside>
-        </div>
-
-    </main>
-
-    <footer class="w-full flex justify-between items-center px-6 py-5 shrink-0 relative z-10 select-none mt-auto">
-        <button onclick="toggleLang()" id="lang-btn" class="focus:outline-none hover:scale-105 active:scale-95 transition-all duration-200">
-            <img id="lang-flag" src="https://cdn.jsdelivr.net/gh/der46er/website@main/assets/flags/united-kingdom-flag.webp" alt="Flag" class="w-7 h-auto rounded-md shadow-md object-cover opacity-80 hover:opacity-100 transition-opacity duration-200">
-        </button>
-        <p onclick="window.location.href='https://thataustrianone.eu/legal/'" class="cursor-pointer text-zinc-600 text-[10px] sm:text-xs font-black italic tracking-widest uppercase opacity-70 hover:opacity-100 hover:text-white transition-all duration-300">
-            (C) <span id="year">2026</span> - ${data.author || '@der_46er'}
-        </p>
-    </footer>
+        <footer class="text-center py-6 text-xs opacity-60">
+            (C) <span id="year">2026</span> - ${data.author || 'Niklas Außerwöger'}
+        </footer>
+    </div>
 
     <script>
         document.getElementById('year').innerText = new Date().getFullYear();
         const TUTORIAL_DATA = ${JSON.stringify(data, null, 2)};
         let currentLang = localStorage.getItem('siteLang') || 'en';
-        let completedSteps = JSON.parse(localStorage.getItem('tut_completed_' + TUTORIAL_DATA.slug) || '[]');
 
         function escapeHtml(str) {
             if (!str) return "";
-            return str
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
         function getVariableSubstitutions() {
             const map = {};
             document.querySelectorAll('[data-var-key]').forEach(inp => {
                 const key = inp.getAttribute('data-var-key');
-                const color = inp.getAttribute('data-var-color') || '#a855f7';
+                const color = inp.getAttribute('data-var-color') || '#2563eb';
                 if (key) map[key] = { val: inp.value, color: color };
             });
             return map;
@@ -1212,48 +1505,30 @@
                 const color = hex.startsWith('#') ? hex : '#' + hex;
                 return '<span style="color: ' + color + ';" class="font-bold">' + txt + '</span>';
             });
-            s = s.replace(/\\*\\*\\*([^\\*\\n]+)\\*\\*\\*/g, '<strong class="font-black text-white">$1</strong>');
-            s = s.replace(/\\*\\*([^\\*\\n]+)\\*\\*/g, '<strong class="font-bold text-white">$1</strong>');
+            s = s.replace(/\\*\\*\\*([^\\*\\n]+)\\*\\*\\*/g, '<strong class="font-black text-inherit">$1</strong>');
+            s = s.replace(/\\*\\*([^\\*\\n]+)\\*\\*/g, '<strong class="font-bold text-inherit">$1</strong>');
             s = s.replace(/\\*([^\\*\\n]+)\\*/g, '<em class="italic">$1</em>');
             s = s.replace(/__([^\\_\\n]+)__/g, '<span class="underline underline-offset-2">$1</span>');
             s = s.replace(/~~([^~\\n]+)~~/g, '<span class="line-through opacity-60">$1</span>');
-            s = s.replace(/'([^'\\n]+)'/g, '<code class="font-mono text-purple-300 bg-black/40 px-1 py-0.5 rounded border border-white/10 text-[0.9em]">$1</code>');
+            s = s.replace(/'([^'\\n]+)'/g, '<code class="font-mono text-purple-400 bg-black/30 px-1 py-0.5 rounded text-[0.9em]">$1</code>');
             return s;
         }
 
-        window.addEventListener('scroll', () => {
-            const h = document.documentElement, b = document.body;
-            const st = 'scrollTop', sh = 'scrollHeight';
-            const percent = (h[st]||b[st]) / ((h[sh]||b[sh]) - h.clientHeight) * 100;
-            document.getElementById('read-progress').style.width = percent + '%';
-        });
+        function toggleTheme() {
+            const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+            const next = cur === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            document.getElementById('theme-icon-sun').classList.toggle('hidden', next === 'dark');
+            document.getElementById('theme-icon-moon').classList.toggle('hidden', next === 'light');
+        }
 
-        function toggleStepComplete(idx) {
-            if (completedSteps.includes(idx)) {
-                completedSteps = completedSteps.filter(x => x !== idx);
-            } else {
-                completedSteps.push(idx);
-            }
-            localStorage.setItem('tut_completed_' + TUTORIAL_DATA.slug, JSON.stringify(completedSteps));
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('siteLang', lang);
+            document.getElementById('btn-de').classList.toggle('active', lang === 'de');
+            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+            document.getElementById('pdf-btn-label').innerText = lang === 'de' ? 'PDF herunterladen' : 'Download as PDF';
             renderTutorial();
-        }
-
-        function switchCodeTab(btn, sIdx, bIdx, tIdx) {
-            const blockDiv = btn.closest('.code-block-container');
-            blockDiv.querySelectorAll('.tab-btn').forEach(b => b.className = 'tab-btn px-2.5 py-1 text-[11px] font-bold uppercase text-zinc-400 hover:text-white');
-            btn.className = 'tab-btn px-2.5 py-1 text-[11px] font-bold uppercase bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded';
-            blockDiv.querySelectorAll('.tab-code-panel').forEach((p, idx) => {
-                p.classList.toggle('hidden', idx !== tIdx);
-            });
-        }
-
-        function copyCodeSnippet(btn) {
-            const codeEl = btn.parentElement.querySelector('code');
-            navigator.clipboard.writeText(codeEl.innerText).then(() => {
-                const orig = btn.innerText;
-                btn.innerText = 'COPIED';
-                setTimeout(() => btn.innerText = orig, 1500);
-            });
         }
 
         function updateDynamicVariables() {
@@ -1262,113 +1537,108 @@
 
         function renderTutorial() {
             const isEn = currentLang === 'en';
-            document.getElementById('lang-flag').src = isEn 
-                ? "https://cdn.jsdelivr.net/gh/der46er/website@main/assets/flags/united-kingdom-flag.webp"
-                : "https://cdn.jsdelivr.net/gh/der46er/website@main/assets/flags/austria-flag.webp";
-
-            document.getElementById('category-badge').innerText = isEn ? TUTORIAL_DATA.category.en : TUTORIAL_DATA.category.de;
             document.getElementById('tut-title').innerHTML = processContent(isEn ? TUTORIAL_DATA.title.en : TUTORIAL_DATA.title.de);
             document.getElementById('tut-desc').innerHTML = processContent(isEn ? TUTORIAL_DATA.description.en : TUTORIAL_DATA.description.de);
-            
-            const countEl = document.getElementById('completed-count');
-            if (countEl) countEl.innerText = completedSteps.length + ' / ' + TUTORIAL_DATA.steps.length;
 
             const wrapper = document.getElementById('steps-wrapper');
-            wrapper.innerHTML = TUTORIAL_DATA.steps.map((st, i) => {
-                const isComplete = completedSteps.includes(i);
+            wrapper.innerHTML = (TUTORIAL_DATA.steps || []).map((st, i) => {
                 const title = isEn ? (st.title.en || st.title.de) : (st.title.de || st.title.en);
+                const iconSz = st.iconSize || 100;
+                const baseIconPx = Math.round(36 * (iconSz / 100));
 
                 let blocksHtml = '';
                 (st.blocks || []).forEach((b, bIdx) => {
                     if (b.type === 'text') {
                         const txt = isEn ? (b.textEn || b.textDe) : (b.textDe || b.textEn);
-                        if (txt) blocksHtml += '<p class="text-zinc-300 text-xs sm:text-sm leading-relaxed whitespace-pre-line">' + processContent(txt) + '</p>';
+                        const tSz = b.textSize || 100;
+                        if (txt) {
+                            blocksHtml += '<p style="font-size: ' + ((tSz / 100) * 0.95) + 'rem; line-height: 1.6;" class="leading-relaxed whitespace-pre-line">' + processContent(txt) + '</p>';
+                        }
                     }
 
-                    if (b.type === 'code') {
+                    if (b.type === 'download-badges') {
                         blocksHtml += \`
-                        <div class="code-block-container bg-black/70 border border-white/10 rounded-xl overflow-hidden mt-2">
-                            <div class="flex items-center justify-between bg-black/40 px-3 py-1.5 border-b border-white/5">
-                                <div class="flex items-center gap-1.5">
-                                    \${b.tabs.map((t, tIdx) => \`
-                                        <button onclick="switchCodeTab(this, \${i}, \${bIdx}, \${tIdx})" class="tab-btn px-2.5 py-1 text-[11px] font-bold uppercase \${tIdx === 0 ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded' : 'text-zinc-400 hover:text-white'}">
-                                            \${t.label}
-                                        </button>
-                                    \`).join('')}
-                                </div>
-                                <span class="text-[9px] uppercase tracking-wider text-zinc-500 font-bold">Terminal</span>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                            <div style="background: var(--sub-box-bg); border: 1.5px solid var(--border);" class="rounded-xl p-3 flex flex-col items-center text-center">
+                                <strong class="text-xs mb-2">Apple iPhone</strong>
+                                <a href="\${b.iosLink || '#'}" target="_blank" class="block mb-1">
+                                    <img src="https://raw.githubusercontent.com/der46er/website/main/assets/tutorials/zello-maps/Download_on_the_App_Store_Badge.svg.png" class="h-8 object-contain">
+                                </a>
                             </div>
-                            <div class="p-3 relative">
-                                \${b.tabs.map((t, tIdx) => \`
-                                    <div class="tab-code-panel \${tIdx !== 0 ? 'hidden' : ''}">
-                                        <button onclick="copyCodeSnippet(this)" class="absolute top-2 right-2 px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[10px] text-zinc-300 uppercase tracking-wider font-bold">Copy</button>
-                                        <pre class="font-mono text-xs text-purple-300 overflow-x-auto"><code>\${processContent(t.code, true)}</code></pre>
-                                    </div>
-                                \`).join('')}
+                            <div style="background: var(--sub-box-bg); border: 1.5px solid var(--border);" class="rounded-xl p-3 flex flex-col items-center text-center">
+                                <strong class="text-xs mb-2">Android</strong>
+                                <a href="\${b.androidLink || '#'}" target="_blank" class="block mb-1">
+                                    <img src="https://raw.githubusercontent.com/der46er/website/main/assets/tutorials/zello-maps/Google_Play_Store_badge_EN.svg.png" class="h-8 object-contain">
+                                </a>
                             </div>
                         </div>\`;
                     }
 
+                    if (b.type === 'code') {
+                        const firstTab = b.tabs?.[0] || { label: 'Code', code: '' };
+                        blocksHtml += \`
+                        <div style="background: var(--sub-box-bg); border: 1.5px solid var(--border);" class="rounded-xl p-3 font-mono text-xs overflow-x-auto">
+                            <code>\${processContent(firstTab.code, true)}</code>
+                        </div>\`;
+                    }
+
                     if (b.type === 'callout') {
-                        const calloutClasses = {
-                            tip: "border-purple-500 bg-purple-950/20 text-purple-200",
-                            info: "border-cyan-500 bg-cyan-950/20 text-cyan-200",
-                            warning: "border-amber-500 bg-amber-950/20 text-amber-200",
-                            danger: "border-rose-500 bg-rose-950/20 text-rose-200"
-                        };
-                        const cText = isEn ? (b.textEn || b.textDe) : (b.textDe || b.textEn);
-                        if (cText) {
-                            blocksHtml += \`
-                            <div class="border-l-4 p-3 rounded-r-lg text-xs leading-relaxed \${calloutClasses[b.level] || calloutClasses.tip}">
-                                \${processContent(cText)}
-                            </div>\`;
-                        }
+                        blocksHtml += \`
+                        <div style="background: var(--sub-box-bg); border-left: 4px solid var(--primary);" class="rounded-r-xl p-3 text-xs leading-relaxed">
+                            \${processContent(isEn ? (b.textEn || b.textDe) : (b.textDe || b.textEn))}
+                        </div>\`;
                     }
 
                     if (b.type === 'image') {
                         const layout = b.layout || 'center';
+                        const s1 = b.scale1 || (layout === 'left' || layout === 'right' ? 20 : 100);
+                        const s2 = b.scale2 || 100;
                         const t1 = isEn ? (b.text1En || b.text1De) : (b.text1De || b.text1En);
                         const t2 = isEn ? (b.text2En || b.text2De) : (b.text2De || b.text2En);
 
                         if (layout === 'center' && b.url1) {
                             blocksHtml += \`
-                            <div class="rounded-xl overflow-hidden border border-white/10 bg-black/40 max-w-lg mx-auto">
-                                <img src="\${b.url1}" alt="Illustration" class="w-full h-auto object-contain">
-                                \${b.caption1 ? \`<div class="p-2 text-center text-xs text-zinc-400 italic bg-black/60">\${processContent(b.caption1)}</div>\` : ''}
+                            <div class="p-2 flex flex-col items-center">
+                                <img src="\${b.url1}" alt="Illustration" style="width: \${s1}%; max-width: 100%;" class="h-auto object-contain rounded-xl border border-white/10">
+                                \${b.caption1 ? \`<div class="p-1 text-center text-xs opacity-75 italic">\${processContent(b.caption1)}</div>\` : ''}
                             </div>\`;
                         } else if (layout === 'left' && b.url1) {
                             blocksHtml += \`
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center bg-black/30 p-3 rounded-xl border border-white/5">
-                                <div class="max-w-[280px] mx-auto rounded-lg overflow-hidden border border-white/10"><img src="\${b.url1}" class="w-full h-auto object-contain"></div>
-                                <div class="text-xs sm:text-sm text-zinc-300 leading-relaxed whitespace-pre-line">\${processContent(t1)}</div>
+                            <div style="background: var(--sub-box-bg); border: 1.5px solid var(--border);" class="flex items-center gap-4 p-4 rounded-xl">
+                                <div style="width: \${s1}%; min-width: 48px;" class="shrink-0 flex items-center justify-center">
+                                    <img src="\${b.url1}" class="w-full h-auto object-contain rounded-xl border border-white/10">
+                                </div>
+                                <div class="text-xs leading-relaxed whitespace-pre-line flex-1">\${processContent(t1)}</div>
                             </div>\`;
                         } else if (layout === 'right' && b.url1) {
                             blocksHtml += \`
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center bg-black/30 p-3 rounded-xl border border-white/5">
-                                <div class="text-xs sm:text-sm text-zinc-300 leading-relaxed whitespace-pre-line order-2 sm:order-1">\${processContent(t1)}</div>
-                                <div class="max-w-[280px] mx-auto rounded-lg overflow-hidden border border-white/10 order-1 sm:order-2"><img src="\${b.url1}" class="w-full h-auto object-contain"></div>
+                            <div style="background: var(--sub-box-bg); border: 1.5px solid var(--border);" class="flex items-center gap-4 p-4 rounded-xl">
+                                <div class="text-xs leading-relaxed whitespace-pre-line flex-1">\${processContent(t1)}</div>
+                                <div style="width: \${s1}%; min-width: 48px;" class="shrink-0 flex items-center justify-center">
+                                    <img src="\${b.url1}" class="w-full h-auto object-contain rounded-xl border border-white/10">
+                                </div>
                             </div>\`;
                         } else if (layout === 'side-by-side' && (b.url1 || b.url2)) {
                             blocksHtml += \`
-                            <div class="space-y-3 bg-black/30 p-4 rounded-xl border border-white/5">
+                            <div style="background: var(--sub-box-bg); border: 1.5px solid var(--border);" class="space-y-3 p-4 rounded-xl">
                                 <div class="flex items-center justify-center gap-3">
-                                    \${b.url1 ? \`<div class="flex-1 max-w-[240px] rounded-lg overflow-hidden border border-white/10"><img src="\${b.url1}" class="w-full h-auto object-contain"></div>\` : ''}
-                                    <span class="text-purple-400 font-bold text-lg">&rarr;</span>
-                                    \${b.url2 ? \`<div class="flex-1 max-w-[240px] rounded-lg overflow-hidden border border-white/10"><img src="\${b.url2}" class="w-full h-auto object-contain"></div>\` : ''}
+                                    \${b.url1 ? \`<div style="width: \${s1}%;" class="flex items-center justify-center"><img src="\${b.url1}" class="w-full h-auto object-contain rounded-lg border border-white/10"></div>\` : ''}
+                                    <span class="text-blue-500 font-bold text-base">&rarr;</span>
+                                    \${b.url2 ? \`<div style="width: \${s2}%;" class="flex items-center justify-center"><img src="\${b.url2}" class="w-full h-auto object-contain rounded-lg border border-white/10"></div>\` : ''}
                                 </div>
-                                \${t1 ? \`<p class="text-xs sm:text-sm text-zinc-300 text-center leading-relaxed whitespace-pre-line">\${processContent(t1)}</p>\` : ''}
+                                \${t1 ? \`<p class="text-xs text-center leading-relaxed">\${processContent(t1)}</p>\` : ''}
                             </div>\`;
                         } else if (layout === 'stacked-steps') {
                             blocksHtml += \`
-                            <div class="space-y-4 bg-black/30 p-4 rounded-xl border border-white/5">
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
-                                    \${b.url1 ? \`<div class="max-w-[260px] mx-auto rounded-lg overflow-hidden border border-white/10"><img src="\${b.url1}" class="w-full h-auto object-contain"></div>\` : ''}
-                                    <div class="text-xs sm:text-sm text-zinc-300 leading-relaxed whitespace-pre-line">\${processContent(t1)}</div>
+                            <div style="background: var(--sub-box-bg); border: 1.5px solid var(--border);" class="space-y-3 p-4 rounded-xl">
+                                <div class="flex items-center gap-4">
+                                    \${b.url1 ? \`<div style="width: \${s1}%;" class="shrink-0 flex items-center justify-center"><img src="\${b.url1}" class="w-full h-auto object-contain rounded-lg border border-white/10"></div>\` : ''}
+                                    <div class="text-xs flex-1">\${processContent(t1)}</div>
                                 </div>
-                                <div class="text-center text-purple-400 text-base font-bold">&darr;</div>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
-                                    \${b.url2 ? \`<div class="max-w-[260px] mx-auto rounded-lg overflow-hidden border border-white/10"><img src="\${b.url2}" class="w-full h-auto object-contain"></div>\` : ''}
-                                    <div class="text-xs sm:text-sm text-zinc-300 leading-relaxed whitespace-pre-line">\${processContent(t2)}</div>
+                                <div class="text-center text-blue-500 text-xs font-bold">&darr;</div>
+                                <div class="flex items-center gap-4">
+                                    \${b.url2 ? \`<div style="width: \${s2}%;" class="shrink-0 flex items-center justify-center"><img src="\${b.url2}" class="w-full h-auto object-contain rounded-lg border border-white/10"></div>\` : ''}
+                                    <div class="text-xs flex-1">\${processContent(t2)}</div>
                                 </div>
                             </div>\`;
                         }
@@ -1378,40 +1648,33 @@
                         const head = isEn ? (b.headerEn || b.headerDe) : (b.headerDe || b.headerEn);
                         const cnt = isEn ? (b.contentEn || b.contentDe) : (b.contentDe || b.contentEn);
                         blocksHtml += \`
-                        <details class="bg-black/40 border border-white/5 rounded-xl p-3.5 text-xs">
-                            <summary class="font-bold text-zinc-300 hover:text-white cursor-pointer select-none">\${processContent(head)}</summary>
-                            <p class="text-zinc-400 mt-2 leading-relaxed whitespace-pre-line">\${processContent(cnt)}</p>
+                        <details style="background: var(--sub-box-bg); border: 1.5px solid var(--border);" class="rounded-xl p-3.5 text-xs">
+                            <summary class="font-bold cursor-pointer select-none">\${processContent(head)}</summary>
+                            <p class="mt-2 leading-relaxed opacity-85 whitespace-pre-line">\${processContent(cnt)}</p>
                         </details>\`;
                     }
                 });
 
                 return \`
-                <div id="step-\${i + 1}" class="glass-box rounded-2xl p-5 sm:p-6 space-y-4 transition-all duration-300 \${isComplete ? 'step-completed' : ''}">
-                    <div class="flex items-center justify-between border-b border-white/5 pb-3">
-                        <div class="flex items-center gap-3">
-                            <span class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center text-xs font-black">\${i + 1}</span>
-                            <h2 class="text-base sm:text-lg font-bold text-white tracking-tight">\${processContent(title) || 'Step ' + (i + 1)}</h2>
-                        </div>
-                        <button onclick="toggleStepComplete(\${i})" class="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg border \${isComplete ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300' : 'border-white/10 text-zinc-400 hover:text-white'}">
-                            \${isComplete ? 'Completed' : 'Mark Done'}
-                        </button>
+                <section class="card">
+                    <div class="card-header">
+                        \${st.iconUrl ? \`
+                            <img src="\${st.iconUrl}" style="width: \${baseIconPx}px; height: \${baseIconPx}px;" class="rounded-xl object-contain border border-white/10 shrink-0" alt="Icon">
+                        \` : \`
+                            <div style="width: 34px; height: 34px; border: 2px solid var(--primary); color: var(--primary);" class="rounded-full flex items-center justify-center text-sm font-black shrink-0">\${i + 1}</div>
+                        \`}
+                        <h2 class="text-lg font-bold tracking-tight">\${processContent(title) || 'Step ' + (i + 1)}</h2>
                     </div>
-                    <div class="space-y-3.5">
+                    <div class="space-y-4">
                         \${blocksHtml}
                     </div>
-                </div>\`;
+                </section>\`;
             }).join('');
 
             updateDynamicVariables();
         }
 
-        window.toggleLang = () => {
-            currentLang = currentLang === 'en' ? 'de' : 'en';
-            localStorage.setItem('siteLang', currentLang);
-            renderTutorial();
-        };
-
-        renderTutorial();
+        setLanguage(currentLang);
     <\/script>
 </body>
 </html>`;
