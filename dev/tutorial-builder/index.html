@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/der46er/website/main/assets/favicon.png">
+    <style>
+        @font-face {
+            font-family: 'Inter';
+            src: url('https://cdn.jsdelivr.net/gh/der46er/website@main/assets/fonts/inter-v12-latin-regular.woff2') format('woff2');
+            font-weight: 400;
+        }
+        @font-face {
+            font-family: 'Inter';
+            src: url('https://cdn.jsdelivr.net/gh/der46er/website@main/assets/fonts/inter-v12-latin-900.woff2') format('woff2');
+            font-weight: 900;
+        }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: #0b0d11;
+            color: white;
+            min-height: 100vh;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: url("https://cdn.jsdelivr.net/gh/der46er/website@main/assets/backgounds/waves-purple-black.webp");
+            background-size: cover;
+            background-position: center;
+            filter: blur(10px);
+            transform: scale(1.05);
+            z-index: -2;
+        }
+        .glass-box {
+            background: rgba(18, 18, 18, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+        .input-base {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 0.65rem;
+            padding: 0.5rem 0.75rem;
+            color: #fff;
+            font-size: 0.8125rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .input-base:focus {
+            border-color: rgba(168, 85, 247, 0.8);
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.2);
+        }
+        .custom-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 8px; }
+        
+        .shake-anim {
+            animation: shake 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+    </style>
+</head>
+<body class="p-3 sm:p-5 flex flex-col h-screen overflow-hidden selection:bg-purple-500/20">
+
+    <!-- Access Gate Modal -->
+    <div id="pin-gate-modal" class="fixed inset-0 z-[500] bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div id="pin-box" class="glass-box rounded-2xl max-w-xs w-full p-6 text-center space-y-4 border border-white/20">
+            <div>
+                <h2 class="text-base font-black italic uppercase tracking-wider text-white">Developer Studio</h2>
+                <p class="text-zinc-400 text-xs font-medium mt-1">Enter access PIN to continue</p>
+            </div>
+            
+            <form onsubmit="verifyPin(event)" class="space-y-3">
+                <input type="password" id="pin-input" maxlength="12" placeholder="PIN" autofocus class="input-base text-center tracking-[0.4em] font-mono text-base py-2.5">
+                <div id="pin-error" class="text-red-400 text-[11px] font-bold hidden">Incorrect PIN</div>
+                <button type="submit" class="w-full py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-xs uppercase tracking-wider transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)]">
+                    Unlock Studio
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Studio Workspace (hidden until PIN verified) -->
+    <div id="studio-app" class="hidden flex-col h-full w-full">
+        <header class="glass-box rounded-2xl px-5 py-3 mb-3 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <a href="https://thataustrianone.eu/dev" aria-label="Back to Dev" class="w-8 h-8 rounded-lg border border-white/10 hover:border-purple-500/80 flex items-center justify-center text-zinc-400 hover:text-white transition-all">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </a>
+                <div>
+                    <h1 class="text-lg sm:text-xl font-black italic uppercase tracking-tighter text-white">Tutorial Studio</h1>
+                    <p class="text-zinc-400 text-[11px] font-medium">Modular step builder with variable colors & custom symbol formatting</p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                <div class="flex items-center gap-1 border-r border-white/10 pr-2">
+                    <button onclick="undo()" id="btn-undo" disabled class="p-1.5 rounded-lg border border-white/10 text-zinc-500 hover:text-white disabled:opacity-30 disabled:hover:text-zinc-500 transition-colors" title="Undo">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                    </button>
+                    <button onclick="redo()" id="btn-redo" disabled class="p-1.5 rounded-lg border border-white/10 text-zinc-500 hover:text-white disabled:opacity-30 disabled:hover:text-zinc-500 transition-colors" title="Redo">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                    </button>
+                    <button onclick="promptClearCanvas()" class="px-2.5 py-1.5 rounded-lg border border-red-500/30 hover:border-red-500/80 text-red-400 text-xs font-bold uppercase transition-colors" title="Clear All">
+                        Clear
+                    </button>
+                </div>
+
+                <input type="file" id="import-json-input" accept=".json" class="hidden" onchange="importJsonFile(event)">
+                <button onclick="document.getElementById('import-json-input').click()" class="px-3 py-1.5 rounded-xl border border-white/10 hover:border-zinc-300 text-zinc-300 hover:text-white text-xs font-bold uppercase tracking-wider transition-all">
+                    Import JSON
+                </button>
+                <button onclick="exportJson()" class="px-3 py-1.5 rounded-xl border border-white/10 hover:border-purple-500/80 text-zinc-300 hover:text-white text-xs font-bold uppercase tracking-wider transition-all">
+                    Save JSON
+                </button>
+                <button onclick="exportHtml()" class="px-4 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-xs uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(168,85,247,0.4)]">
+                    Build index.html
+                </button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 flex-grow min-h-0">
+            
+            <div class="lg:col-span-7 flex flex-col gap-3.5 overflow-y-auto custom-scroll pr-1.5 pb-12">
+                
+                <section class="glass-box rounded-2xl p-4 sm:p-5 space-y-3.5">
+                    <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                        <h2 class="text-xs font-black italic uppercase tracking-wider text-purple-400">1. Tutorial Metadata</h2>
+                        <span class="text-[10px] text-zinc-500 font-bold uppercase">Local draft active</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Slug / Folder Name</label>
+                            <input id="meta-slug" oninput="handleFieldChange()" type="text" placeholder="e.g. docker-setup" class="input-base">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Category (EN)</label>
+                            <input id="meta-category-en" oninput="handleFieldChange()" type="text" placeholder="Category" class="input-base">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Category (DE)</label>
+                            <input id="meta-category-de" oninput="handleFieldChange()" type="text" placeholder="Kategorie" class="input-base">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Title (EN)</label>
+                            <input id="meta-title-en" oninput="handleFieldChange()" type="text" placeholder="Title" class="input-base">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Title (DE)</label>
+                            <input id="meta-title-de" oninput="handleFieldChange()" type="text" placeholder="Titel" class="input-base">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Description (EN)</label>
+                            <textarea id="meta-desc-en" oninput="handleFieldChange()" rows="2" placeholder="Summary..." class="input-base"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Description (DE)</label>
+                            <textarea id="meta-desc-de" oninput="handleFieldChange()" rows="2" placeholder="Zusammenfassung..." class="input-base"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Difficulty</label>
+                            <select id="meta-difficulty" onchange="handleFieldChange()" class="input-base">
+                                <option value="">Select</option>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Estimated Time</label>
+                            <input id="meta-time" oninput="handleFieldChange()" type="text" placeholder="e.g. 15 Mins" class="input-base">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Platform</label>
+                            <input id="meta-os" oninput="handleFieldChange()" type="text" placeholder="e.g. Linux / Docker" class="input-base">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Author</label>
+                            <input id="meta-author" oninput="handleFieldChange()" type="text" placeholder="@der_46er" class="input-base">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Thumbnail / Header Image URL</label>
+                        <input id="meta-image" oninput="handleFieldChange()" type="text" placeholder="https://..." class="input-base">
+                    </div>
+                </section>
+
+                <section class="glass-box rounded-2xl p-4 sm:p-5 space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/5 pb-2 gap-2">
+                        <div>
+                            <h2 class="text-xs font-black italic uppercase tracking-wider text-purple-400">2. Dynamic Variables & Highlights</h2>
+                            <p class="text-zinc-500 text-[10px]">Customize keys, values, and hex colors</p>
+                        </div>
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <button onclick="addPresetVar('DO', 'DO', '#22c55e')" class="px-2 py-0.5 rounded bg-emerald-500/10 hover:bg-emerald-500/20 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">+ DO</button>
+                            <button onclick="addPresetVar('DONT', 'DON\'T', '#ef4444')" class="px-2 py-0.5 rounded bg-red-500/10 hover:bg-red-500/20 text-[10px] font-bold text-red-400 border border-red-500/30">+ DON'T</button>
+                            <button onclick="addPresetVar('DEPENDS', 'DEPENDS', '#eab308')" class="px-2 py-0.5 rounded bg-amber-500/10 hover:bg-amber-500/20 text-[10px] font-bold text-amber-400 border border-amber-500/30">+ DEPENDS</button>
+                            <button onclick="addPresetVar('OPTIONAL', 'OPTIONAL', '#38bdf8')" class="px-2 py-0.5 rounded bg-sky-500/10 hover:bg-sky-500/20 text-[10px] font-bold text-sky-400 border border-sky-500/30">+ OPTIONAL</button>
+                            <button onclick="addPresetVar('REQUIRED', 'REQUIRED', '#ec4899')" class="px-2 py-0.5 rounded bg-pink-500/10 hover:bg-pink-500/20 text-[10px] font-bold text-pink-400 border border-pink-500/30">+ REQUIRED</button>
+                            <button onclick="addVariableRow()" class="px-2 py-0.5 rounded bg-purple-600/30 hover:bg-purple-600/50 text-[10px] font-bold uppercase text-purple-300 border border-purple-500/40">+ Custom</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-black/40 border border-white/5 rounded-xl p-3 text-[11px] space-y-1.5 text-zinc-400">
+                        <span class="font-bold uppercase text-zinc-300 text-[10px] block">Formatting Guide:</span>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px]">
+                            <div><code>**bold**</code> &rarr; <span class="font-bold text-white">bold</span></div>
+                            <div><code>***extra***</code> &rarr; <span class="font-black text-white">extra</span></div>
+                            <div><code>*cursive*</code> &rarr; <span class="italic text-white">cursive</span></div>
+                            <div><code>'code'</code> &rarr; <span class="font-mono text-purple-300">code</span></div>
+                            <div><code>__underline__</code> &rarr; <span class="underline text-white">underline</span></div>
+                            <div><code>~~cross~~</code> &rarr; <span class="line-through text-white">cross</span></div>
+                            <div><code>##txt#HEX#</code> &rarr; <span class="text-sky-400">color</span></div>
+                            <div><code>#H1#txt#H2#</code> &rarr; <span class="text-pink-400 font-bold">gradient</span></div>
+                        </div>
+                    </div>
+
+                    <div id="variables-container" class="space-y-2"></div>
+                </section>
+
+                <section class="glass-box rounded-2xl p-4 sm:p-5 space-y-3.5">
+                    <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                        <h2 class="text-xs font-black italic uppercase tracking-wider text-purple-400">3. Tutorial Steps</h2>
+                        <button onclick="addNewStep()" class="px-3 py-1.5 rounded-lg bg-purple-600/30 border border-purple-500/60 hover:bg-purple-600/50 text-xs font-bold uppercase text-purple-200 transition-colors">
+                            + Add Step
+                        </button>
+                    </div>
+                    <div id="steps-container" class="space-y-4"></div>
+                </section>
+            </div>
+
+            <div class="hidden lg:flex lg:col-span-5 flex-col glass-box rounded-2xl p-4 overflow-hidden">
+                <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-white/10 shrink-0">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                        <span class="text-xs font-black uppercase tracking-wider text-zinc-300">Live Simulator</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="setSimLang('en')" id="btn-sim-en" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/30">EN</button>
+                        <button onclick="setSimLang('de')" id="btn-sim-de" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-zinc-400 hover:text-white">DE</button>
+                    </div>
+                </div>
+
+                <div class="flex-grow overflow-y-auto custom-scroll pr-1 space-y-4 text-left" id="live-simulator-content"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Clear Modal -->
+    <div id="clear-modal" class="hidden fixed inset-0 z-[400] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-box rounded-2xl max-w-sm w-full p-6 text-center space-y-4 border border-white/20">
+            <h3 class="text-base font-black italic uppercase tracking-wide text-white">Clear Canvas</h3>
+            <p class="text-zinc-300 text-xs leading-relaxed">Are you sure you want to do that? All unsaved changes on the canvas will be wiped.</p>
+            <div class="flex gap-2 justify-center pt-2">
+                <button onclick="closeClearModal()" class="px-4 py-2 rounded-xl border border-white/10 text-zinc-400 hover:text-white text-xs font-bold uppercase">Cancel</button>
+                <button onclick="executeClearCanvas()" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-black uppercase tracking-wider">Yes, Clear</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set your PIN here
+        const REQUIRED_PIN = "4646";
+        const COOKIE_NAME = "studio_unlocked";
+
+        function getCookie(name) {
+            const matches = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)'));
+            return matches ? decodeURIComponent(matches[1]) : undefined;
+        }
+
+        function setCookie(name, val) {
+            document.cookie = `${name}=${encodeURIComponent(val)}; max-age=31536000; path=/; SameSite=Strict`;
+        }
+
+        function checkGate() {
+            if (getCookie(COOKIE_NAME) === "granted") {
+                document.getElementById('pin-gate-modal').classList.add('hidden');
+                document.getElementById('studio-app').classList.remove('hidden');
+                document.getElementById('studio-app').classList.add('flex');
+            } else {
+                document.getElementById('pin-gate-modal').classList.remove('hidden');
+                document.getElementById('studio-app').classList.add('hidden');
+                document.getElementById('studio-app').classList.remove('flex');
+                setTimeout(() => document.getElementById('pin-input')?.focus(), 100);
+            }
+        }
+
+        function verifyPin(e) {
+            if (e) e.preventDefault();
+            const inp = document.getElementById('pin-input');
+            const err = document.getElementById('pin-error');
+            const box = document.getElementById('pin-box');
+
+            if (inp.value === REQUIRED_PIN) {
+                setCookie(COOKIE_NAME, "granted");
+                err.classList.add('hidden');
+                document.getElementById('pin-gate-modal').classList.add('hidden');
+                document.getElementById('studio-app').classList.remove('hidden');
+                document.getElementById('studio-app').classList.add('flex');
+                renderSimulator();
+            } else {
+                err.classList.remove('hidden');
+                box.classList.remove('shake-anim');
+                void box.offsetWidth;
+                box.classList.add('shake-anim');
+                inp.value = "";
+                inp.focus();
+            }
+        }
+
+        // Studio State & Handlers
+        let tutorialData = {
+            slug: "",
+            category: { en: "", de: "" },
+            title: { en: "", de: "" },
+            description: { en: "", de: "" },
+            difficulty: "",
+            estTime: "",
+            os: "",
+            author: "",
+            image: "",
+            variables: [],
+            steps: []
+        };
+
+        let historyStack = [];
+        let historyIndex = -1;
+        let isUndoRedoAction = false;
+        let simLang = 'en';
+
+        function escapeHtml(str) {
+            if (!str) return "";
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function processContent(text, isCode = false) {
+            if (!text) return "";
+            let s = text;
+
+            if (tutorialData.variables && tutorialData.variables.length > 0) {
+                tutorialData.variables.forEach(v => {
+                    const rawKey = (v.key || '').trim();
+                    if (!rawKey) return;
+                    const val = v.defaultVal || v.label || rawKey;
+                    const col = v.color || '#a855f7';
+                    const styled = `<span style="color: ${col};" class="font-bold">${escapeHtml(val)}</span>`;
+                    s = s.split(rawKey).join(styled);
+                });
+            }
+
+            if (isCode) return s;
+
+            s = s.replace(/#([0-9a-fA-F]{3,8})#([^#\n]+)#([0-9a-fA-F]{3,8})#/g, (match, hex1, txt, hex2) => {
+                const c1 = hex1.startsWith('#') ? hex1 : '#' + hex1;
+                const c2 = hex2.startsWith('#') ? hex2 : '#' + hex2;
+                return `<span style="background: linear-gradient(135deg, ${c1}, ${c2}); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" class="font-bold">${txt}</span>`;
+            });
+
+            s = s.replace(/##([^#\n]+)#([0-9a-fA-F]{3,8})#/g, (match, txt, hex) => {
+                const color = hex.startsWith('#') ? hex : '#' + hex;
+                return `<span style="color: ${color};" class="font-bold">${txt}</span>`;
+            });
+
+            s = s.replace(/\*\*\*([^\*\n]+)\*\*\*/g, '<strong class="font-black text-white">$1</strong>');
+            s = s.replace(/\*\*([^\*\n]+)\*\*/g, '<strong class="font-bold text-white">$1</strong>');
+            s = s.replace(/\*([^\*\n]+)\*/g, '<em class="italic">$1</em>');
+            s = s.replace(/__([^_\n]+)__/g, '<span class="underline underline-offset-2">$1</span>');
+            s = s.replace(/~~([^~\n]+)~~/g, '<span class="line-through opacity-60">$1</span>');
+            s = s.replace(/'([^'\n]+)'/g, '<code class="font-mono text-purple-300 bg-black/40 px-1 py-0.5 rounded border border-white/10 text-[0.9em]">$1</code>');
+
+            return s;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            checkGate();
+            const saved = localStorage.getItem('tutorial_builder_draft');
+            if (saved) {
+                try { tutorialData = Object.assign(tutorialData, JSON.parse(saved)); } catch (e) {}
+            }
+            populateForm();
+            pushHistoryState();
+            renderSimulator();
+        });
+
+        function pushHistoryState() {
+            if (isUndoRedoAction) return;
+            syncMetadata();
+            const snapshot = JSON.stringify(tutorialData);
+            if (historyIndex >= 0 && historyStack[historyIndex] === snapshot) return;
+            
+            historyStack = historyStack.slice(0, historyIndex + 1);
+            historyStack.push(snapshot);
+            historyIndex++;
+            updateHistoryButtons();
+        }
+
+        function undo() {
+            if (historyIndex > 0) {
+                isUndoRedoAction = true;
+                historyIndex--;
+                tutorialData = JSON.parse(historyStack[historyIndex]);
+                populateForm();
+                renderSimulator();
+                localStorage.setItem('tutorial_builder_draft', JSON.stringify(tutorialData));
+                isUndoRedoAction = false;
+                updateHistoryButtons();
+            }
+        }
+
+        function redo() {
+            if (historyIndex < historyStack.length - 1) {
+                isUndoRedoAction = true;
+                historyIndex++;
+                tutorialData = JSON.parse(historyStack[historyIndex]);
+                populateForm();
+                renderSimulator();
+                localStorage.setItem('tutorial_builder_draft', JSON.stringify(tutorialData));
+                isUndoRedoAction = false;
+                updateHistoryButtons();
+            }
+        }
+
+        function updateHistoryButtons() {
+            document.getElementById('btn-undo').disabled = historyIndex <= 0;
+            document.getElementById('btn-redo').disabled = historyIndex >= historyStack.length - 1;
+        }
+
+        function promptClearCanvas() {
+            document.getElementById('clear-modal').classList.remove('hidden');
+        }
+
+        function closeClearModal() {
+            document.getElementById('clear-modal').classList.add('hidden');
+        }
+
+        function executeClearCanvas() {
+            tutorialData = {
+                slug: "",
+                category: { en: "", de: "" },
+                title: { en: "", de: "" },
+                description: { en: "", de: "" },
+                difficulty: "",
+                estTime: "",
+                os: "",
+                author: "",
+                image: "",
+                variables: [],
+                steps: []
+            };
+            localStorage.removeItem('tutorial_builder_draft');
+            populateForm();
+            pushHistoryState();
+            renderSimulator();
+            closeClearModal();
+        }
+
+        function handleFieldChange() {
+            syncMetadata();
+            localStorage.setItem('tutorial_builder_draft', JSON.stringify(tutorialData));
+            renderSimulator();
+            pushHistoryState();
+        }
+
+        function populateForm() {
+            document.getElementById('meta-slug').value = tutorialData.slug || "";
+            document.getElementById('meta-category-en').value = tutorialData.category?.en || "";
+            document.getElementById('meta-category-de').value = tutorialData.category?.de || "";
+            document.getElementById('meta-title-en').value = tutorialData.title?.en || "";
+            document.getElementById('meta-title-de').value = tutorialData.title?.de || "";
+            document.getElementById('meta-desc-en').value = tutorialData.description?.en || "";
+            document.getElementById('meta-desc-de').value = tutorialData.description?.de || "";
+            document.getElementById('meta-difficulty').value = tutorialData.difficulty || "";
+            document.getElementById('meta-time').value = tutorialData.estTime || "";
+            document.getElementById('meta-os').value = tutorialData.os || "";
+            document.getElementById('meta-author').value = tutorialData.author || "";
+            document.getElementById('meta-image').value = tutorialData.image || "";
+
+            renderVariables();
+            renderStepsEditor();
+        }
+
+        function renderVariables() {
+            const container = document.getElementById('variables-container');
+            if (!tutorialData.variables || tutorialData.variables.length === 0) {
+                container.innerHTML = '<div class="text-zinc-600 text-xs py-1">No placeholders added.</div>';
+                return;
+            }
+            container.innerHTML = tutorialData.variables.map((v, i) => `
+                <div class="flex items-center gap-2 bg-black/40 border border-white/10 rounded-xl p-2">
+                    <input class="input-base text-xs font-mono text-purple-300 w-32" placeholder="<KEY>" value="${v.key || ''}" oninput="tutorialData.variables[${i}].key = this.value; handleFieldChange();">
+                    <input class="input-base text-xs flex-1" placeholder="Label" value="${v.label || ''}" oninput="tutorialData.variables[${i}].label = this.value; handleFieldChange();">
+                    <input class="input-base text-xs flex-1" placeholder="Default / Value" value="${v.defaultVal || ''}" oninput="tutorialData.variables[${i}].defaultVal = this.value; handleFieldChange();">
+                    
+                    <div class="flex items-center gap-1 shrink-0 bg-black/50 px-2 py-1 rounded-lg border border-white/5">
+                        <input type="color" value="${v.color || '#a855f7'}" onchange="tutorialData.variables[${i}].color = this.value; handleFieldChange();" class="w-5 h-5 bg-transparent border-0 cursor-pointer rounded">
+                        <input type="text" value="${v.color || '#a855f7'}" oninput="tutorialData.variables[${i}].color = this.value; handleFieldChange();" class="w-16 bg-transparent text-[10px] font-mono text-zinc-300 uppercase outline-none">
+                    </div>
+
+                    <button onclick="removeVariableRow(${i})" class="text-zinc-500 hover:text-red-400 px-2 text-xs font-bold">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function addVariableRow() {
+            tutorialData.variables.push({ key: "", label: "", defaultVal: "", color: "#a855f7" });
+            renderVariables();
+            handleFieldChange();
+        }
+
+        function addPresetVar(key, label, color) {
+            tutorialData.variables.push({ key: `<${key}>`, label: label, defaultVal: label, color: color });
+            renderVariables();
+            handleFieldChange();
+        }
+
+        function removeVariableRow(index) {
+            tutorialData.variables.splice(index, 1);
+            renderVariables();
+            handleFieldChange();
+        }
+
+        function renderStepsEditor() {
+            const container = document.getElementById('steps-container');
+            if (!tutorialData.steps || tutorialData.steps.length === 0) {
+                container.innerHTML = '<div class="text-zinc-600 text-xs py-2">No steps created yet. Click "+ Add Step" to begin.</div>';
+                return;
+            }
+            container.innerHTML = tutorialData.steps.map((step, sIdx) => `
+                <div class="bg-black/50 border border-white/10 rounded-xl p-4 space-y-3 relative">
+                    <div class="flex items-center justify-between border-b border-white/5 pb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-5 h-5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center justify-center text-[11px] font-black">${sIdx + 1}</span>
+                            <span class="text-xs font-black uppercase tracking-wider text-zinc-300">Step ${sIdx + 1}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="moveStep(${sIdx}, -1)" ${sIdx === 0 ? 'disabled class="opacity-30"' : 'class="hover:text-purple-400 font-bold"'} title="Move Up">Up</button>
+                            <button onclick="moveStep(${sIdx}, 1)" ${sIdx === tutorialData.steps.length - 1 ? 'disabled class="opacity-30"' : 'class="hover:text-purple-400 font-bold"'} title="Move Down">Down</button>
+                            <button onclick="deleteStep(${sIdx})" class="text-xs text-zinc-500 hover:text-red-400 font-bold ml-2">Remove</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <input class="input-base text-xs font-semibold" placeholder="Step Title (EN)" value="${step.title?.en || ''}" oninput="tutorialData.steps[${sIdx}].title.en = this.value; handleFieldChange();">
+                        <input class="input-base text-xs font-semibold" placeholder="Step Title (DE)" value="${step.title?.de || ''}" oninput="tutorialData.steps[${sIdx}].title.de = this.value; handleFieldChange();">
+                    </div>
+
+                    <div class="space-y-2.5 pt-2">
+                        <div class="text-[10px] font-black uppercase tracking-wider text-zinc-400">Content Blocks</div>
+                        <div class="space-y-2">
+                            ${renderBlocks(step.blocks || [], sIdx)}
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-white/5">
+                            <span class="text-[10px] text-zinc-500 font-bold uppercase mr-1">+ Add:</span>
+                            <button onclick="addBlock(${sIdx}, 'text')" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-[10px] font-bold text-zinc-300 uppercase">Text</button>
+                            <button onclick="addBlock(${sIdx}, 'code')" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-[10px] font-bold text-zinc-300 uppercase">Code/Command</button>
+                            <button onclick="addBlock(${sIdx}, 'callout')" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-[10px] font-bold text-zinc-300 uppercase">Callout</button>
+                            <button onclick="addBlock(${sIdx}, 'image')" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-[10px] font-bold text-zinc-300 uppercase">Image Layout</button>
+                            <button onclick="addBlock(${sIdx}, 'accordion')" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-[10px] font-bold text-zinc-300 uppercase">Collapsible Section</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderBlocks(blocks, sIdx) {
+            return blocks.map((b, bIdx) => {
+                if (b.type === 'text') {
+                    return `
+                    <div class="p-2.5 bg-black/40 border border-white/5 rounded-lg space-y-1.5 relative">
+                        <div class="flex justify-between items-center text-[10px] text-zinc-500 font-bold uppercase">
+                            <span>Text Block</span>
+                            <button onclick="deleteBlock(${sIdx}, ${bIdx})" class="hover:text-red-400 font-bold">Remove</button>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <textarea rows="2" class="input-base text-xs" placeholder="Text (EN)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].textEn = this.value; handleFieldChange();">${b.textEn || ''}</textarea>
+                            <textarea rows="2" class="input-base text-xs" placeholder="Text (DE)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].textDe = this.value; handleFieldChange();">${b.textDe || ''}</textarea>
+                        </div>
+                    </div>`;
+                }
+
+                if (b.type === 'code') {
+                    return `
+                    <div class="p-2.5 bg-black/40 border border-white/5 rounded-lg space-y-2 relative">
+                        <div class="flex justify-between items-center text-[10px] text-zinc-500 font-bold uppercase">
+                            <span>Code Snippet Tabs</span>
+                            <button onclick="deleteBlock(${sIdx}, ${bIdx})" class="hover:text-red-400 font-bold">Remove</button>
+                        </div>
+                        <div class="space-y-2">
+                            ${(b.tabs || []).map((t, tIdx) => `
+                                <div class="space-y-1 bg-black/50 p-2 rounded border border-white/5">
+                                    <div class="flex justify-between items-center">
+                                        <input class="input-base text-[10px] w-48 font-bold py-1" value="${t.label || ''}" placeholder="Tab Label" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].tabs[${tIdx}].label = this.value; handleFieldChange();">
+                                        ${(b.tabs.length > 1) ? `<button onclick="deleteCodeTab(${sIdx}, ${bIdx}, ${tIdx})" class="text-zinc-600 hover:text-red-400 text-[10px] font-bold">Remove Tab</button>` : ''}
+                                    </div>
+                                    <textarea rows="2" class="input-base font-mono text-xs text-purple-300 py-1" placeholder="Commands..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].tabs[${tIdx}].code = this.value; handleFieldChange();">${t.code || ''}</textarea>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button onclick="addCodeTab(${sIdx}, ${bIdx})" class="text-[10px] text-purple-400 font-bold uppercase">+ Add Tab</button>
+                    </div>`;
+                }
+
+                if (b.type === 'callout') {
+                    return `
+                    <div class="p-2.5 bg-black/40 border border-white/5 rounded-lg space-y-1.5 relative">
+                        <div class="flex justify-between items-center text-[10px] text-zinc-500 font-bold uppercase">
+                            <div class="flex items-center gap-2">
+                                <span>Callout</span>
+                                <select class="bg-black/60 border border-white/10 rounded px-1.5 py-0.5 text-[10px] text-purple-300" onchange="tutorialData.steps[${sIdx}].blocks[${bIdx}].level = this.value; handleFieldChange();">
+                                    <option value="tip" ${b.level === 'tip' ? 'selected' : ''}>Tip (Purple)</option>
+                                    <option value="info" ${b.level === 'info' ? 'selected' : ''}>Info (Cyan)</option>
+                                    <option value="warning" ${b.level === 'warning' ? 'selected' : ''}>Warning (Amber)</option>
+                                    <option value="danger" ${b.level === 'danger' ? 'selected' : ''}>Danger (Rose)</option>
+                                </select>
+                            </div>
+                            <button onclick="deleteBlock(${sIdx}, ${bIdx})" class="hover:text-red-400 font-bold">Remove</button>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <input class="input-base text-xs" placeholder="Message (EN)" value="${b.textEn || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].textEn = this.value; handleFieldChange();">
+                            <input class="input-base text-xs" placeholder="Nachricht (DE)" value="${b.textDe || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].textDe = this.value; handleFieldChange();">
+                        </div>
+                    </div>`;
+                }
+
+                if (b.type === 'image') {
+                    const layout = b.layout || 'center';
+                    return `
+                    <div class="p-3 bg-black/40 border border-white/10 rounded-lg space-y-2.5 relative">
+                        <div class="flex justify-between items-center text-[10px] text-zinc-500 font-bold uppercase border-b border-white/5 pb-1.5">
+                            <div class="flex items-center gap-2">
+                                <span class="text-purple-400">Image Layout</span>
+                                <select class="bg-black/60 border border-white/10 rounded px-2 py-0.5 text-[10px] text-zinc-300 font-bold" onchange="tutorialData.steps[${sIdx}].blocks[${bIdx}].layout = this.value; renderStepsEditor(); handleFieldChange();">
+                                    <option value="center" ${layout === 'center' ? 'selected' : ''}>Centered (Fit)</option>
+                                    <option value="left" ${layout === 'left' ? 'selected' : ''}>Image Left, Text Right</option>
+                                    <option value="right" ${layout === 'right' ? 'selected' : ''}>Text Left, Image Right</option>
+                                    <option value="side-by-side" ${layout === 'side-by-side' ? 'selected' : ''}>Side-by-Side (Img1 -> Img2)</option>
+                                    <option value="stacked-steps" ${layout === 'stacked-steps' ? 'selected' : ''}>Stacked Steps (Img1 -> Img2)</option>
+                                </select>
+                            </div>
+                            <button onclick="deleteBlock(${sIdx}, ${bIdx})" class="hover:text-red-400 font-bold">Remove</button>
+                        </div>
+
+                        ${layout === 'center' ? `
+                            <input class="input-base text-xs font-mono" placeholder="Image URL (https://...)" value="${b.url1 || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].url1 = this.value; handleFieldChange();">
+                            <input class="input-base text-xs" placeholder="Caption (optional)" value="${b.caption1 || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].caption1 = this.value; handleFieldChange();">
+                        ` : ''}
+
+                        ${(layout === 'left' || layout === 'right') ? `
+                            <input class="input-base text-xs font-mono" placeholder="Image URL (https://...)" value="${b.url1 || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].url1 = this.value; handleFieldChange();">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <textarea rows="2" class="input-base text-xs" placeholder="Text (EN)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1En = this.value; handleFieldChange();">${b.text1En || ''}</textarea>
+                                <textarea rows="2" class="input-base text-xs" placeholder="Text (DE)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1De = this.value; handleFieldChange();">${b.text1De || ''}</textarea>
+                            </div>
+                        ` : ''}
+
+                        ${layout === 'side-by-side' ? `
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <input class="input-base text-xs font-mono" placeholder="Image 1 URL" value="${b.url1 || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].url1 = this.value; handleFieldChange();">
+                                <input class="input-base text-xs font-mono" placeholder="Image 2 URL" value="${b.url2 || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].url2 = this.value; handleFieldChange();">
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <textarea rows="2" class="input-base text-xs" placeholder="Description under images (EN)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1En = this.value; handleFieldChange();">${b.text1En || ''}</textarea>
+                                <textarea rows="2" class="input-base text-xs" placeholder="Beschreibung unter Bildern (DE)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1De = this.value; handleFieldChange();">${b.text1De || ''}</textarea>
+                            </div>
+                        ` : ''}
+
+                        ${layout === 'stacked-steps' ? `
+                            <div class="space-y-1.5 p-2 bg-black/30 rounded border border-white/5">
+                                <span class="text-[10px] text-zinc-400 font-bold uppercase">First Stage</span>
+                                <input class="input-base text-xs font-mono" placeholder="Image 1 URL" value="${b.url1 || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].url1 = this.value; handleFieldChange();">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    <textarea rows="2" class="input-base text-xs" placeholder="Stage 1 Text (EN)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1En = this.value; handleFieldChange();">${b.text1En || ''}</textarea>
+                                    <textarea rows="2" class="input-base text-xs" placeholder="Stufe 1 Text (DE)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1De = this.value; handleFieldChange();">${b.text1De || ''}</textarea>
+                                </div>
+                            </div>
+                            <div class="space-y-1.5 p-2 bg-black/30 rounded border border-white/5">
+                                <span class="text-[10px] text-zinc-400 font-bold uppercase">Second Stage</span>
+                                <input class="input-base text-xs font-mono" placeholder="Image 2 URL" value="${b.url2 || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].url2 = this.value; handleFieldChange();">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    <textarea rows="2" class="input-base text-xs" placeholder="Stage 2 Text (EN)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text2En = this.value; handleFieldChange();">${b.text2En || ''}</textarea>
+                                    <textarea rows="2" class="input-base text-xs" placeholder="Stufe 2 Text (DE)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text2De = this.value; handleFieldChange();">${b.text2De || ''}</textarea>
+                                </div>
+                            </div>
+                        ` : ''}
+
+                    </div>`;
+                }
+
+                if (b.type === 'accordion') {
+                    return `
+                    <div class="p-2.5 bg-black/40 border border-white/5 rounded-lg space-y-1.5 relative">
+                        <div class="flex justify-between items-center text-[10px] text-zinc-500 font-bold uppercase">
+                            <span>Collapsible Section</span>
+                            <button onclick="deleteBlock(${sIdx}, ${bIdx})" class="hover:text-red-400 font-bold">Remove</button>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <input class="input-base text-xs font-bold" placeholder="Header (EN)" value="${b.headerEn || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].headerEn = this.value; handleFieldChange();">
+                            <input class="input-base text-xs font-bold" placeholder="Header (DE)" value="${b.headerDe || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].headerDe = this.value; handleFieldChange();">
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <textarea rows="2" class="input-base text-xs" placeholder="Content (EN)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].contentEn = this.value; handleFieldChange();">${b.contentEn || ''}</textarea>
+                            <textarea rows="2" class="input-base text-xs" placeholder="Inhalt (DE)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].contentDe = this.value; handleFieldChange();">${b.contentDe || ''}</textarea>
+                        </div>
+                    </div>`;
+                }
+            }).join('');
+        }
+
+        function addNewStep() {
+            tutorialData.steps.push({
+                id: Date.now(),
+                title: { en: "", de: "" },
+                blocks: [{ type: "text", textEn: "", textDe: "" }]
+            });
+            renderStepsEditor();
+            handleFieldChange();
+        }
+
+        function deleteStep(index) {
+            tutorialData.steps.splice(index, 1);
+            renderStepsEditor();
+            handleFieldChange();
+        }
+
+        function moveStep(idx, dir) {
+            const target = idx + dir;
+            if (target < 0 || target >= tutorialData.steps.length) return;
+            const temp = tutorialData.steps[idx];
+            tutorialData.steps[idx] = tutorialData.steps[target];
+            tutorialData.steps[target] = temp;
+            renderStepsEditor();
+            handleFieldChange();
+        }
+
+        function addBlock(sIdx, type) {
+            const step = tutorialData.steps[sIdx];
+            if (!step.blocks) step.blocks = [];
+            if (type === 'text') step.blocks.push({ type: 'text', textEn: '', textDe: '' });
+            if (type === 'code') step.blocks.push({ type: 'code', tabs: [{ label: 'Default', code: '' }] });
+            if (type === 'callout') step.blocks.push({ type: 'callout', level: 'tip', textEn: '', textDe: '' });
+            if (type === 'image') step.blocks.push({ type: 'image', layout: 'center', url1: '', url2: '', caption1: '', text1En: '', text1De: '', text2En: '', text2De: '' });
+            if (type === 'accordion') step.blocks.push({ type: 'accordion', headerEn: '', headerDe: '', contentEn: '', contentDe: '' });
+            renderStepsEditor();
+            handleFieldChange();
+        }
+
+        function deleteBlock(sIdx, bIdx) {
+            tutorialData.steps[sIdx].blocks.splice(bIdx, 1);
+            renderStepsEditor();
+            handleFieldChange();
+        }
+
+        function addCodeTab(sIdx, bIdx) {
+            tutorialData.steps[sIdx].blocks[bIdx].tabs.push({ label: 'Tab', code: '' });
+            renderStepsEditor();
+            handleFieldChange();
+        }
+
+        function deleteCodeTab(sIdx, bIdx, tIdx) {
+            tutorialData.steps[sIdx].blocks[bIdx].tabs.splice(tIdx, 1);
+            renderStepsEditor();
+            handleFieldChange();
+        }
+
+        function syncMetadata() {
+            tutorialData.slug = document.getElementById('meta-slug').value.trim();
+            tutorialData.category = {
+                en: document.getElementById('meta-category-en').value.trim(),
+                de: document.getElementById('meta-category-de').value.trim()
+            };
+            tutorialData.title = {
+                en: document.getElementById('meta-title-en').value.trim(),
+                de: document.getElementById('meta-title-de').value.trim()
+            };
+            tutorialData.description = {
+                en: document.getElementById('meta-desc-en').value.trim(),
+                de: document.getElementById('meta-desc-de').value.trim()
+            };
+            tutorialData.difficulty = document.getElementById('meta-difficulty').value;
+            tutorialData.estTime = document.getElementById('meta-time').value.trim();
+            tutorialData.os = document.getElementById('meta-os').value.trim();
+            tutorialData.author = document.getElementById('meta-author').value.trim();
+            tutorialData.image = document.getElementById('meta-image').value.trim();
+        }
+
+        function setSimLang(lang) {
+            simLang = lang;
+            document.getElementById('btn-sim-en').className = lang === 'en' 
+                ? 'px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                : 'px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-zinc-400 hover:text-white';
+            document.getElementById('btn-sim-de').className = lang === 'de' 
+                ? 'px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                : 'px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-zinc-400 hover:text-white';
+            renderSimulator();
+        }
+
+        function renderSimulator() {
+            const isEn = simLang === 'en';
+            const cat = isEn ? tutorialData.category.en : tutorialData.category.de;
+            const title = isEn ? tutorialData.title.en : tutorialData.title.de;
+            const desc = isEn ? tutorialData.description.en : tutorialData.description.de;
+
+            const container = document.getElementById('live-simulator-content');
+
+            let html = `
+                <div class="text-center py-2 border-b border-white/5 pb-4">
+                    ${cat ? `<span class="inline-block bg-purple-500/10 border border-purple-500/30 text-purple-400 text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded mb-2">${cat}</span>` : ''}
+                    <h2 class="text-lg font-black italic uppercase tracking-tight text-white mb-1.5 leading-snug">${processContent(title) || 'Tutorial Title'}</h2>
+                    ${desc ? `<p class="text-zinc-400 text-[11px] leading-relaxed max-w-md mx-auto">${processContent(desc)}</p>` : ''}
+                    
+                    <div class="flex items-center justify-center gap-2 mt-3 flex-wrap text-[10px] text-zinc-400 font-semibold">
+                        ${tutorialData.estTime ? `<span class="px-2 py-0.5 rounded bg-white/5 border border-white/10">Time: ${tutorialData.estTime}</span>` : ''}
+                        ${tutorialData.difficulty ? `<span class="px-2 py-0.5 rounded bg-white/5 border border-white/10">${tutorialData.difficulty}</span>` : ''}
+                        ${tutorialData.os ? `<span class="px-2 py-0.5 rounded bg-white/5 border border-white/10">${tutorialData.os}</span>` : ''}
+                        ${tutorialData.author ? `<span class="px-2 py-0.5 rounded bg-white/5 border border-white/10">${tutorialData.author}</span>` : ''}
+                    </div>
+                </div>
+            `;
+
+            html += `<div class="space-y-3 pt-2">`;
+            (tutorialData.steps || []).forEach((step, idx) => {
+                const sTitle = isEn ? (step.title?.en || step.title?.de) : (step.title?.de || step.title?.en);
+                html += `
+                    <div class="bg-black/40 border border-white/10 rounded-xl p-3.5 space-y-2.5">
+                        <div class="flex items-center gap-2">
+                            <span class="w-5 h-5 rounded bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center text-[10px] font-black">${idx + 1}</span>
+                            <h3 class="text-xs font-bold text-white tracking-tight">${processContent(sTitle) || 'Step ' + (idx + 1)}</h3>
+                        </div>
+                `;
+
+                (step.blocks || []).forEach(b => {
+                    if (b.type === 'text') {
+                        const txt = isEn ? (b.textEn || b.textDe) : (b.textDe || b.textEn);
+                        if (txt) html += `<p class="text-zinc-300 text-[11px] leading-relaxed whitespace-pre-line">${processContent(txt)}</p>`;
+                    }
+
+                    if (b.type === 'code') {
+                        const firstTab = b.tabs?.[0] || { label: 'Code', code: '' };
+                        html += `
+                        <div class="bg-black/80 border border-white/10 rounded-lg p-2 font-mono text-[10px] text-purple-300 relative">
+                            <span class="absolute top-1 right-2 text-[8px] uppercase tracking-wider text-zinc-500 font-bold">${firstTab.label}</span>
+                            <code>${processContent(firstTab.code, true) || ''}</code>
+                        </div>`;
+                    }
+
+                    if (b.type === 'callout') {
+                        const calloutColors = {
+                            tip: "border-purple-500 bg-purple-950/20 text-purple-200",
+                            info: "border-cyan-500 bg-cyan-950/20 text-cyan-200",
+                            warning: "border-amber-500 bg-amber-950/20 text-amber-200",
+                            danger: "border-rose-500 bg-rose-950/20 text-rose-200"
+                        };
+                        const cText = isEn ? (b.textEn || b.textDe) : (b.textDe || b.textEn);
+                        if (cText) {
+                            html += `<div class="border-l-2 p-2 rounded-r text-[10px] ${calloutColors[b.level] || calloutColors.tip}">${processContent(cText)}</div>`;
+                        }
+                    }
+
+                    if (b.type === 'image') {
+                        const layout = b.layout || 'center';
+                        const t1 = isEn ? (b.text1En || b.text1De) : (b.text1De || b.text1En);
+                        const t2 = isEn ? (b.text2En || b.text2De) : (b.text2De || b.text2En);
+
+                        if (layout === 'center' && b.url1) {
+                            html += `
+                            <div class="rounded-lg overflow-hidden border border-white/10 bg-black/40 max-w-sm mx-auto">
+                                <img src="${b.url1}" class="w-full h-auto object-contain">
+                                ${b.caption1 ? `<div class="p-1 text-[9px] text-zinc-500 italic text-center">${processContent(b.caption1)}</div>` : ''}
+                            </div>`;
+                        } else if (layout === 'left' && b.url1) {
+                            html += `
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center bg-black/20 p-2 rounded-lg border border-white/5">
+                                <div class="max-w-[200px] mx-auto rounded overflow-hidden border border-white/10"><img src="${b.url1}" class="w-full h-auto object-contain"></div>
+                                <div class="text-[11px] text-zinc-300 leading-relaxed whitespace-pre-line">${processContent(t1)}</div>
+                            </div>`;
+                        } else if (layout === 'right' && b.url1) {
+                            html += `
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center bg-black/20 p-2 rounded-lg border border-white/5">
+                                <div class="text-[11px] text-zinc-300 leading-relaxed whitespace-pre-line">${processContent(t1)}</div>
+                                <div class="max-w-[200px] mx-auto rounded overflow-hidden border border-white/10"><img src="${b.url1}" class="w-full h-auto object-contain"></div>
+                            </div>`;
+                        } else if (layout === 'side-by-side' && (b.url1 || b.url2)) {
+                            html += `
+                            <div class="space-y-2 bg-black/20 p-2.5 rounded-lg border border-white/5">
+                                <div class="flex items-center justify-center gap-2">
+                                    ${b.url1 ? `<div class="flex-1 max-w-[150px] rounded overflow-hidden border border-white/10"><img src="${b.url1}" class="w-full h-auto object-contain"></div>` : ''}
+                                    <span class="text-purple-400 font-bold text-xs">&rarr;</span>
+                                    ${b.url2 ? `<div class="flex-1 max-w-[150px] rounded overflow-hidden border border-white/10"><img src="${b.url2}" class="w-full h-auto object-contain"></div>` : ''}
+                                </div>
+                                ${t1 ? `<p class="text-[11px] text-zinc-300 text-center leading-relaxed">${processContent(t1)}</p>` : ''}
+                            </div>`;
+                        } else if (layout === 'stacked-steps') {
+                            html += `
+                            <div class="space-y-3 bg-black/20 p-2.5 rounded-lg border border-white/5">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 items-center">
+                                    ${b.url1 ? `<div class="max-w-[180px] mx-auto rounded overflow-hidden border border-white/10"><img src="${b.url1}" class="w-full h-auto object-contain"></div>` : ''}
+                                    <div class="text-[11px] text-zinc-300">${processContent(t1)}</div>
+                                </div>
+                                <div class="text-center text-purple-400 text-xs font-bold">&darr;</div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 items-center">
+                                    ${b.url2 ? `<div class="max-w-[180px] mx-auto rounded overflow-hidden border border-white/10"><img src="${b.url2}" class="w-full h-auto object-contain"></div>` : ''}
+                                    <div class="text-[11px] text-zinc-300">${processContent(t2)}</div>
+                                </div>
+                            </div>`;
+                        }
+                    }
+
+                    if (b.type === 'accordion') {
+                        const head = isEn ? (b.headerEn || b.headerDe) : (b.headerDe || b.headerEn);
+                        const cnt = isEn ? (b.contentEn || b.contentDe) : (b.contentDe || b.contentEn);
+                        html += `
+                        <details class="bg-black/60 border border-white/5 rounded-lg p-2 text-[10px]">
+                            <summary class="font-bold text-zinc-300 cursor-pointer">${processContent(head) || 'Details'}</summary>
+                            <p class="text-zinc-400 mt-1 whitespace-pre-line">${processContent(cnt)}</p>
+                        </details>`;
+                    }
+                });
+
+                html += `</div>`;
+            });
+            html += `</div>`;
+
+            container.innerHTML = html;
+        }
+
+        function exportJson() {
+            syncMetadata();
+            const jsonPayload = {
+                title: tutorialData.title,
+                category: tutorialData.category,
+                description: tutorialData.description,
+                difficulty: tutorialData.difficulty,
+                estTime: tutorialData.estTime,
+                os: tutorialData.os,
+                author: tutorialData.author,
+                image: tutorialData.image,
+                url: tutorialData.slug ? `https://thataustrianone.eu/tutorials/${tutorialData.slug}/` : "#",
+                variables: tutorialData.variables,
+                steps: tutorialData.steps
+            };
+            downloadFile(JSON.stringify(jsonPayload, null, 4), `${tutorialData.slug || 'tutorial'}.json`, 'application/json');
+        }
+
+        function importJsonFile(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const parsed = JSON.parse(event.target.result);
+                    tutorialData = Object.assign(tutorialData, parsed);
+                    populateForm();
+                    handleFieldChange();
+                } catch (err) {
+                    alert("Invalid JSON file uploaded.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function exportHtml() {
+            syncMetadata();
+            const data = tutorialData;
+
+            const schemaSteps = (data.steps || []).map((st, i) => ({
+                "@type": "HowToStep",
+                "position": i + 1,
+                "name": st.title?.en || `Step ${i + 1}`,
+                "text": st.blocks?.find(b => b.type === 'text')?.textEn || st.title?.en || `Step ${i + 1}`
+            }));
+
+            const schemaJson = JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "HowTo",
+                "name": data.title.en || "Tutorial",
+                "description": data.description.en || "",
+                "image": data.image || "",
+                "step": schemaSteps
+            }, null, 2);
+
+            const generatedHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${data.title.en || 'Tutorial'} | Nick</title>
+    
+    <meta property="og:title" content="${data.title.en || 'Tutorial'} | Nick">
+    <meta property="og:description" content="${data.description.en || ''}">
+    <meta property="og:image" content="${data.image || ''}">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="${data.title.en || 'Tutorial'}">
+    <meta name="twitter:description" content="${data.description.en || ''}">
+    <meta name="twitter:image" content="${data.image || ''}">
+
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/der46er/website/main/assets/favicon.png">
+    
+    <style>
+        @font-face {
+            font-family: 'Inter';
+            src: url('https://cdn.jsdelivr.net/gh/der46er/website@main/assets/fonts/inter-v12-latin-regular.woff2') format('woff2');
+            font-weight: 400;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'Inter';
+            src: url('https://cdn.jsdelivr.net/gh/der46er/website@main/assets/fonts/inter-v12-latin-900.woff2') format('woff2');
+            font-weight: 900;
+            font-display: swap;
+        }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: #0b0d11;
+            color: white;
+            margin: 0; padding: 0;
+            position: relative;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: url("https://cdn.jsdelivr.net/gh/der46er/website@main/assets/backgounds/waves-purple-black.webp");
+            background-size: cover;
+            background-position: center;
+            filter: blur(8px);
+            transform: scale(1.05);
+            z-index: -2;
+        }
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.015'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: -1;
+        }
+        .glass-box {
+            background: rgba(18, 18, 18, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+        .progress-bar-glow {
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.8);
+        }
+        .step-completed {
+            opacity: 0.6;
+            filter: grayscale(0.5);
+        }
+    </style>
+    <script src="https://cdn.tailwindcss.com"><\/script>
+
+    <script type="application/ld+json">
+    ${schemaJson}
+    <\/script>
+</head>
+<body class="flex flex-col min-h-screen w-full overflow-x-hidden selection:bg-purple-500/20 relative">
+
+    <div id="read-progress" class="fixed top-0 left-0 h-1 bg-gradient-to-r from-purple-600 to-fuchsia-500 z-[300] progress-bar-glow w-0 transition-all duration-75"></div>
+
+    <a href="../" aria-label="Back to Tutorials" class="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] w-10 h-10 rounded-xl glass-box hover:border-zinc-300/80 hover:shadow-[0_0_25px_rgba(212,212,216,0.3)] text-zinc-400 hover:text-white flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 group">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-0.5 transition-transform duration-200">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+    </a>
+
+    <main class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 w-full flex-grow flex flex-col justify-start pt-16 md:pt-14 pb-16">
+        
+        <header class="w-full text-center shrink-0 mb-8">
+            <span id="category-badge" class="inline-block bg-purple-500/10 border border-purple-500/30 text-purple-400 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-md mb-3">
+                ${data.category.en || ''}
+            </span>
+            <h1 id="tut-title" class="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-white mb-3"></h1>
+            <p id="tut-desc" class="text-zinc-400 text-xs sm:text-sm font-medium tracking-wide leading-relaxed max-w-2xl mx-auto mb-4"></p>
+
+            <div class="flex items-center justify-center gap-2 flex-wrap text-xs text-zinc-400 font-semibold mb-6">
+                ${data.estTime ? `<span class="px-3 py-1 rounded-lg bg-black/40 border border-white/10">Time: ${data.estTime}</span>` : ''}
+                ${data.difficulty ? `<span class="px-3 py-1 rounded-lg bg-black/40 border border-white/10">${data.difficulty}</span>` : ''}
+                ${data.os ? `<span class="px-3 py-1 rounded-lg bg-black/40 border border-white/10">${data.os}</span>` : ''}
+                ${data.author ? `<span class="px-3 py-1 rounded-lg bg-black/40 border border-white/10">${data.author}</span>` : ''}
+            </div>
+        </header>
+
+        ${data.variables && data.variables.length > 0 ? `
+        <div class="glass-box rounded-2xl p-4 sm:p-5 mb-8">
+            <div class="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
+                <h3 class="text-xs font-black uppercase tracking-wider text-purple-400">Placeholders & Variables</h3>
+                <span class="text-[10px] text-zinc-500 uppercase font-semibold">Change to personalize values across this tutorial</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                ${data.variables.map(v => `
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">
+                            ${v.label || v.key} 
+                            <span class="font-mono text-[9px] px-1 py-0.5 rounded border border-white/10" style="color: ${v.color || '#a855f7'}; background: ${v.color ? v.color + '15' : 'rgba(168,85,247,0.1)'}">${v.key}</span>
+                        </label>
+                        <input data-var-key="${v.key}" data-var-color="${v.color || '#a855f7'}" oninput="updateDynamicVariables()" class="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-purple-500" value="${v.defaultVal || ''}">
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+        ` : ''}
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div id="steps-wrapper" class="lg:col-span-8 space-y-6"></div>
+
+            <aside class="hidden lg:block lg:col-span-4 sticky top-8">
+                <div class="glass-box rounded-2xl p-5 space-y-4">
+                    <div class="flex items-center justify-between border-b border-white/5 pb-2">
+                        <h4 class="text-xs font-black uppercase tracking-wider text-purple-400">Table of Contents</h4>
+                        <span id="completed-count" class="text-[10px] text-zinc-400 font-bold">0 / ${data.steps.length}</span>
+                    </div>
+                    <nav class="space-y-1.5 text-xs">
+                        ${data.steps.map((st, i) => `
+                            <a href="#step-${i + 1}" class="block px-2.5 py-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 truncate transition-colors">
+                                <span class="text-purple-400 font-bold mr-1.5">${i + 1}.</span>${st.title.en || 'Step ' + (i + 1)}
+                            </a>
+                        `).join('')}
+                    </nav>
+                </div>
+            </aside>
+        </div>
+
+    </main>
+
+    <footer class="w-full flex justify-between items-center px-6 py-5 shrink-0 relative z-10 select-none mt-auto">
+        <button onclick="toggleLang()" id="lang-btn" class="focus:outline-none hover:scale-105 active:scale-95 transition-all duration-200">
+            <img id="lang-flag" src="https://cdn.jsdelivr.net/gh/der46er/website@main/assets/flags/united-kingdom-flag.webp" alt="Flag" class="w-7 h-auto rounded-md shadow-md object-cover opacity-80 hover:opacity-100 transition-opacity duration-200">
+        </button>
+        <p onclick="window.location.href='https://thataustrianone.eu/legal/'" class="cursor-pointer text-zinc-600 text-[10px] sm:text-xs font-black italic tracking-widest uppercase opacity-70 hover:opacity-100 hover:text-white transition-all duration-300">
+            (C) <span id="year">2026</span> - ${data.author || '@der_46er'}
+        </p>
+    </footer>
+
+    <script>
+        document.getElementById('year').innerText = new Date().getFullYear();
+        const TUTORIAL_DATA = ${JSON.stringify(data, null, 2)};
+        let currentLang = localStorage.getItem('siteLang') || 'en';
+        let completedSteps = JSON.parse(localStorage.getItem('tut_completed_' + TUTORIAL_DATA.slug) || '[]');
+
+        function escapeHtml(str) {
+            if (!str) return "";
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function getVariableSubstitutions() {
+            const map = {};
+            document.querySelectorAll('[data-var-key]').forEach(inp => {
+                const key = inp.getAttribute('data-var-key');
+                const color = inp.getAttribute('data-var-color') || '#a855f7';
+                if (key) map[key] = { val: inp.value, color: color };
+            });
+            return map;
+        }
+
+        function processContent(text, isCode = false) {
+            if (!text) return "";
+            let s = text;
+            const subs = getVariableSubstitutions();
+
+            Object.keys(subs).forEach(k => {
+                const item = subs[k];
+                const styled = '<span style="color:' + item.color + ';" class="font-bold">' + escapeHtml(item.val) + '</span>';
+                s = s.split(k).join(styled);
+            });
+
+            if (isCode) return s;
+
+            s = s.replace(/#([0-9a-fA-F]{3,8})#([^#\\n]+)#([0-9a-fA-F]{3,8})#/g, (match, hex1, txt, hex2) => {
+                const c1 = hex1.startsWith('#') ? hex1 : '#' + hex1;
+                const c2 = hex2.startsWith('#') ? hex2 : '#' + hex2;
+                return '<span style="background: linear-gradient(135deg, ' + c1 + ', ' + c2 + '); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" class="font-bold">' + txt + '</span>';
+            });
+            s = s.replace(/##([^#\\n]+)#([0-9a-fA-F]{3,8})#/g, (match, txt, hex) => {
+                const color = hex.startsWith('#') ? hex : '#' + hex;
+                return '<span style="color: ' + color + ';" class="font-bold">' + txt + '</span>';
+            });
+            s = s.replace(/\\*\\*\\*([^\\*\\n]+)\\*\\*\\*/g, '<strong class="font-black text-white">$1</strong>');
+            s = s.replace(/\\*\\*([^\\*\\n]+)\\*\\*/g, '<strong class="font-bold text-white">$1</strong>');
+            s = s.replace(/\\*([^\\*\\n]+)\\*/g, '<em class="italic">$1</em>');
+            s = s.replace(/__([^\\_\\n]+)__/g, '<span class="underline underline-offset-2">$1</span>');
+            s = s.replace(/~~([^~\\n]+)~~/g, '<span class="line-through opacity-60">$1</span>');
+            s = s.replace(/'([^'\\n]+)'/g, '<code class="font-mono text-purple-300 bg-black/40 px-1 py-0.5 rounded border border-white/10 text-[0.9em]">$1</code>');
+            return s;
+        }
+
+        window.addEventListener('scroll', () => {
+            const h = document.documentElement, b = document.body;
+            const st = 'scrollTop', sh = 'scrollHeight';
+            const percent = (h[st]||b[st]) / ((h[sh]||b[sh]) - h.clientHeight) * 100;
+            document.getElementById('read-progress').style.width = percent + '%';
+        });
+
+        function toggleStepComplete(idx) {
+            if (completedSteps.includes(idx)) {
+                completedSteps = completedSteps.filter(x => x !== idx);
+            } else {
+                completedSteps.push(idx);
+            }
+            localStorage.setItem('tut_completed_' + TUTORIAL_DATA.slug, JSON.stringify(completedSteps));
+            renderTutorial();
+        }
+
+        function switchCodeTab(btn, sIdx, bIdx, tIdx) {
+            const blockDiv = btn.closest('.code-block-container');
+            blockDiv.querySelectorAll('.tab-btn').forEach(b => b.className = 'tab-btn px-2.5 py-1 text-[11px] font-bold uppercase text-zinc-400 hover:text-white');
+            btn.className = 'tab-btn px-2.5 py-1 text-[11px] font-bold uppercase bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded';
+            blockDiv.querySelectorAll('.tab-code-panel').forEach((p, idx) => {
+                p.classList.toggle('hidden', idx !== tIdx);
+            });
+        }
+
+        function copyCodeSnippet(btn) {
+            const codeEl = btn.parentElement.querySelector('code');
+            navigator.clipboard.writeText(codeEl.innerText).then(() => {
+                const orig = btn.innerText;
+                btn.innerText = 'COPIED';
+                setTimeout(() => btn.innerText = orig, 1500);
+            });
+        }
+
+        function updateDynamicVariables() {
+            renderTutorial();
+        }
+
+        function renderTutorial() {
+            const isEn = currentLang === 'en';
+            document.getElementById('lang-flag').src = isEn 
+                ? "https://cdn.jsdelivr.net/gh/der46er/website@main/assets/flags/united-kingdom-flag.webp"
+                : "https://cdn.jsdelivr.net/gh/der46er/website@main/assets/flags/austria-flag.webp";
+
+            document.getElementById('category-badge').innerText = isEn ? TUTORIAL_DATA.category.en : TUTORIAL_DATA.category.de;
+            document.getElementById('tut-title').innerHTML = processContent(isEn ? TUTORIAL_DATA.title.en : TUTORIAL_DATA.title.de);
+            document.getElementById('tut-desc').innerHTML = processContent(isEn ? TUTORIAL_DATA.description.en : TUTORIAL_DATA.description.de);
+            
+            const countEl = document.getElementById('completed-count');
+            if (countEl) countEl.innerText = completedSteps.length + ' / ' + TUTORIAL_DATA.steps.length;
+
+            const wrapper = document.getElementById('steps-wrapper');
+            wrapper.innerHTML = TUTORIAL_DATA.steps.map((st, i) => {
+                const isComplete = completedSteps.includes(i);
+                const title = isEn ? (st.title.en || st.title.de) : (st.title.de || st.title.en);
+
+                let blocksHtml = '';
+                (st.blocks || []).forEach((b, bIdx) => {
+                    if (b.type === 'text') {
+                        const txt = isEn ? (b.textEn || b.textDe) : (b.textDe || b.textEn);
+                        if (txt) blocksHtml += '<p class="text-zinc-300 text-xs sm:text-sm leading-relaxed whitespace-pre-line">' + processContent(txt) + '</p>';
+                    }
+
+                    if (b.type === 'code') {
+                        blocksHtml += \`
+                        <div class="code-block-container bg-black/70 border border-white/10 rounded-xl overflow-hidden mt-2">
+                            <div class="flex items-center justify-between bg-black/40 px-3 py-1.5 border-b border-white/5">
+                                <div class="flex items-center gap-1.5">
+                                    \${b.tabs.map((t, tIdx) => \`
+                                        <button onclick="switchCodeTab(this, \${i}, \${bIdx}, \${tIdx})" class="tab-btn px-2.5 py-1 text-[11px] font-bold uppercase \${tIdx === 0 ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded' : 'text-zinc-400 hover:text-white'}">
+                                            \${t.label}
+                                        </button>
+                                    \`).join('')}
+                                </div>
+                                <span class="text-[9px] uppercase tracking-wider text-zinc-500 font-bold">Terminal</span>
+                            </div>
+                            <div class="p-3 relative">
+                                \${b.tabs.map((t, tIdx) => \`
+                                    <div class="tab-code-panel \${tIdx !== 0 ? 'hidden' : ''}">
+                                        <button onclick="copyCodeSnippet(this)" class="absolute top-2 right-2 px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[10px] text-zinc-300 uppercase tracking-wider font-bold">Copy</button>
+                                        <pre class="font-mono text-xs text-purple-300 overflow-x-auto"><code>\${processContent(t.code, true)}</code></pre>
+                                    </div>
+                                \`).join('')}
+                            </div>
+                        </div>\`;
+                    }
+
+                    if (b.type === 'callout') {
+                        const calloutClasses = {
+                            tip: "border-purple-500 bg-purple-950/20 text-purple-200",
+                            info: "border-cyan-500 bg-cyan-950/20 text-cyan-200",
+                            warning: "border-amber-500 bg-amber-950/20 text-amber-200",
+                            danger: "border-rose-500 bg-rose-950/20 text-rose-200"
+                        };
+                        const cText = isEn ? (b.textEn || b.textDe) : (b.textDe || b.textEn);
+                        if (cText) {
+                            blocksHtml += \`
+                            <div class="border-l-4 p-3 rounded-r-lg text-xs leading-relaxed \${calloutClasses[b.level] || calloutClasses.tip}">
+                                \${processContent(cText)}
+                            </div>\`;
+                        }
+                    }
+
+                    if (b.type === 'image') {
+                        const layout = b.layout || 'center';
+                        const t1 = isEn ? (b.text1En || b.text1De) : (b.text1De || b.text1En);
+                        const t2 = isEn ? (b.text2En || b.text2De) : (b.text2De || b.text2En);
+
+                        if (layout === 'center' && b.url1) {
+                            blocksHtml += \`
+                            <div class="rounded-xl overflow-hidden border border-white/10 bg-black/40 max-w-lg mx-auto">
+                                <img src="\${b.url1}" alt="Illustration" class="w-full h-auto object-contain">
+                                \${b.caption1 ? \`<div class="p-2 text-center text-xs text-zinc-400 italic bg-black/60">\${processContent(b.caption1)}</div>\` : ''}
+                            </div>\`;
+                        } else if (layout === 'left' && b.url1) {
+                            blocksHtml += \`
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center bg-black/30 p-3 rounded-xl border border-white/5">
+                                <div class="max-w-[280px] mx-auto rounded-lg overflow-hidden border border-white/10"><img src="\${b.url1}" class="w-full h-auto object-contain"></div>
+                                <div class="text-xs sm:text-sm text-zinc-300 leading-relaxed whitespace-pre-line">\${processContent(t1)}</div>
+                            </div>\`;
+                        } else if (layout === 'right' && b.url1) {
+                            blocksHtml += \`
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center bg-black/30 p-3 rounded-xl border border-white/5">
+                                <div class="text-xs sm:text-sm text-zinc-300 leading-relaxed whitespace-pre-line order-2 sm:order-1">\${processContent(t1)}</div>
+                                <div class="max-w-[280px] mx-auto rounded-lg overflow-hidden border border-white/10 order-1 sm:order-2"><img src="\${b.url1}" class="w-full h-auto object-contain"></div>
+                            </div>\`;
+                        } else if (layout === 'side-by-side' && (b.url1 || b.url2)) {
+                            blocksHtml += \`
+                            <div class="space-y-3 bg-black/30 p-4 rounded-xl border border-white/5">
+                                <div class="flex items-center justify-center gap-3">
+                                    \${b.url1 ? \`<div class="flex-1 max-w-[240px] rounded-lg overflow-hidden border border-white/10"><img src="\${b.url1}" class="w-full h-auto object-contain"></div>\` : ''}
+                                    <span class="text-purple-400 font-bold text-lg">&rarr;</span>
+                                    \${b.url2 ? \`<div class="flex-1 max-w-[240px] rounded-lg overflow-hidden border border-white/10"><img src="\${b.url2}" class="w-full h-auto object-contain"></div>\` : ''}
+                                </div>
+                                \${t1 ? \`<p class="text-xs sm:text-sm text-zinc-300 text-center leading-relaxed whitespace-pre-line">\${processContent(t1)}</p>\` : ''}
+                            </div>\`;
+                        } else if (layout === 'stacked-steps') {
+                            blocksHtml += \`
+                            <div class="space-y-4 bg-black/30 p-4 rounded-xl border border-white/5">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+                                    \${b.url1 ? \`<div class="max-w-[260px] mx-auto rounded-lg overflow-hidden border border-white/10"><img src="\${b.url1}" class="w-full h-auto object-contain"></div>\` : ''}
+                                    <div class="text-xs sm:text-sm text-zinc-300 leading-relaxed whitespace-pre-line">\${processContent(t1)}</div>
+                                </div>
+                                <div class="text-center text-purple-400 text-base font-bold">&darr;</div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+                                    \${b.url2 ? \`<div class="max-w-[260px] mx-auto rounded-lg overflow-hidden border border-white/10"><img src="\${b.url2}" class="w-full h-auto object-contain"></div>\` : ''}
+                                    <div class="text-xs sm:text-sm text-zinc-300 leading-relaxed whitespace-pre-line">\${processContent(t2)}</div>
+                                </div>
+                            </div>\`;
+                        }
+                    }
+
+                    if (b.type === 'accordion') {
+                        const head = isEn ? (b.headerEn || b.headerDe) : (b.headerDe || b.headerEn);
+                        const cnt = isEn ? (b.contentEn || b.contentDe) : (b.contentDe || b.contentEn);
+                        blocksHtml += \`
+                        <details class="bg-black/40 border border-white/5 rounded-xl p-3.5 text-xs">
+                            <summary class="font-bold text-zinc-300 hover:text-white cursor-pointer select-none">\${processContent(head)}</summary>
+                            <p class="text-zinc-400 mt-2 leading-relaxed whitespace-pre-line">\${processContent(cnt)}</p>
+                        </details>\`;
+                    }
+                });
+
+                return \`
+                <div id="step-\${i + 1}" class="glass-box rounded-2xl p-5 sm:p-6 space-y-4 transition-all duration-300 \${isComplete ? 'step-completed' : ''}">
+                    <div class="flex items-center justify-between border-b border-white/5 pb-3">
+                        <div class="flex items-center gap-3">
+                            <span class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center text-xs font-black">\${i + 1}</span>
+                            <h2 class="text-base sm:text-lg font-bold text-white tracking-tight">\${processContent(title) || 'Step ' + (i + 1)}</h2>
+                        </div>
+                        <button onclick="toggleStepComplete(\${i})" class="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg border \${isComplete ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300' : 'border-white/10 text-zinc-400 hover:text-white'}">
+                            \${isComplete ? 'Completed' : 'Mark Done'}
+                        </button>
+                    </div>
+                    <div class="space-y-3.5">
+                        \${blocksHtml}
+                    </div>
+                </div>\`;
+            }).join('');
+
+            updateDynamicVariables();
+        }
+
+        window.toggleLang = () => {
+            currentLang = currentLang === 'en' ? 'de' : 'en';
+            localStorage.setItem('siteLang', currentLang);
+            renderTutorial();
+        };
+
+        renderTutorial();
+    <\/script>
+</body>
+</html>`;
+
+            downloadFile(generatedHtml, 'index.html', 'text/html');
+        }
+
+        function downloadFile(content, fileName, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+        }
+    </script>
+</body>
+</html>
