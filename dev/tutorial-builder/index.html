@@ -27,7 +27,7 @@
             content: "";
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: url("https://cdn.jsdelivr.net/gh/der46er/website/main/assets/backgrounds/waves-purple-black.webp");
+            background-image: url("https://cdn.jsdelivr.net/gh/der46er/website@main/assets/backgrounds/waves-purple-black.webp");
             background-size: cover;
             background-position: center;
             filter: blur(10px);
@@ -465,7 +465,7 @@
         }
 
         function hexToRgba(hex, alpha = 0.2) {
-            let c = (hex || '#a855f7').replace('#', '');
+            let c = hex.replace('#', '');
             if (c.length === 3) c = c.split('').map(x => x + x).join('');
             const num = parseInt(c, 16);
             if (isNaN(num)) return `rgba(168, 85, 247, ${alpha})`;
@@ -1255,15 +1255,15 @@
                         } else if (layout === 'left' && b.url1) {
                             html += `
                             <div style="background: ${subBoxBg}; border: 1.5px solid ${cardBorder};" class="flex items-center gap-3.5 p-3.5 rounded-xl">
-                                <div style="width: ${s1}%; min-width: 48px;" class="shrink-0 flex items-center justify-center">
+                                <div style="width: ${s1}%; min-width: 48px;" class="shrink-0 flex items-center justify-center self-center">
                                     <img src="${b.url1}" 
                                          onclick="openScaleModal(${idx}, ${bIdx}, 'img1', ${s1})" 
                                          class="w-full h-auto object-contain interactive-preview-el rounded-xl border border-white/10" 
                                          title="Click to scale image size">
                                 </div>
                                 <div onclick="openScaleModal(${idx}, ${bIdx}, 'img-text1', ${t1Sz})" 
-                                     style="font-size: ${(t1Sz / 100) * 0.8125}rem; line-height: 1.6;" 
-                                     class="text-inherit leading-relaxed whitespace-pre-line flex-1 interactive-preview-el rounded p-1" 
+                                     style="font-size: ${(t1Sz / 100) * 0.8125}rem; line-height: 1.45;" 
+                                     class="text-inherit whitespace-pre-line flex-1 flex flex-col justify-center self-center interactive-preview-el rounded p-1" 
                                      title="Click to scale text size">
                                     ${processContent(t1)}
                                 </div>
@@ -1272,12 +1272,12 @@
                             html += `
                             <div style="background: ${subBoxBg}; border: 1.5px solid ${cardBorder};" class="flex items-center gap-3.5 p-3.5 rounded-xl">
                                 <div onclick="openScaleModal(${idx}, ${bIdx}, 'img-text1', ${t1Sz})" 
-                                     style="font-size: ${(t1Sz / 100) * 0.8125}rem; line-height: 1.6;" 
-                                     class="text-inherit leading-relaxed whitespace-pre-line flex-1 interactive-preview-el rounded p-1" 
+                                     style="font-size: ${(t1Sz / 100) * 0.8125}rem; line-height: 1.45;" 
+                                     class="text-inherit whitespace-pre-line flex-1 flex flex-col justify-center self-center interactive-preview-el rounded p-1" 
                                      title="Click to scale text size">
                                     ${processContent(t1)}
                                 </div>
-                                <div style="width: ${s1}%; min-width: 48px;" class="shrink-0 flex items-center justify-center">
+                                <div style="width: ${s1}%; min-width: 48px;" class="shrink-0 flex items-center justify-center self-center">
                                     <img src="${b.url1}" 
                                          onclick="openScaleModal(${idx}, ${bIdx}, 'img1', ${s1})" 
                                          class="w-full h-auto object-contain interactive-preview-el rounded-xl border border-white/10" 
@@ -1304,20 +1304,20 @@
                             html += `
                             <div style="background: ${subBoxBg}; border: 1.5px solid ${cardBorder};" class="space-y-3 p-3 rounded-xl">
                                 <div class="flex items-center gap-3">
-                                    ${b.url1 ? `<div style="width: ${s1}%;" class="shrink-0 flex items-center justify-center"><img src="${b.url1}" onclick="openScaleModal(${idx}, ${bIdx}, 'img1',${s1})" class="w-full h-auto object-contain interactive-preview-el rounded-lg border border-white/10" title="Click to scale"></div>` : ''}
+                                    ${b.url1 ? `<div style="width: ${s1}%;" class="shrink-0 flex items-center justify-center self-center"><img src="${b.url1}" onclick="openScaleModal(${idx}, ${bIdx}, 'img1',${s1})" class="w-full h-auto object-contain interactive-preview-el rounded-lg border border-white/10" title="Click to scale"></div>` : ''}
                                     <div onclick="openScaleModal(${idx}, ${bIdx}, 'img-text1', ${t1Sz})" 
-                                         style="font-size: ${(t1Sz / 100) * 0.75}rem;" 
-                                         class="text-inherit flex-1 interactive-preview-el rounded p-1" 
+                                         style="font-size: ${(t1Sz / 100) * 0.75}rem; line-height: 1.45;" 
+                                         class="text-inherit flex-1 flex flex-col justify-center self-center interactive-preview-el rounded p-1" 
                                          title="Click to scale stage 1 text">
                                         ${processContent(t1)}
                                     </div>
                                 </div>
                                 <div class="text-center text-blue-500 text-xs font-bold">&darr;</div>
                                 <div class="flex items-center gap-3">
-                                    ${b.url2 ? `<div style="width: ${s2}%;" class="shrink-0 flex items-center justify-center"><img src="${b.url2}" onclick="openScaleModal(${idx}, ${bIdx}, 'img2',${s2})" class="w-full h-auto object-contain interactive-preview-el rounded-lg border border-white/10" title="Click to scale"></div>` : ''}
+                                    ${b.url2 ? `<div style="width: ${s2}%;" class="shrink-0 flex items-center justify-center self-center"><img src="${b.url2}" onclick="openScaleModal(${idx}, ${bIdx}, 'img2',${s2})" class="w-full h-auto object-contain interactive-preview-el rounded-lg border border-white/10" title="Click to scale"></div>` : ''}
                                     <div onclick="openScaleModal(${idx}, ${bIdx}, 'img-text2', ${t2Sz})" 
-                                         style="font-size: ${(t2Sz / 100) * 0.75}rem;" 
-                                         class="text-inherit flex-1 interactive-preview-el rounded p-1" 
+                                         style="font-size: ${(t2Sz / 100) * 0.75}rem; line-height: 1.45;" 
+                                         class="text-inherit flex-1 flex flex-col justify-center self-center interactive-preview-el rounded p-1" 
                                          title="Click to scale stage 2 text">
                                         ${processContent(t2)}
                                     </div>
@@ -1861,16 +1861,16 @@
                         } else if (layout === 'left' && b.url1) {
                             blocksHtml += \`
                             <div style="background: var(--sub-box-bg); border: 1.5px solid var(--border);" class="flex items-center gap-4 p-4 rounded-xl">
-                                <div style="width: \${s1}%; min-width: 48px;" class="shrink-0 flex items-center justify-center">
+                                <div style="width: \${s1}%; min-width: 48px;" class="shrink-0 flex items-center justify-center self-center">
                                     <img src="\${b.url1}" class="w-full h-auto object-contain rounded-xl border border-white/10">
                                 </div>
-                                <div style="font-size: \${(t1Sz / 100) * 0.8125}rem;" class="leading-relaxed whitespace-pre-line flex-1">\${processContent(t1)}</div>
+                                <div style="font-size: \${(t1Sz / 100) * 0.8125}rem; line-height: 1.45;" class="whitespace-pre-line flex-1 flex flex-col justify-center self-center">\${processContent(t1)}</div>
                             </div>\`;
                         } else if (layout === 'right' && b.url1) {
                             blocksHtml += \`
                             <div style="background: var(--sub-box-bg); border: 1.5px solid var(--border);" class="flex items-center gap-4 p-4 rounded-xl">
-                                <div style="font-size: \${(t1Sz / 100) * 0.8125}rem;" class="leading-relaxed whitespace-pre-line flex-1">\${processContent(t1)}</div>
-                                <div style="width: \${s1}%; min-width: 48px;" class="shrink-0 flex items-center justify-center">
+                                <div style="font-size: \${(t1Sz / 100) * 0.8125}rem; line-height: 1.45;" class="whitespace-pre-line flex-1 flex flex-col justify-center self-center">\${processContent(t1)}</div>
+                                <div style="width: \${s1}%; min-width: 48px;" class="shrink-0 flex items-center justify-center self-center">
                                     <img src="\${b.url1}" class="w-full h-auto object-contain rounded-xl border border-white/10">
                                 </div>
                             </div>\`;
@@ -1888,13 +1888,13 @@
                             blocksHtml += \`
                             <div style="background: var(--sub-box-bg); border: 1.5px solid var(--border);" class="space-y-3 p-4 rounded-xl">
                                 <div class="flex items-center gap-4">
-                                    \${b.url1 ? \`<div style="width: \${s1}%;" class="shrink-0 flex items-center justify-center"><img src="\${b.url1}" class="w-full h-auto object-contain rounded-lg border border-white/10"></div>\` : ''}
-                                    <div style="font-size: \${(t1Sz / 100) * 0.75}rem;" class="flex-1">\${processContent(t1)}</div>
+                                    \${b.url1 ? \`<div style="width: \${s1}%;" class="shrink-0 flex items-center justify-center self-center"><img src="\${b.url1}" class="w-full h-auto object-contain rounded-lg border border-white/10"></div>\` : ''}
+                                    <div style="font-size: \${(t1Sz / 100) * 0.75}rem; line-height: 1.45;" class="flex-1 flex flex-col justify-center self-center">\${processContent(t1)}</div>
                                 </div>
                                 <div class="text-center text-blue-500 text-xs font-bold">&darr;</div>
                                 <div class="flex items-center gap-4">
-                                    \${b.url2 ? \`<div style="width: \${s2}%;" class="shrink-0 flex items-center justify-center"><img src="\${b.url2}" class="w-full h-auto object-contain rounded-lg border border-white/10"></div>\` : ''}
-                                    <div style="font-size: \${(t2Sz / 100) * 0.75}rem;" class="flex-1">\${processContent(t2)}</div>
+                                    \${b.url2 ? \`<div style="width: \${s2}%;" class="shrink-0 flex items-center justify-center self-center"><img src="\${b.url2}" class="w-full h-auto object-contain rounded-lg border border-white/10"></div>\` : ''}
+                                    <div style="font-size: \${(t2Sz / 100) * 0.75}rem; line-height: 1.45;" class="flex-1 flex flex-col justify-center self-center">\${processContent(t2)}</div>
                                 </div>
                             </div>\`;
                         }
