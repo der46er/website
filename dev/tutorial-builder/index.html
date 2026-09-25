@@ -27,7 +27,7 @@
             content: "";
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: url("https://cdn.jsdelivr.net/gh/der46er/website@main/assets/backgrounds/waves-purple-black.webp");
+            background-image: url("https://cdn.jsdelivr.net/gh/der46er/website/main/assets/backgrounds/waves-purple-black.webp");
             background-size: cover;
             background-position: center;
             filter: blur(10px);
@@ -142,7 +142,16 @@
                 <section class="glass-box rounded-2xl p-4 sm:p-5 space-y-3.5">
                     <div class="flex justify-between items-center border-b border-white/5 pb-2">
                         <h2 class="text-xs font-black italic uppercase tracking-wider text-purple-400">1. Tutorial Metadata</h2>
-                        <span class="text-[10px] text-zinc-500 font-bold uppercase">Local draft active</span>
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] text-zinc-400 uppercase font-bold">Title %</span>
+                                <input id="meta-title-size" type="number" min="1" max="1000" class="input-base text-xs text-center font-mono py-0.5 w-16" value="100" oninput="handleFieldChange()">
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] text-zinc-400 uppercase font-bold">Desc %</span>
+                                <input id="meta-desc-size" type="number" min="1" max="1000" class="input-base text-xs text-center font-mono py-0.5 w-16" value="100" oninput="handleFieldChange()">
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -185,7 +194,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
                             <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Author</label>
-                            <input id="meta-author" oninput="handleFieldChange()" type="text" placeholder="Niklas Außerwöger" class="input-base">
+                            <input id="meta-author" oninput="handleFieldChange()" type="text" placeholder="Author name" class="input-base">
                         </div>
                         <div>
                             <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Header Logo 1 URL (Optional)</label>
@@ -358,8 +367,10 @@
             slug: "",
             category: { en: "", de: "" },
             title: { en: "", de: "" },
+            titleSize: 100,
             description: { en: "", de: "" },
-            author: "Niklas Außerwöger",
+            descriptionSize: 100,
+            author: "",
             logo1: "",
             logo2: "",
             image: "",
@@ -383,7 +394,21 @@
         function openScaleModal(sIdx, bIdx, type, currentVal) {
             activeScaleTarget = { sIdx, bIdx, type };
             const titleEl = document.getElementById('scale-modal-title');
-            titleEl.innerText = type === 'text' ? 'Resize Text Block' : (type === 'icon' ? 'Resize Step Icon' : 'Resize Image');
+            
+            const titles = {
+                'header-title': 'Resize Tutorial Title',
+                'header-desc': 'Resize Tutorial Summary',
+                'step-title': 'Resize Step Header',
+                'text': 'Resize Text Block',
+                'icon': 'Resize Step Icon',
+                'img1': 'Resize Primary Image',
+                'img2': 'Resize Secondary Image',
+                'img-caption': 'Resize Image Caption',
+                'img-text1': 'Resize Image Text (Stage 1 / Card)',
+                'img-text2': 'Resize Image Text (Stage 2)'
+            };
+
+            titleEl.innerText = titles[type] || 'Resize Element';
             const val = currentVal || 100;
             document.getElementById('scale-range').value = val;
             document.getElementById('scale-number').value = val;
@@ -400,7 +425,15 @@
             const { sIdx, bIdx, type } = activeScaleTarget;
             const val = Math.min(1000, Math.max(1, parseInt(document.getElementById('scale-number').value) || 100));
 
-            if (type === 'icon') {
+            if (type === 'header-title') {
+                tutorialData.titleSize = val;
+                document.getElementById('meta-title-size').value = val;
+            } else if (type === 'header-desc') {
+                tutorialData.descriptionSize = val;
+                document.getElementById('meta-desc-size').value = val;
+            } else if (type === 'step-title') {
+                tutorialData.steps[sIdx].titleSize = val;
+            } else if (type === 'icon') {
                 tutorialData.steps[sIdx].iconSize = val;
             } else if (type === 'text') {
                 tutorialData.steps[sIdx].blocks[bIdx].textSize = val;
@@ -408,6 +441,12 @@
                 tutorialData.steps[sIdx].blocks[bIdx].scale1 = val;
             } else if (type === 'img2') {
                 tutorialData.steps[sIdx].blocks[bIdx].scale2 = val;
+            } else if (type === 'img-caption') {
+                tutorialData.steps[sIdx].blocks[bIdx].captionSize = val;
+            } else if (type === 'img-text1') {
+                tutorialData.steps[sIdx].blocks[bIdx].text1Size = val;
+            } else if (type === 'img-text2') {
+                tutorialData.steps[sIdx].blocks[bIdx].text2Size = val;
             }
 
             renderStepsEditor();
@@ -426,7 +465,7 @@
         }
 
         function hexToRgba(hex, alpha = 0.2) {
-            let c = hex.replace('#', '');
+            let c = (hex || '#a855f7').replace('#', '');
             if (c.length === 3) c = c.split('').map(x => x + x).join('');
             const num = parseInt(c, 16);
             if (isNaN(num)) return `rgba(168, 85, 247, ${alpha})`;
@@ -538,8 +577,10 @@
                 slug: "",
                 category: { en: "", de: "" },
                 title: { en: "", de: "" },
+                titleSize: 100,
                 description: { en: "", de: "" },
-                author: "Niklas Außerwöger",
+                descriptionSize: 100,
+                author: "",
                 logo1: "",
                 logo2: "",
                 image: "",
@@ -566,9 +607,11 @@
             document.getElementById('meta-category-de').value = tutorialData.category?.de || "";
             document.getElementById('meta-title-en').value = tutorialData.title?.en || "";
             document.getElementById('meta-title-de').value = tutorialData.title?.de || "";
+            document.getElementById('meta-title-size').value = tutorialData.titleSize || 100;
             document.getElementById('meta-desc-en').value = tutorialData.description?.en || "";
             document.getElementById('meta-desc-de').value = tutorialData.description?.de || "";
-            document.getElementById('meta-author').value = tutorialData.author || "Niklas Außerwöger";
+            document.getElementById('meta-desc-size').value = tutorialData.descriptionSize || 100;
+            document.getElementById('meta-author').value = tutorialData.author || "";
             document.getElementById('meta-logo1').value = tutorialData.logo1 || "";
             document.getElementById('meta-logo2').value = tutorialData.logo2 || "";
             document.getElementById('meta-image').value = tutorialData.image || "";
@@ -634,6 +677,10 @@
                             <span class="text-xs font-black uppercase tracking-wider text-zinc-300">Step ${sIdx + 1}</span>
                         </div>
                         <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-1 mr-2">
+                                <span class="text-[9px] text-zinc-400 uppercase font-bold">Title %:</span>
+                                <input type="number" min="1" max="1000" class="input-base text-[10px] w-14 text-center py-0.5" value="${step.titleSize || 100}" oninput="tutorialData.steps[${sIdx}].titleSize = parseInt(this.value) || 100; handleFieldChange();">
+                            </div>
                             <button onclick="moveStep(${sIdx}, -1)" ${sIdx === 0 ? 'disabled class="opacity-30"' : 'class="hover:text-purple-400 font-bold"'} title="Move Up">Up</button>
                             <button onclick="moveStep(${sIdx}, 1)" ${sIdx === tutorialData.steps.length - 1 ? 'disabled class="opacity-30"' : 'class="hover:text-purple-400 font-bold"'} title="Move Down">Down</button>
                             <button onclick="deleteStep(${sIdx})" class="text-xs text-zinc-500 hover:text-red-400 font-bold ml-2">Remove</button>
@@ -769,10 +816,20 @@
                         </div>
 
                         ${layout === 'center' ? `
-                            <input class="input-base text-xs" placeholder="Caption (optional)" value="${b.caption1 || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].caption1 = this.value; handleFieldChange();">
+                            <div class="flex items-center gap-2">
+                                <input class="input-base text-xs flex-1" placeholder="Caption (optional)" value="${b.caption1 || ''}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].caption1 = this.value; handleFieldChange();">
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <span class="text-[9px] text-zinc-500 font-bold uppercase">Text %</span>
+                                    <input type="number" min="1" max="1000" class="input-base text-[10px] w-14 text-center py-0.5" value="${b.captionSize || 100}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].captionSize = parseInt(this.value) || 100; handleFieldChange();">
+                                </div>
+                            </div>
                         ` : ''}
 
                         ${(layout === 'left' || layout === 'right') ? `
+                            <div class="flex justify-end items-center gap-1">
+                                <span class="text-[9px] text-zinc-500 font-bold uppercase">Text Size %</span>
+                                <input type="number" min="1" max="1000" class="input-base text-[10px] w-14 text-center py-0.5" value="${b.text1Size || 100}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1Size = parseInt(this.value) || 100; handleFieldChange();">
+                            </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 <textarea rows="2" class="input-base text-xs" placeholder="Text (EN)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1En = this.value; handleFieldChange();">${b.text1En || ''}</textarea>
                                 <textarea rows="2" class="input-base text-xs" placeholder="Text (DE)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1De = this.value; handleFieldChange();">${b.text1De || ''}</textarea>
@@ -787,6 +844,10 @@
                                     <input type="number" min="1" max="1000" class="input-base text-xs text-center font-mono py-1" value="${b.scale2 || 100}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].scale2 = parseInt(this.value) || 100; handleFieldChange();">
                                 </div>
                             </div>
+                            <div class="flex justify-end items-center gap-1">
+                                <span class="text-[9px] text-zinc-500 font-bold uppercase">Text Size %</span>
+                                <input type="number" min="1" max="1000" class="input-base text-[10px] w-14 text-center py-0.5" value="${b.text1Size || 100}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1Size = parseInt(this.value) || 100; handleFieldChange();">
+                            </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 <textarea rows="2" class="input-base text-xs" placeholder="Description under images (EN)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1En = this.value; handleFieldChange();">${b.text1En || ''}</textarea>
                                 <textarea rows="2" class="input-base text-xs" placeholder="Beschreibung unter Bildern (DE)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1De = this.value; handleFieldChange();">${b.text1De || ''}</textarea>
@@ -794,6 +855,10 @@
                         ` : ''}
 
                         ${layout === 'stacked-steps' ? `
+                            <div class="flex justify-end items-center gap-1">
+                                <span class="text-[9px] text-zinc-500 font-bold uppercase">Stage 1 Text %</span>
+                                <input type="number" min="1" max="1000" class="input-base text-[10px] w-14 text-center py-0.5" value="${b.text1Size || 100}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1Size = parseInt(this.value) || 100; handleFieldChange();">
+                            </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 <textarea rows="2" class="input-base text-xs" placeholder="Stage 1 Text (EN)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1En = this.value; handleFieldChange();">${b.text1En || ''}</textarea>
                                 <textarea rows="2" class="input-base text-xs" placeholder="Stufe 1 Text (DE)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text1De = this.value; handleFieldChange();">${b.text1De || ''}</textarea>
@@ -804,6 +869,10 @@
                                     <span class="text-[10px] text-zinc-500 font-bold uppercase">Size %</span>
                                     <input type="number" min="1" max="1000" class="input-base text-xs text-center font-mono py-1" value="${b.scale2 || 100}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].scale2 = parseInt(this.value) || 100; handleFieldChange();">
                                 </div>
+                            </div>
+                            <div class="flex justify-end items-center gap-1">
+                                <span class="text-[9px] text-zinc-500 font-bold uppercase">Stage 2 Text %</span>
+                                <input type="number" min="1" max="1000" class="input-base text-[10px] w-14 text-center py-0.5" value="${b.text2Size || 100}" oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text2Size = parseInt(this.value) || 100; handleFieldChange();">
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 <textarea rows="2" class="input-base text-xs" placeholder="Stage 2 Text (EN)..." oninput="tutorialData.steps[${sIdx}].blocks[${bIdx}].text2En = this.value; handleFieldChange();">${b.text2En || ''}</textarea>
@@ -899,6 +968,7 @@
                 iconUrl: "",
                 iconSize: 100,
                 title: { en: "", de: "" },
+                titleSize: 100,
                 blocks: [{ type: "text", textEn: "", textDe: "", textSize: 100 }]
             });
             renderStepsEditor();
@@ -928,7 +998,7 @@
             if (type === 'download-badges') step.blocks.push({ type: 'download-badges', iosLink: '', androidLink: '' });
             if (type === 'code') step.blocks.push({ type: 'code', tabs: [{ label: 'Default', code: '' }] });
             if (type === 'callout') step.blocks.push({ type: 'callout', level: 'tip', textEn: '', textDe: '' });
-            if (type === 'image') step.blocks.push({ type: 'image', layout: 'left', scale1: 20, scale2: 20, url1: '', url2: '', caption1: '', text1En: '', text1De: '', text2En: '', text2De: '' });
+            if (type === 'image') step.blocks.push({ type: 'image', layout: 'left', scale1: 20, scale2: 20, url1: '', url2: '', caption1: '', captionSize: 100, text1En: '', text1De: '', text1Size: 100, text2En: '', text2De: '', text2Size: 100 });
             if (type === 'accordion') step.blocks.push({ type: 'accordion', headerEn: '', headerDe: '', contentEn: '', contentDe: '' });
             renderStepsEditor();
             handleFieldChange();
@@ -962,11 +1032,13 @@
                 en: document.getElementById('meta-title-en').value.trim(),
                 de: document.getElementById('meta-title-de').value.trim()
             };
+            tutorialData.titleSize = parseInt(document.getElementById('meta-title-size').value) || 100;
             tutorialData.description = {
                 en: document.getElementById('meta-desc-en').value.trim(),
                 de: document.getElementById('meta-desc-de').value.trim()
             };
-            tutorialData.author = document.getElementById('meta-author').value.trim() || "Niklas Außerwöger";
+            tutorialData.descriptionSize = parseInt(document.getElementById('meta-desc-size').value) || 100;
+            tutorialData.author = document.getElementById('meta-author').value.trim();
             tutorialData.logo1 = document.getElementById('meta-logo1').value.trim();
             tutorialData.logo2 = document.getElementById('meta-logo2').value.trim();
             tutorialData.image = document.getElementById('meta-image').value.trim();
@@ -1002,6 +1074,9 @@
             const themeIcon = isDark ? ICONS.sunLight : ICONS.moonDark;
             const pdfIcon = isDark ? ICONS.saveLight : ICONS.saveDark;
 
+            const headerTitleSz = tutorialData.titleSize || 100;
+            const headerDescSz = tutorialData.descriptionSize || 100;
+
             let html = `
                 <div class="flex items-center justify-end gap-2 mb-3">
                     <div style="width: 44px; height: 44px; background: ${cardBg}; border: 2px solid ${cardBorder};" class="rounded-xl flex items-center justify-center shrink-0">
@@ -1028,9 +1103,19 @@
                             ${tutorialData.logo2 ? `<img src="${tutorialData.logo2}" class="w-12 h-12 rounded-xl object-contain border border-white/5">` : ''}
                         </div>
                     ` : ''}
-                    <div>
-                        <h2 class="text-base font-extrabold tracking-tight">${processContent(title) || 'Tutorial Header Title'}</h2>
-                        <p style="color: ${mutedCol};" class="text-xs mt-0.5">${processContent(desc) || 'Guide summary will show here'}</p>
+                    <div class="flex-1 min-w-0">
+                        <h2 onclick="openScaleModal(-1, -1, 'header-title', ${headerTitleSz})" 
+                            style="font-size: ${(headerTitleSz / 100) * 1.0}rem; line-height: 1.25;" 
+                            class="font-extrabold tracking-tight interactive-preview-el rounded p-0.5" 
+                            title="Click to scale tutorial title">
+                            ${processContent(title) || '<span class="opacity-40 italic">Tutorial Header Title</span>'}
+                        </h2>
+                        <p onclick="openScaleModal(-1, -1, 'header-desc', ${headerDescSz})" 
+                           style="color: ${mutedCol}; font-size: ${(headerDescSz / 100) * 0.75}rem; line-height: 1.4;" 
+                           class="mt-1 interactive-preview-el rounded p-0.5" 
+                           title="Click to scale tutorial summary">
+                            ${processContent(desc) || '<span class="opacity-40 italic">Guide summary will show here</span>'}
+                        </p>
                     </div>
                 </div>
             `;
@@ -1042,6 +1127,7 @@
                 const baseIconPx = Math.round(36 * (iconSz / 100));
                 const iconType = step.iconType || 'default';
                 const customCol = step.iconColor || '#a855f7';
+                const sTitleSz = step.titleSize || 100;
 
                 let iconMarkup = '';
                 if (iconType === 'url' && step.iconUrl) {
@@ -1077,7 +1163,12 @@
                     <div style="background: ${cardBg}; border: 2px solid ${cardBorder}; border-radius: 18px;" class="p-4 sm:p-5 space-y-3.5">
                         <div style="border-bottom: 2px solid ${cardBorder};" class="flex items-center gap-3 pb-3">
                             ${iconMarkup}
-                            <h3 class="text-base font-bold tracking-tight">${processContent(sTitle) || 'Step ' + (idx + 1)}</h3>
+                            <h3 onclick="openScaleModal(${idx}, -1, 'step-title', ${sTitleSz})" 
+                                style="font-size: ${(sTitleSz / 100) * 1.0}rem; line-height: 1.3;" 
+                                class="font-bold tracking-tight interactive-preview-el rounded p-1 flex-1 min-w-0" 
+                                title="Click to scale step header">
+                                ${processContent(sTitle) || '<span class="opacity-40 italic">Step ' + (idx + 1) + '</span>'}
+                            </h3>
                         </div>
                 `;
 
@@ -1141,6 +1232,9 @@
                         const s2 = b.scale2 || 100;
                         const t1 = isEn ? (b.text1En || b.text1De) : (b.text1De || b.text1En);
                         const t2 = isEn ? (b.text2En || b.text2De) : (b.text2De || b.text2En);
+                        const capSz = b.captionSize || 100;
+                        const t1Sz = b.text1Size || 100;
+                        const t2Sz = b.text2Size || 100;
 
                         if (layout === 'center' && b.url1) {
                             html += `
@@ -1150,7 +1244,13 @@
                                      style="width: ${s1}%; max-width: 100%;" 
                                      class="h-auto object-contain interactive-preview-el rounded-xl border border-white/10" 
                                      title="Click to scale image size">
-                                ${b.caption1 ? `<div class="p-1 text-[11px] text-zinc-500 italic text-center">${processContent(b.caption1)}</div>` : ''}
+                                ${b.caption1 ? `
+                                <div onclick="openScaleModal(${idx}, ${bIdx}, 'img-caption',${capSz})" 
+                                     style="font-size: ${(capSz / 100) * 0.75}rem;" 
+                                     class="p-1 text-zinc-500 italic text-center interactive-preview-el rounded" 
+                                     title="Click to scale caption size">
+                                    ${processContent(b.caption1)}
+                                </div>` : ''}
                             </div>`;
                         } else if (layout === 'left' && b.url1) {
                             html += `
@@ -1161,12 +1261,22 @@
                                          class="w-full h-auto object-contain interactive-preview-el rounded-xl border border-white/10" 
                                          title="Click to scale image size">
                                 </div>
-                                <div class="text-xs text-inherit leading-relaxed whitespace-pre-line flex-1">${processContent(t1)}</div>
+                                <div onclick="openScaleModal(${idx}, ${bIdx}, 'img-text1', ${t1Sz})" 
+                                     style="font-size: ${(t1Sz / 100) * 0.8125}rem; line-height: 1.6;" 
+                                     class="text-inherit leading-relaxed whitespace-pre-line flex-1 interactive-preview-el rounded p-1" 
+                                     title="Click to scale text size">
+                                    ${processContent(t1)}
+                                </div>
                             </div>`;
                         } else if (layout === 'right' && b.url1) {
                             html += `
                             <div style="background: ${subBoxBg}; border: 1.5px solid ${cardBorder};" class="flex items-center gap-3.5 p-3.5 rounded-xl">
-                                <div class="text-xs text-inherit leading-relaxed whitespace-pre-line flex-1">${processContent(t1)}</div>
+                                <div onclick="openScaleModal(${idx}, ${bIdx}, 'img-text1', ${t1Sz})" 
+                                     style="font-size: ${(t1Sz / 100) * 0.8125}rem; line-height: 1.6;" 
+                                     class="text-inherit leading-relaxed whitespace-pre-line flex-1 interactive-preview-el rounded p-1" 
+                                     title="Click to scale text size">
+                                    ${processContent(t1)}
+                                </div>
                                 <div style="width: ${s1}%; min-width: 48px;" class="shrink-0 flex items-center justify-center">
                                     <img src="${b.url1}" 
                                          onclick="openScaleModal(${idx}, ${bIdx}, 'img1', ${s1})" 
@@ -1182,19 +1292,35 @@
                                     <span class="text-blue-500 font-bold text-sm">&rarr;</span>
                                     ${b.url2 ? `<div style="width: ${s2}%;" class="flex items-center justify-center"><img src="${b.url2}" onclick="openScaleModal(${idx}, ${bIdx}, 'img2',${s2})" class="w-full h-auto object-contain interactive-preview-el rounded-lg border border-white/10" title="Click to scale"></div>` : ''}
                                 </div>
-                                ${t1 ? `<p class="text-xs text-center leading-relaxed text-inherit">${processContent(t1)}</p>` : ''}
+                                ${t1 ? `
+                                <p onclick="openScaleModal(${idx}, ${bIdx}, 'img-text1',${t1Sz})" 
+                                   style="font-size: ${(t1Sz / 100) * 0.75}rem; line-height: 1.5;" 
+                                   class="text-center leading-relaxed text-inherit interactive-preview-el rounded p-1" 
+                                   title="Click to scale description size">
+                                    ${processContent(t1)}
+                                </p>` : ''}
                             </div>`;
                         } else if (layout === 'stacked-steps') {
                             html += `
                             <div style="background: ${subBoxBg}; border: 1.5px solid ${cardBorder};" class="space-y-3 p-3 rounded-xl">
                                 <div class="flex items-center gap-3">
                                     ${b.url1 ? `<div style="width: ${s1}%;" class="shrink-0 flex items-center justify-center"><img src="${b.url1}" onclick="openScaleModal(${idx}, ${bIdx}, 'img1',${s1})" class="w-full h-auto object-contain interactive-preview-el rounded-lg border border-white/10" title="Click to scale"></div>` : ''}
-                                    <div class="text-xs text-inherit flex-1">${processContent(t1)}</div>
+                                    <div onclick="openScaleModal(${idx}, ${bIdx}, 'img-text1', ${t1Sz})" 
+                                         style="font-size: ${(t1Sz / 100) * 0.75}rem;" 
+                                         class="text-inherit flex-1 interactive-preview-el rounded p-1" 
+                                         title="Click to scale stage 1 text">
+                                        ${processContent(t1)}
+                                    </div>
                                 </div>
                                 <div class="text-center text-blue-500 text-xs font-bold">&darr;</div>
                                 <div class="flex items-center gap-3">
                                     ${b.url2 ? `<div style="width: ${s2}%;" class="shrink-0 flex items-center justify-center"><img src="${b.url2}" onclick="openScaleModal(${idx}, ${bIdx}, 'img2',${s2})" class="w-full h-auto object-contain interactive-preview-el rounded-lg border border-white/10" title="Click to scale"></div>` : ''}
-                                    <div class="text-xs text-inherit flex-1">${processContent(t2)}</div>
+                                    <div onclick="openScaleModal(${idx}, ${bIdx}, 'img-text2', ${t2Sz})" 
+                                         style="font-size: ${(t2Sz / 100) * 0.75}rem;" 
+                                         class="text-inherit flex-1 interactive-preview-el rounded p-1" 
+                                         title="Click to scale stage 2 text">
+                                        ${processContent(t2)}
+                                    </div>
                                 </div>
                             </div>`;
                         }
@@ -1222,8 +1348,10 @@
             syncMetadata();
             const jsonPayload = {
                 title: tutorialData.title,
+                titleSize: tutorialData.titleSize,
                 category: tutorialData.category,
                 description: tutorialData.description,
+                descriptionSize: tutorialData.descriptionSize,
                 author: tutorialData.author,
                 logo1: tutorialData.logo1,
                 logo2: tutorialData.logo2,
@@ -1266,8 +1394,8 @@
             const schemaJson = JSON.stringify({
                 "@context": "https://schema.org",
                 "@type": "HowTo",
-                "name": data.title.en || "Tutorial",
-                "description": data.description.en || "",
+                "name": data.title?.en || "Tutorial",
+                "description": data.description?.en || "",
                 "image": data.image || "",
                 "step": schemaSteps
             }, null, 2);
@@ -1277,18 +1405,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="${data.author || 'Niklas Außerwöger'}">
-    <meta name="copyright" content="${data.author || 'Niklas Außerwöger'}">
-    <title>${data.title.en || 'Tutorial'}</title>
+    <meta name="author" content="${escapeHtml(data.author || '')}">
+    <title>${escapeHtml(data.title?.en || 'Tutorial')}</title>
     
-    <meta property="og:title" content="${data.title.en || 'Tutorial'}">
-    <meta property="og:description" content="${data.description.en || ''}">
-    <meta property="og:image" content="${data.image || ''}">
+    <meta property="og:title" content="${escapeHtml(data.title?.en || 'Tutorial')}">
+    <meta property="og:description" content="${escapeHtml(data.description?.en || '')}">
+    <meta property="og:image" content="${escapeHtml(data.image || '')}">
     <meta property="og:type" content="article">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="${data.title.en || 'Tutorial'}">
-    <meta name="twitter:description" content="${data.description.en || ''}">
-    <meta name="twitter:image" content="${data.image || ''}">
+    <meta name="twitter:title" content="${escapeHtml(data.title?.en || 'Tutorial')}">
+    <meta name="twitter:description" content="${escapeHtml(data.description?.en || '')}">
+    <meta name="twitter:image" content="${escapeHtml(data.image || '')}">
 
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/der46er/website/main/assets/favicon.png">
     
@@ -1525,8 +1652,8 @@
                 </div>
             ` : ''}
             <div>
-                <h1 id="tut-title" class="text-xl sm:text-2xl font-black tracking-tight mb-1"></h1>
-                <p id="tut-desc" class="text-sm opacity-80"></p>
+                <h1 id="tut-title" style="font-size: ${((data.titleSize || 100) / 100) * 1.5}rem;" class="font-black tracking-tight mb-1"></h1>
+                <p id="tut-desc" style="font-size: ${((data.descriptionSize || 100) / 100) * 0.875}rem;" class="opacity-80"></p>
             </div>
         </header>
 
@@ -1550,7 +1677,7 @@
         <main id="steps-wrapper" class="space-y-6"></main>
 
         <footer class="text-center py-6 text-xs opacity-60">
-            (C) <span id="year">2026</span> - ${data.author || 'Niklas Außerwöger'}
+            (C) <span id="year">2026</span> ${data.author ? `- ` + escapeHtml(data.author) : ''}
         </footer>
     </div>
 
@@ -1650,16 +1777,17 @@
 
         function renderTutorial() {
             const isEn = currentLang === 'en';
-            document.getElementById('tut-title').innerHTML = processContent(isEn ? TUTORIAL_DATA.title.en : TUTORIAL_DATA.title.de);
-            document.getElementById('tut-desc').innerHTML = processContent(isEn ? TUTORIAL_DATA.description.en : TUTORIAL_DATA.description.de);
+            document.getElementById('tut-title').innerHTML = processContent(isEn ? TUTORIAL_DATA.title?.en : TUTORIAL_DATA.title?.de);
+            document.getElementById('tut-desc').innerHTML = processContent(isEn ? TUTORIAL_DATA.description?.en : TUTORIAL_DATA.description?.de);
 
             const wrapper = document.getElementById('steps-wrapper');
             wrapper.innerHTML = (TUTORIAL_DATA.steps || []).map((st, i) => {
-                const title = isEn ? (st.title.en || st.title.de) : (st.title.de || st.title.en);
+                const title = isEn ? (st.title?.en || st.title?.de) : (st.title?.de || st.title?.en);
                 const iconSz = st.iconSize || 100;
                 const baseIconPx = Math.round(36 * (iconSz / 100));
                 const iconType = st.iconType || 'default';
                 const customCol = st.iconColor || '#a855f7';
+                const sTitleSz = st.titleSize || 100;
 
                 let iconMarkup = '';
                 if (iconType === 'url' && st.iconUrl) {
@@ -1720,12 +1848,15 @@
                         const s2 = b.scale2 || 100;
                         const t1 = isEn ? (b.text1En || b.text1De) : (b.text1De || b.text1En);
                         const t2 = isEn ? (b.text2En || b.text2De) : (b.text2De || b.text2En);
+                        const capSz = b.captionSize || 100;
+                        const t1Sz = b.text1Size || 100;
+                        const t2Sz = b.text2Size || 100;
 
                         if (layout === 'center' && b.url1) {
                             blocksHtml += \`
                             <div class="p-2 flex flex-col items-center">
                                 <img src="\${b.url1}" alt="Illustration" style="width: \${s1}%; max-width: 100%;" class="h-auto object-contain rounded-xl border border-white/10">
-                                \${b.caption1 ? \`<div class="p-1 text-center text-xs opacity-75 italic">\${processContent(b.caption1)}</div>\` : ''}
+                                \${b.caption1 ? \`<div style="font-size: \${(capSz / 100) * 0.75}rem;" class="p-1 text-center opacity-75 italic">\${processContent(b.caption1)}</div>\` : ''}
                             </div>\`;
                         } else if (layout === 'left' && b.url1) {
                             blocksHtml += \`
@@ -1733,12 +1864,12 @@
                                 <div style="width: \${s1}%; min-width: 48px;" class="shrink-0 flex items-center justify-center">
                                     <img src="\${b.url1}" class="w-full h-auto object-contain rounded-xl border border-white/10">
                                 </div>
-                                <div class="text-xs leading-relaxed whitespace-pre-line flex-1">\${processContent(t1)}</div>
+                                <div style="font-size: \${(t1Sz / 100) * 0.8125}rem;" class="leading-relaxed whitespace-pre-line flex-1">\${processContent(t1)}</div>
                             </div>\`;
                         } else if (layout === 'right' && b.url1) {
                             blocksHtml += \`
                             <div style="background: var(--sub-box-bg); border: 1.5px solid var(--border);" class="flex items-center gap-4 p-4 rounded-xl">
-                                <div class="text-xs leading-relaxed whitespace-pre-line flex-1">\${processContent(t1)}</div>
+                                <div style="font-size: \${(t1Sz / 100) * 0.8125}rem;" class="leading-relaxed whitespace-pre-line flex-1">\${processContent(t1)}</div>
                                 <div style="width: \${s1}%; min-width: 48px;" class="shrink-0 flex items-center justify-center">
                                     <img src="\${b.url1}" class="w-full h-auto object-contain rounded-xl border border-white/10">
                                 </div>
@@ -1751,19 +1882,19 @@
                                     <span class="text-blue-500 font-bold text-base">&rarr;</span>
                                     \${b.url2 ? \`<div style="width: \${s2}%;" class="flex items-center justify-center"><img src="\${b.url2}" class="w-full h-auto object-contain rounded-lg border border-white/10"></div>\` : ''}
                                 </div>
-                                \${t1 ? \`<p class="text-xs text-center leading-relaxed">\${processContent(t1)}</p>\` : ''}
+                                \${t1 ? \`<p style="font-size: \${(t1Sz / 100) * 0.75}rem;" class="text-center leading-relaxed">\${processContent(t1)}</p>\` : ''}
                             </div>\`;
                         } else if (layout === 'stacked-steps') {
                             blocksHtml += \`
                             <div style="background: var(--sub-box-bg); border: 1.5px solid var(--border);" class="space-y-3 p-4 rounded-xl">
                                 <div class="flex items-center gap-4">
                                     \${b.url1 ? \`<div style="width: \${s1}%;" class="shrink-0 flex items-center justify-center"><img src="\${b.url1}" class="w-full h-auto object-contain rounded-lg border border-white/10"></div>\` : ''}
-                                    <div class="text-xs flex-1">\${processContent(t1)}</div>
+                                    <div style="font-size: \${(t1Sz / 100) * 0.75}rem;" class="flex-1">\${processContent(t1)}</div>
                                 </div>
                                 <div class="text-center text-blue-500 text-xs font-bold">&darr;</div>
                                 <div class="flex items-center gap-4">
                                     \${b.url2 ? \`<div style="width: \${s2}%;" class="shrink-0 flex items-center justify-center"><img src="\${b.url2}" class="w-full h-auto object-contain rounded-lg border border-white/10"></div>\` : ''}
-                                    <div class="text-xs flex-1">\${processContent(t2)}</div>
+                                    <div style="font-size: \${(t2Sz / 100) * 0.75}rem;" class="flex-1">\${processContent(t2)}</div>
                                 </div>
                             </div>\`;
                         }
@@ -1784,7 +1915,7 @@
                 <section class="card">
                     <div class="card-header">
                         \${iconMarkup}
-                        <h2 class="text-lg font-bold tracking-tight">\${processContent(title) || 'Step ' + (i + 1)}</h2>
+                        <h2 style="font-size: \${((sTitleSz) / 100) * 1.125}rem;" class="font-bold tracking-tight">\${processContent(title) || 'Step ' + (i + 1)}</h2>
                     </div>
                     <div class="space-y-4">
                         \${blocksHtml}
