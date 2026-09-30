@@ -5,36 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Legal Notice & Terms | thataustrianone.eu</title>
     
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/der46er/website/refs/heads/main/assets/favicon.png">
+    <link rel="icon" type="image/png" href="./assets/favicon.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        /* Self-hosted font definitions from the repository folder */
-        @font-face {
-            font-family: 'Pliant';
-            src: url('https://cdn.jsdelivr.net/gh/der46er/website@main/assets/fonts/Pliant-Regular-variable.woff2') format('woff2'),
-                 url('./assets/fonts/Pliant-Regular-variable.woff2') format('woff2');
-            font-weight: 100 900;
-            font-style: normal;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'Pliant';
-            src: url('https://cdn.jsdelivr.net/gh/der46er/website@main/assets/fonts/Pliant-Italic-variable.woff2') format('woff2'),
-                 url('./assets/fonts/Pliant-Italic-variable.woff2') format('woff2');
-            font-weight: 100 900;
-            font-style: italic;
-            font-display: swap;
-        }
-
+        /* Lato self-hosted font definitions from the repository */
         @font-face {
             font-family: 'Lato';
             src: url('https://cdn.jsdelivr.net/gh/der46er/website@main/assets/fonts/Lato-Regular.woff2') format('woff2'),
                  url('./assets/fonts/Lato-Regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Lato';
+            src: url('https://cdn.jsdelivr.net/gh/der46er/website@main/assets/fonts/Lato-Italic.woff2') format('woff2'),
+                 url('./assets/fonts/Lato-Italic.woff2') format('woff2');
+            font-weight: 400;
+            font-style: italic;
             font-display: swap;
         }
 
@@ -49,10 +40,28 @@
 
         @font-face {
             font-family: 'Lato';
+            src: url('https://cdn.jsdelivr.net/gh/der46er/website@main/assets/fonts/Lato-BoldItalic.woff2') format('woff2'),
+                 url('./assets/fonts/Lato-BoldItalic.woff2') format('woff2');
+            font-weight: 700;
+            font-style: italic;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Lato';
             src: url('https://cdn.jsdelivr.net/gh/der46er/website@main/assets/fonts/Lato-Black.woff2') format('woff2'),
                  url('./assets/fonts/Lato-Black.woff2') format('woff2');
             font-weight: 900;
             font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Lato';
+            src: url('https://cdn.jsdelivr.net/gh/der46er/website@main/assets/fonts/Lato-BlackItalic.woff2') format('woff2'),
+                 url('./assets/fonts/Lato-BlackItalic.woff2') format('woff2');
+            font-weight: 900;
+            font-style: italic;
             font-display: swap;
         }
 
@@ -66,8 +75,8 @@
         }
 
         .font-brand, h1, h2 {
-            font-family: 'Pliant', 'Lato', sans-serif;
-            word-spacing: 0.12em;
+            font-family: 'Lato', sans-serif;
+            font-weight: 900;
         }
 
         body::before {
@@ -116,7 +125,7 @@
 
 <body class="flex flex-col min-h-[100dvh] w-full overflow-x-hidden selection:bg-white/10 relative">
 
-    <!-- Absolute Top-Left Back Button: stays pinned to document top and naturally scrolls away -->
+    <!-- Absolute Top-Left Back Button: scrolls naturally out of view -->
     <a href="https://thataustrianone.eu" aria-label="Back to home" class="absolute top-4 left-4 sm:top-6 sm:left-6 z-30 w-10 h-10 rounded-xl glass-box hover:border-zinc-300/80 hover:shadow-[0_0_25px_rgba(212,212,216,0.3)] text-zinc-400 hover:text-white flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -128,11 +137,11 @@
 
         <!-- Header -->
         <div class="w-full text-center shrink-0 pt-2 animate-in" style="animation-delay: 0.1s; opacity: 0;">
-            <h1 id="legal-title" class="text-3xl sm:text-5xl md:text-6xl font-black italic uppercase tracking-normal sm:tracking-wide text-white mb-2"></h1>
+            <h1 id="legal-title" class="text-3xl sm:text-5xl md:text-6xl font-black italic uppercase tracking-tight text-white mb-2"></h1>
             <p id="legal-desc" class="text-zinc-400 text-xs sm:text-sm md:text-base font-medium max-w-xl mx-auto tracking-wide"></p>
         </div>
 
-        <!-- Scope Box (Domains Applied) - Placed Beneath Header -->
+        <!-- Scope Box (Domains Applied) -->
         <div class="glass-box rounded-[1.2rem] p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left animate-in" style="animation-delay: 0.15s; opacity: 0;">
             <div class="space-y-0.5">
                 <p id="scope-label" class="text-[10px] uppercase tracking-widest text-zinc-400 font-bold"></p>
@@ -147,7 +156,7 @@
         <!-- 1. Legal Notice Card -->
         <section class="glass-box rounded-[1.2rem] p-6 sm:p-8 space-y-4 hover:border-blue-500/80 transition-all duration-300 animate-in" style="animation-delay: 0.2s; opacity: 0;">
             <div class="flex items-center justify-between border-b border-white/10 pb-4">
-                <h2 id="sec-impressum-title" class="text-xl sm:text-2xl font-black italic uppercase tracking-normal sm:tracking-wide text-white"></h2>
+                <h2 id="sec-impressum-title" class="text-xl sm:text-2xl font-black italic uppercase tracking-tight text-white"></h2>
                 <span class="text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-zinc-400 uppercase tracking-widest">§ 5 ECG</span>
             </div>
             <p id="sec-impressum-sub" class="text-xs sm:text-sm text-zinc-300 leading-relaxed font-medium"></p>
@@ -176,7 +185,7 @@
         <!-- 2. Privacy Policy Card -->
         <section class="glass-box rounded-[1.2rem] p-6 sm:p-8 space-y-6 hover:border-emerald-500/80 transition-all duration-300 animate-in" style="animation-delay: 0.3s; opacity: 0;">
             <div class="flex items-center justify-between border-b border-white/10 pb-4">
-                <h2 id="sec-privacy-title" class="text-xl sm:text-2xl font-black italic uppercase tracking-normal sm:tracking-wide text-white"></h2>
+                <h2 id="sec-privacy-title" class="text-xl sm:text-2xl font-black italic uppercase tracking-tight text-white"></h2>
                 <span class="text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-zinc-400 uppercase tracking-widest">DSGVO / GDPR</span>
             </div>
 
@@ -186,7 +195,7 @@
         <!-- 3. Terms of Use Card -->
         <section class="glass-box rounded-[1.2rem] p-6 sm:p-8 space-y-6 hover:border-purple-500/80 transition-all duration-300 animate-in" style="animation-delay: 0.4s; opacity: 0;">
             <div class="flex items-center justify-between border-b border-white/10 pb-4">
-                <h2 id="sec-terms-title" class="text-xl sm:text-2xl font-black italic uppercase tracking-normal sm:tracking-wide text-white"></h2>
+                <h2 id="sec-terms-title" class="text-xl sm:text-2xl font-black italic uppercase tracking-tight text-white"></h2>
                 <span class="text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-zinc-400 uppercase tracking-widest">TERMS</span>
             </div>
 
