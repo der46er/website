@@ -92,12 +92,12 @@
             --theme-color: #dc2626; 
             --theme-rgb: 220, 38, 38; 
         }
-            .logo-red-mask {
+        .logo-red-mask {
             background-color: #dc2626;
             mask: url('https://raw.githubusercontent.com/der46er/website/refs/heads/main/assets/favicon.png') center/contain no-repeat;
            -webkit-mask: url('https://raw.githubusercontent.com/der46er/website/refs/heads/main/assets/favicon.png') center/contain no-repeat;
         }
-            .logo-green-mask {
+        .logo-green-mask {
             background-color: #38A838;
             mask: url('https://raw.githubusercontent.com/der46er/website/refs/heads/main/assets/favicon.png') center/contain no-repeat;
            -webkit-mask: url('https://raw.githubusercontent.com/der46er/website/refs/heads/main/assets/favicon.png') center/contain no-repeat;
@@ -203,17 +203,17 @@
       gtag('config', 'G-0WHX0WMFTC');
     </script>
 </head>
-<body class="flex flex-col min-h-[100dvh] w-full selection:bg-white/10">
+<body class="flex flex-col min-h-[100dvh] w-full selection:bg-white/10 relative">
 
-    <!-- Glass Box Back Button -->
-    <a href="https://thataustrianone.eu/" aria-label="Back to home" class="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] w-10 h-10 rounded-xl glass-box hover:border-zinc-300/80 hover:shadow-[0_0_25px_rgba(212,212,216,0.3)] text-zinc-400 hover:text-[#f0f0f0] flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 group">
+    <!-- Glass Box Back Button (Absolute on mobile/tablet, Fixed on desktop) -->
+    <a href="https://thataustrianone.eu/" aria-label="Back to home" class="absolute lg:fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] w-10 h-10 rounded-xl glass-box hover:border-zinc-300/80 hover:shadow-[0_0_25px_rgba(212,212,216,0.3)] text-zinc-400 hover:text-[#f0f0f0] flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 group">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-0.5 transition-transform duration-200">
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
         </svg>
     </a>
 
-    <div class="flex-grow flex flex-col relative z-10 max-w-xl mx-auto px-4 pt-16 sm:pt-24 md:pt-28 animate-in gap-3.5 w-full pb-10">
+    <div class="flex-grow flex flex-col relative z-10 max-w-xl mx-auto px-4 pt-16 sm:pt-24 md:pt-28 lg:pb-16 animate-in gap-3.5 w-full pb-10">
         
         <!-- Profile Header -->
         <header class="flex w-full gap-4" style="margin-bottom: 35px;">
@@ -309,8 +309,8 @@
         </main>
     </div>
 
-    <!-- Footer -->
-    <footer class="w-full flex justify-between items-center px-6 lg:px-10 py-4 shrink-0 relative z-10 select-none">
+    <!-- Footer (Relative/in-flow on mobile & tablet, Fixed at bottom on desktop) -->
+    <footer class="w-full relative lg:fixed lg:bottom-0 lg:left-0 flex justify-between items-center px-6 lg:px-10 py-4 shrink-0 z-20 select-none pointer-events-auto">
         <p onclick="window.location.href='https://thataustrianone.eu/'" class="cursor-pointer text-zinc-600 text-[10px] sm:text-xs font-black italic tracking-widest uppercase opacity-70 hover:opacity-100 hover:text-[#f0f0f0] transition-all duration-300">
             powered by thataustrianone.eu
         </p>
