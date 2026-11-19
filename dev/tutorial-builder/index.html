@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tutorial Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/der46er/website/main/assets/favicon.png">
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
     <style>
         @font-face { font-family: 'Syncopate'; src: url('/assets/fonts/Syncopate-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
         .font-display { font-family: 'Syncopate', 'Lato', system-ui, sans-serif; font-weight: 700; font-style: normal; }
@@ -32,7 +32,7 @@
             content: "";
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: url("https://cdn.jsdelivr.net/gh/der46er/website@main/assets/backgrounds/waves-purple-black.webp");
+            background-image: url("/assets/backgrounds/waves-purple-black.small.webp");
             background-size: cover;
             background-position: center;
             filter: blur(10px);
@@ -315,12 +315,12 @@
         const COOKIE_NAME = "studio_unlocked";
 
         const ICONS = {
-            flagEn: "https://raw.githubusercontent.com/der46er/website/main/assets/flags/united-kingdom-flag.webp",
-            flagDe: "https://raw.githubusercontent.com/der46er/website/main/assets/flags/austria-flag.webp",
-            sunLight: "https://raw.githubusercontent.com/der46er/website/main/assets/icons/light-mode-light.svg",
-            moonDark: "https://raw.githubusercontent.com/der46er/website/main/assets/icons/dark-mode-dark.svg",
-            saveDark: "https://raw.githubusercontent.com/der46er/website/main/assets/icons/file-save-dark.svg",
-            saveLight: "https://raw.githubusercontent.com/der46er/website/main/assets/icons/file-save-light.svg"
+            flagEn: "/assets/flags/united-kingdom-flag.webp",
+            flagDe: "/assets/flags/austria-flag.webp",
+            sunLight: "/assets/icons/light-mode-light.svg",
+            moonDark: "/assets/icons/dark-mode-dark.svg",
+            saveDark: "/assets/icons/file-save-dark.svg",
+            saveLight: "/assets/icons/file-save-light.svg"
         };
 
         function getCookie(name) {
@@ -1198,13 +1198,13 @@
                             <div style="background: ${subBoxBg}; border: 1.5px solid ${cardBorder};" class="rounded-xl p-3 flex flex-col items-center text-center">
                                 <span class="text-xs font-bold mb-2">Apple iPhone</span>
                                 <a href="${b.iosLink || '#'}" target="_blank" class="block mb-1">
-                                    <img src="https://raw.githubusercontent.com/der46er/website/main/assets/tutorials/zello-maps/Download_on_the_App_Store_Badge.svg.png" class="h-8 object-contain">
+                                    <img src="/assets/tutorials/zello-maps/Download_on_the_App_Store_Badge.svg.png" class="h-8 object-contain">
                                 </a>
                             </div>
                             <div style="background: ${subBoxBg}; border: 1.5px solid ${cardBorder};" class="rounded-xl p-3 flex flex-col items-center text-center">
                                 <span class="text-xs font-bold mb-2">Android</span>
                                 <a href="${b.androidLink || '#'}" target="_blank" class="block mb-1">
-                                    <img src="https://raw.githubusercontent.com/der46er/website/main/assets/tutorials/zello-maps/Google_Play_Store_badge_EN.svg.png" class="h-8 object-contain">
+                                    <img src="/assets/tutorials/zello-maps/Google_Play_Store_badge_EN.svg.png" class="h-8 object-contain">
                                 </a>
                             </div>
                         </div>`;
@@ -1422,7 +1422,7 @@
     <meta name="twitter:description" content="${escapeHtml(data.description?.en || '')}">
     <meta name="twitter:image" content="${escapeHtml(data.image || '')}">
 
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/der46er/website/main/assets/favicon.png">
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
     
     <style>
         :root {
@@ -1631,20 +1631,20 @@
             </a>
 
             <button class="btn-fixed-nav" onclick="toggleTheme()" aria-label="Toggle theme">
-                <img id="theme-btn-icon" src="https://raw.githubusercontent.com/der46er/website/main/assets/icons/light-mode-light.svg" style="width: 18px; height: 18px;" class="object-contain" alt="Theme">
+                <img id="theme-btn-icon" src="/assets/icons/light-mode-light.svg" style="width: 18px; height: 18px;" class="object-contain" alt="Theme">
             </button>
 
             <div class="lang-switch" role="group" aria-label="Language selector">
                 <button class="lang-btn" id="btn-de" onclick="setLanguage('de')" title="Deutsch">
-                    <img src="https://raw.githubusercontent.com/der46er/website/main/assets/flags/austria-flag.webp" style="width: 22px; height: 15px;" class="rounded-sm object-cover" alt="DE">
+                    <img src="/assets/flags/austria-flag.webp" style="width: 22px; height: 15px;" class="rounded-sm object-cover" alt="DE">
                 </button>
                 <button class="lang-btn active" id="btn-en" onclick="setLanguage('en')" title="English">
-                    <img src="https://raw.githubusercontent.com/der46er/website/main/assets/flags/united-kingdom-flag.webp" style="width: 22px; height: 15px;" class="rounded-sm object-cover" alt="EN">
+                    <img src="/assets/flags/united-kingdom-flag.webp" style="width: 22px; height: 15px;" class="rounded-sm object-cover" alt="EN">
                 </button>
             </div>
 
             <button class="btn-pdf" onclick="window.print()">
-                <img id="pdf-btn-icon" src="https://raw.githubusercontent.com/der46er/website/main/assets/icons/file-save-light.svg" style="width: 16px; height: 16px;" class="object-contain" alt="Save">
+                <img id="pdf-btn-icon" src="/assets/icons/file-save-light.svg" style="width: 16px; height: 16px;" class="object-contain" alt="Save">
                 <span id="pdf-btn-label">Download as PDF</span>
             </button>
         </div>
@@ -1692,10 +1692,10 @@
         let currentLang = localStorage.getItem('siteLang') || 'en';
 
         const ASSET_ICONS = {
-            sunLight: "https://raw.githubusercontent.com/der46er/website/main/assets/icons/light-mode-light.svg",
-            moonDark: "https://raw.githubusercontent.com/der46er/website/main/assets/icons/dark-mode-dark.svg",
-            saveDark: "https://raw.githubusercontent.com/der46er/website/main/assets/icons/file-save-dark.svg",
-            saveLight: "https://raw.githubusercontent.com/der46er/website/main/assets/icons/file-save-light.svg"
+            sunLight: "/assets/icons/light-mode-light.svg",
+            moonDark: "/assets/icons/dark-mode-dark.svg",
+            saveDark: "/assets/icons/file-save-dark.svg",
+            saveLight: "/assets/icons/file-save-light.svg"
         };
 
         function hexToRgba(hex, alpha = 0.2) {
@@ -1820,13 +1820,13 @@
                             <div style="background: var(--sub-box-bg); border: 1.5px solid var(--border);" class="rounded-xl p-3 flex flex-col items-center text-center">
                                 <strong class="text-xs mb-2">Apple iPhone</strong>
                                 <a href="\${b.iosLink || '#'}" target="_blank" class="block mb-1">
-                                    <img src="https://raw.githubusercontent.com/der46er/website/main/assets/tutorials/zello-maps/Download_on_the_App_Store_Badge.svg.png" class="h-8 object-contain">
+                                    <img src="/assets/tutorials/zello-maps/Download_on_the_App_Store_Badge.svg.png" class="h-8 object-contain">
                                 </a>
                             </div>
                             <div style="background: var(--sub-box-bg); border: 1.5px solid var(--border);" class="rounded-xl p-3 flex flex-col items-center text-center">
                                 <strong class="text-xs mb-2">Android</strong>
                                 <a href="\${b.androidLink || '#'}" target="_blank" class="block mb-1">
-                                    <img src="https://raw.githubusercontent.com/der46er/website/main/assets/tutorials/zello-maps/Google_Play_Store_badge_EN.svg.png" class="h-8 object-contain">
+                                    <img src="/assets/tutorials/zello-maps/Google_Play_Store_badge_EN.svg.png" class="h-8 object-contain">
                                 </a>
                             </div>
                         </div>\`;

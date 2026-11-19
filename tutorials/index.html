@@ -3,7 +3,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tutorials | Nick</title>
     
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/der46er/website/main/assets/favicon.png">
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
 
     <style>
         @font-face { font-family: 'Syncopate'; src: url('/assets/fonts/Syncopate-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
@@ -38,7 +38,7 @@
             width: 100vw;
             height: 100vh;
             height: 100lvh;
-            background-image: url("https://cdn.jsdelivr.net/gh/der46er/website@main/assets/backgrounds/waves-purple-black.webp");
+            background-image: url("/assets/backgrounds/waves-purple-black.small.webp");
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -162,12 +162,12 @@
         document.getElementById('year').innerText = new Date().getFullYear();
 
         const GITHUB_API_URL = "https://api.github.com/repos/der46er/website/contents/assets/tutorials";
-        const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/der46er/website/main/assets/tutorials";
+        const GITHUB_RAW_BASE = "/assets/tutorials";
         const arrowUpRight = '<line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline>';
 
         const translations = {
             de: {
-                flag: "https://cdn.jsdelivr.net/gh/der46er/website@main/assets/flags/austria-flag.webp",
+                flag: "/assets/flags/austria-flag.webp",
                 alt: "Austria Flag",
                 heroTitle: "Tutorials",
                 heroDesc: "Schritt für Schritt Anleitungen und Tutorials",
@@ -180,7 +180,7 @@
                 readTutorial: "Anleitung"
             },
             en: {
-                flag: "https://cdn.jsdelivr.net/gh/der46er/website@main/assets/flags/united-kingdom-flag.webp",
+                flag: "/assets/flags/united-kingdom-flag.webp",
                 alt: "UK Flag",
                 heroTitle: "Tutorials",
                 heroDesc: "Step by step guides and tutorials",

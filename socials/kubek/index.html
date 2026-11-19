@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Socials | Kub3k</title>
     
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/der46er/website/main/assets/favicon.png">
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
 
     <style>
         @font-face { font-family: 'Syncopate'; src: url('/assets/fonts/Syncopate-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
@@ -67,7 +67,7 @@
                     <div class="absolute inset-0 animate-rotate-slow rounded-full opacity-40 group-hover:opacity-80 transition duration-500 theme-bg-glow" style="background-image: conic-gradient(transparent, transparent, transparent, var(--theme-color), var(--theme-color))"></div>
                     
                     <div class="relative w-full h-full rounded-full border-4 border-[#0b0d11] shadow-2xl overflow-hidden bg-[#161920] z-10">
-                        <img src="https://raw.githubusercontent.com/der46er/website/main/socials/kubek/kubek_pfp.webp" alt="Kub3k" class="w-full h-full object-cover object-center scale-[1.15]">
+                        <img src="/socials/kubek/kubek_pfp.webp" alt="Kub3k" class="w-full h-full object-cover object-center scale-[1.15]">
                     </div>
                 </div>
                 <h1 class="font-display uppercase drop-shadow-lg leading-none text-[clamp(0.85rem,4vw,1.25rem)] w-full text-center truncate tracking-normal">Kub3k</h1>
@@ -144,7 +144,7 @@
                     <div id="sp-cont" class="w-14 h-14 rounded-full bg-[#161920] flex items-center justify-center border-2 border-white/5 relative overflow-hidden shrink-0 shadow-xl">
                         <img id="sp-cover" src="./Socials _ 0_kub3k_files/)" class="hidden w-full h-full object-cover rounded-full" alt="Cover">
                         <div id="sp-dot" class="hidden absolute w-2 h-2 bg-[#0b0d11] rounded-full border border-white/20 z-10"></div>
-                        <div id="sp-icon" class="w-8 h-8 opacity-20 theme-drop-shadow transition-all duration-500" style="background-color: var(--theme-color); mask: url('https://raw.githubusercontent.com/der46er/website/main/assets/favicon.png') center/contain no-repeat; -webkit-mask: url('https://raw.githubusercontent.com/der46er/website/main/assets/favicon.png') center/contain no-repeat;"></div>
+                        <div id="sp-icon" class="w-8 h-8 opacity-20 theme-drop-shadow transition-all duration-500" style="background-color: var(--theme-color); mask: url('/assets/favicon.png') center/contain no-repeat; -webkit-mask: url('/assets/favicon.png') center/contain no-repeat;"></div>
                     </div>
                     <div class="text-left overflow-hidden">
                         <p id="sp-title" class="text-[8px] font-black uppercase tracking-[0.2em] mb-0.5 theme-text transition-colors duration-500">Spotify</p>
@@ -189,7 +189,7 @@
                     let link = document.querySelector("link[rel~='icon']");
                     if(link) link.href = canvas.toDataURL('image/png');
                 };
-                img.src = 'https://raw.githubusercontent.com/der46er/website/main/assets/favicon.png';
+                img.src = '/assets/favicon.png';
             }
         }).catch(()=>{});
 

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Affiliate | Nick</title>
     
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/der46er/website/main/assets/favicon.png">
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -43,7 +43,7 @@
             width: 100vw;
             height: 100vh;
             height: 100lvh;
-            background-image: url("https://cdn.jsdelivr.net/gh/der46er/website@main/assets/backgrounds/waves-green-black.webp");
+            background-image: url("/assets/backgrounds/waves-green-black.small.webp");
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -191,7 +191,7 @@
         document.getElementById('year').innerText = new Date().getFullYear();
 
         const GITHUB_API_URL = "https://api.github.com/repos/der46er/website/contents/assets/products/affiliate";
-        const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/der46er/website/main/assets/products/affiliate";
+        const GITHUB_RAW_BASE = "/assets/products/affiliate";
         const arrowUpRight = '<line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline>';
 
         const KNOWN_PLATFORMS = {
@@ -213,7 +213,7 @@
 
         const translations = {
             de: {
-                flag: "https://cdn.jsdelivr.net/gh/der46er/website@main/assets/flags/austria-flag.webp",
+                flag: "/assets/flags/austria-flag.webp",
                 alt: "Austria Flag",
                 heroTitle: "Produkte",
                 heroDesc: "Hardware, Zubehör & Ausrüstung die ich empfehle und nutze",
@@ -230,7 +230,7 @@
                 openListing: "Öffnen"
             },
             en: {
-                flag: "https://cdn.jsdelivr.net/gh/der46er/website@main/assets/flags/united-kingdom-flag.webp",
+                flag: "/assets/flags/united-kingdom-flag.webp",
                 alt: "UK Flag",
                 heroTitle: "Products",
                 heroDesc: "Hardware, accessories & gear I personally use and recommend",
