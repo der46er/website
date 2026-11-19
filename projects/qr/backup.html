@@ -11,18 +11,22 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
-        @font-face {
-            font-family: 'Inter';
-            src: url('https://raw.githubusercontent.com/der46er/website/main/assets/fonts/Inter-VariableFont_slnt,wght.ttf') format('truetype');
-            font-weight: 100 900;
-            font-display: swap;
-            font-style: normal;
-        }
+/* Lato (self-hosted in assets/fonts) */
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Thin.woff2') format('woff2'); font-weight: 100; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Light.woff2') format('woff2'); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Black.woff2') format('woff2'); font-weight: 900; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-ThinItalic.woff2') format('woff2'); font-weight: 100; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-LightItalic.woff2') format('woff2'); font-weight: 300; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Italic.woff2') format('woff2'); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-BoldItalic.woff2') format('woff2'); font-weight: 700; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-BlackItalic.woff2') format('woff2'); font-weight: 900; font-style: italic; font-display: swap; }
 
         :root {
             --theme-color: #007bff;
             --theme-rgb: 0, 123, 255;
-            --app-font: 'Inter', sans-serif;
+            --app-font: 'Lato', sans-serif;
         }
 
         body {

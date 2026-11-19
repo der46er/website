@@ -16,20 +16,20 @@ function exportScorecardImage(latestComparisonResult, currentTheme) {
   ctx.stroke();
 
   ctx.fillStyle = isLight ? '#4F4F4F' : '#8F8F8F';
-  ctx.font = '700 36px Inter, sans-serif';
+  ctx.font = '700 36px Lato, sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText('COMPATIBILITY SCORECARD', 540, 360);
 
   ctx.fillStyle = isLight ? '#1C4494' : '#6CA0F8';
-  ctx.font = '800 64px Inter, sans-serif';
+  ctx.font = '800 64px Lato, sans-serif';
   ctx.fillText(`${latestComparisonResult.name1}  x  ${latestComparisonResult.name2}`, 540, 460);
 
   ctx.fillStyle = '#24ACD4';
-  ctx.font = '800 220px Inter, monospace';
+  ctx.font = '800 220px Lato, monospace';
   ctx.fillText(`${latestComparisonResult.percentage}%`, 540, 820);
 
   ctx.fillStyle = isLight ? '#0F0F0F' : '#F0F0F0';
-  ctx.font = '600 44px Inter, sans-serif';
+  ctx.font = '600 44px Lato, sans-serif';
   const label = latestComparisonResult.type === 'similarity' ? 'Overall Similarity Match' : 'Knowledge Accuracy Match';
   ctx.fillText(label, 540, 940);
 
@@ -41,11 +41,11 @@ function exportScorecardImage(latestComparisonResult, currentTheme) {
   ctx.stroke();
 
   ctx.fillStyle = isLight ? '#4F4F4F' : '#8F8F8F';
-  ctx.font = '400 34px Inter, sans-serif';
+  ctx.font = '400 34px Lato, sans-serif';
   ctx.fillText('Take the quiz and test your compatibility:', 540, 1260);
 
   ctx.fillStyle = isLight ? '#0F0F0F' : '#F0F0F0';
-  ctx.font = '700 42px Inter, sans-serif';
+  ctx.font = '700 42px Lato, sans-serif';
   ctx.fillText('thataustrianone.eu', 540, 1340);
 
   const link = document.createElement('a');

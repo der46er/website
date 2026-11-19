@@ -6,21 +6,18 @@
 <title>Family Tree Generator</title>
 <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/der46er/website/main/assets/favicon.png">
 <style>
-  @font-face {
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url('https://raw.githubusercontent.com/der46er/website/main/assets/fonts/inter-v20-cyrillic_cyrillic-ext_greek_greek-ext_latin_latin-ext_vietnamese-regular.woff2') format('woff2');
-  }
+/* Lato (self-hosted in assets/fonts) */
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Thin.woff2') format('woff2'); font-weight: 100; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Light.woff2') format('woff2'); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Black.woff2') format('woff2'); font-weight: 900; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-ThinItalic.woff2') format('woff2'); font-weight: 100; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-LightItalic.woff2') format('woff2'); font-weight: 300; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Italic.woff2') format('woff2'); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-BoldItalic.woff2') format('woff2'); font-weight: 700; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-BlackItalic.woff2') format('woff2'); font-weight: 900; font-style: italic; font-display: swap; }
 
-  @font-face {
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 700;
-    font-display: swap;
-    src: url('https://raw.githubusercontent.com/der46er/website/main/assets/fonts/inter-v20-cyrillic_cyrillic-ext_greek_greek-ext_latin_latin-ext_vietnamese-700.woff2') format('woff2');
-  }
 
   :root {
     --bg-color: #0F0F0F;
@@ -54,7 +51,7 @@
     box-sizing: border-box; 
     margin: 0; 
     padding: 0; 
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif;
     scrollbar-width: thin;
     scrollbar-color: var(--scrollbar-thumb) transparent;
     -webkit-tap-highlight-color: transparent;
@@ -2777,7 +2774,7 @@
 
       const tag = t.relLabels[l.type]?.tag;
       if (tag) {
-        ctx.font = 'bold 11px Inter, sans-serif';
+        ctx.font = 'bold 11px Lato, sans-serif';
         const metrics = ctx.measureText(tag);
         const padX = 6;
         const rectW = metrics.width + padX * 2;
@@ -2813,7 +2810,7 @@
       ctx.stroke();
 
       ctx.fillStyle = '#5e81ac';
-      ctx.font = 'bold 12px Inter, sans-serif';
+      ctx.font = 'bold 12px Lato, sans-serif';
       ctx.textAlign = 'left';
       ctx.fillText(state.legend.title || t.defaultLegendTitle, legX + 14, legY + 20);
 
@@ -2836,7 +2833,7 @@
         ctx.setLineDash([]);
 
         ctx.fillStyle = '#f0f0f0';
-        ctx.font = '12px Inter, sans-serif';
+        ctx.font = '12px Lato, sans-serif';
         ctx.fillText(desc, legX + 58, itemY + 4);
       });
     }
@@ -2897,7 +2894,7 @@
       ctx.stroke();
 
       ctx.fillStyle = textColor;
-      ctx.font = 'bold 12px Inter, sans-serif';
+      ctx.font = 'bold 12px Lato, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(m.name, m.x + dims.w / 2, m.y + 17, dims.w - 16);

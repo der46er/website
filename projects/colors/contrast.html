@@ -8,20 +8,23 @@
   <!-- jsPDF Library for client-side PDF export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    /* Inter Font Definition */
-    @font-face {
-      font-family: 'Inter';
-      font-style: normal;
-      font-weight: 400 700 800;
-      font-display: swap;
-      src: url('https://cdn.jsdelivr.net/gh/der46er/website@main/assets/fonts/inter-v12-latin-regular.woff2') format('woff2');
-    }
+/* Lato (self-hosted in assets/fonts) */
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Thin.woff2') format('woff2'); font-weight: 100; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Light.woff2') format('woff2'); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Black.woff2') format('woff2'); font-weight: 900; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-ThinItalic.woff2') format('woff2'); font-weight: 100; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-LightItalic.woff2') format('woff2'); font-weight: 300; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Italic.woff2') format('woff2'); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-BoldItalic.woff2') format('woff2'); font-weight: 700; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-BlackItalic.woff2') format('woff2'); font-weight: 900; font-style: italic; font-display: swap; }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-family: 'Lato', system-ui, -apple-system, sans-serif;
     }
 
     body {
@@ -893,10 +896,10 @@
 
       // Left Column Text
       ctx.fillStyle = textColor;
-      ctx.font = '800 96px Inter, sans-serif';
+      ctx.font = '800 96px Lato, sans-serif';
       ctx.fillText('Contrast Test Heading', 120, 380);
 
-      ctx.font = '400 42px Inter, sans-serif';
+      ctx.font = '400 42px Lato, sans-serif';
       const text = 'Good typography and accessible color contrast ensure that your web design is readable, legible, and comfortable for all users across all screens.';
       
       const words = text.split(' ');
@@ -923,7 +926,7 @@
       ctx.fill();
 
       ctx.fillStyle = bgColor;
-      ctx.font = 'bold 36px Inter, sans-serif';
+      ctx.font = 'bold 36px Lato, sans-serif';
       ctx.fillText('Primary Action', 1495, 378);
 
       // 2. Card Object Box
@@ -934,16 +937,16 @@
       ctx.stroke();
 
       ctx.fillStyle = textColor;
-      ctx.font = 'bold 36px Inter, sans-serif';
+      ctx.font = 'bold 36px Lato, sans-serif';
       ctx.fillText('Card Component', 1490, 525);
-      ctx.font = '400 28px Inter, sans-serif';
+      ctx.font = '400 28px Lato, sans-serif';
       ctx.fillText('Ui element contrast test', 1490, 575);
 
       // 3. Pill Tag
       ctx.beginPath();
       ctx.roundRect(1450, 660, 240, 60, 30);
       ctx.stroke();
-      ctx.font = 'bold 24px Inter, sans-serif';
+      ctx.font = 'bold 24px Lato, sans-serif';
       ctx.fillText('BADGE TAG', 1488, 700);
 
       // Score Ratio at Bottom
