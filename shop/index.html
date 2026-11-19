@@ -230,6 +230,12 @@
     </div>
 
     <script>
+        // Prices are always shown in euros (the usd field in the JSON files is ignored)
+        function formatEur(v) {
+            const n = parseFloat(String(v ?? '').replace(',', '.'));
+            if (isNaN(n)) return '';
+            return new Intl.NumberFormat(currentLang === 'en' ? 'en-IE' : 'de-AT', { style: 'currency', currency: 'EUR', minimumFractionDigits: Number.isInteger(n) ? 0 : 2 }).format(n);
+        }
         document.getElementById('year').innerText = new Date().getFullYear();
 
         const GITHUB_API_URL = "https://api.github.com/repos/der46er/website/contents/assets/products/shop";
@@ -663,7 +669,7 @@
                 const title = currentLang === 'en' ? item.title.en : item.title.de;
                 const desc = currentLang === 'en' ? item.description.en : item.description.de;
                 const category = currentLang === 'en' ? item.category.en : item.category.de;
-                const priceFormatted = currentLang === 'en' ? (item.price.usd ? `$${item.price.usd}` : `${item.price.eur}€`) : (item.price.eur ? `${item.price.eur}€` : `$${item.price.usd}`);
+                const priceFormatted = formatEur(item.price.eur);
 
                 return `
                 <div onclick="handleItemClick(${realIndex})" class="group relative glass-box rounded-[1.2rem] transition-all duration-300 hover:border-orange-500/80 hover:shadow-[0_0_50px_-5px_rgba(249,115,22,0.4)] active:scale-[0.99] p-4 flex flex-col justify-between overflow-hidden w-full cursor-pointer">
