@@ -87,6 +87,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
+        @font-face { font-family: 'Syncopate'; src: url('/assets/fonts/Syncopate-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+        .font-display { font-family: 'Syncopate', 'Lato', system-ui, sans-serif; font-weight: 700; font-style: normal; }
+
+
         @font-face {
             font-family: 'Lato';
             src: url('/assets/fonts/Lato-Thin.woff2') format('woff2');
@@ -262,7 +266,7 @@
     <main class="relative z-10 max-w-[1500px] mx-auto px-4 sm:px-6 w-full flex-grow flex flex-col justify-start pt-10 md:pt-8 pb-12">
         
         <div class="w-full text-center shrink-0 mb-8 animate-in" style="animation-delay: 0.1s; opacity: 0;">
-            <h1 id="hero-title" class="text-4xl sm:text-5xl md:text-6xl font-black italic uppercase tracking-tighter text-white mb-6 leading-tight">
+            <h1 id="hero-title" class="text-3xl sm:text-5xl md:text-6xl font-display uppercase text-white mb-6 leading-tight tracking-normal">
                 About Me
             </h1>
 
@@ -291,7 +295,7 @@
                         <span class="text-zinc-600 text-xs">•</span>
                         <span id="discord-activity-pill" class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-zinc-500 truncate transition-colors duration-300">Connecting...</span>
                     </div>
-                    <h2 class="text-2xl sm:text-3xl font-black italic uppercase text-white tracking-tight leading-tight mb-2.5 pt-0.5">Nick</h2>
+                    <h2 class="text-xl sm:text-2xl font-display uppercase text-white leading-tight mb-2.5 pt-0.5 tracking-normal">Nick</h2>
                     <p id="profile-bio" class="text-zinc-300 text-xs sm:text-sm font-medium leading-relaxed max-w-4xl">
                     </p>
                 </div>
@@ -303,7 +307,7 @@
             <div class="glass-box rounded-[1.2rem] p-6 sm:p-7 transition-all duration-300 hover:border-blue-500/80 hover:shadow-[0_0_50px_-5px_rgba(59,130,246,0.3)]">
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-5">
                     <div>
-                        <h3 id="socials-heading" class="text-xl sm:text-2xl font-black italic uppercase text-white tracking-tight leading-tight">Connect & Network</h3>
+                        <h3 id="socials-heading" class="text-lg sm:text-xl font-display uppercase text-white leading-tight tracking-normal">Connect & Network</h3>
                         <p id="socials-subheading" class="text-zinc-500 text-[10px] sm:text-xs font-bold uppercase tracking-widest mt-0.5">Direct communication channels & platforms</p>
                     </div>
                     <a href="https://thataustrianone.eu/socials" class="px-4 py-2 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest bg-blue-500/10 border border-blue-500/30 text-blue-400 hover:bg-blue-500 hover:text-white transition-all flex items-center gap-1.5 shrink-0">
@@ -347,7 +351,7 @@
 
             <div class="glass-box rounded-[1.2rem] p-6 sm:p-8 transition-all duration-300 hover:border-blue-500/80 hover:shadow-[0_0_50px_-5px_rgba(59,130,246,0.3)]">
                 <div class="mb-5">
-                    <h3 id="stack-heading" class="text-xl sm:text-2xl font-black italic uppercase text-white tracking-tight leading-tight">Skills & Tech Stack</h3>
+                    <h3 id="stack-heading" class="text-lg sm:text-xl font-display uppercase text-white leading-tight tracking-normal">Skills & Tech Stack</h3>
                     <p id="stack-subheading" class="text-zinc-500 text-[10px] sm:text-xs font-bold uppercase tracking-widest mt-0.5">Operating systems, hardware engineering & production software</p>
                 </div>
 
@@ -358,7 +362,7 @@
             <div class="glass-box rounded-[1.2rem] p-6 sm:p-8 transition-all duration-300 hover:border-blue-500/80 hover:shadow-[0_0_50px_-5px_rgba(59,130,246,0.3)]">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                     <div>
-                        <h3 id="setup-heading" class="text-xl sm:text-2xl font-black italic uppercase text-white tracking-tight leading-tight">Workstation & Setup</h3>
+                        <h3 id="setup-heading" class="text-lg sm:text-xl font-display uppercase text-white leading-tight tracking-normal">Workstation & Setup</h3>
                         <p id="setup-subheading" class="text-zinc-500 text-[10px] sm:text-xs font-bold uppercase tracking-widest mt-0.5">Primary computing hardware & Gear</p>
                     </div>
                     <div class="grid grid-cols-3 sm:flex gap-1.5 p-1 bg-black/40 rounded-xl border border-white/5 w-full sm:w-auto shrink-0" id="setup-tabs">
@@ -410,7 +414,7 @@
             <div class="glass-box rounded-[1.2rem] p-6 sm:p-8 transition-all duration-300 hover:border-blue-500/80 hover:shadow-[0_0_50px_-5px_rgba(59,130,246,0.3)]">
                 <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-5">
                     <div>
-                        <h3 id="gallery-heading" class="text-xl sm:text-2xl font-black italic uppercase text-white tracking-tight leading-tight">Gallery</h3>
+                        <h3 id="gallery-heading" class="text-lg sm:text-xl font-display uppercase text-white leading-tight tracking-normal">Gallery</h3>
                         <p id="gallery-subheading" class="text-zinc-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest mt-1 max-w-2xl leading-relaxed">
                         </p>
                     </div>

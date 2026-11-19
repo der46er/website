@@ -9,6 +9,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
+        @font-face { font-family: 'Syncopate'; src: url('/assets/fonts/Syncopate-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+        .font-display { font-family: 'Syncopate', 'Lato', system-ui, sans-serif; font-weight: 700; font-style: normal; }
+
+
         /* --- FONTS --- */
         @font-face { font-family: 'Noto Sans'; src: url('https://raw.githubusercontent.com/der46er/website/main/assets/fonts/noto-sans-v36-latin-regular.woff2') format('woff2'); font-display: swap; }
 /* Lato (self-hosted in assets/fonts) */
@@ -557,7 +561,7 @@
     <!-- Info Tutorial -->
     <div id="info-overlay" class="modal-overlay" onclick="toggleInfo()">
         <div class="tutorial-card" onclick="event.stopPropagation()" style="width:100%; max-width:800px; padding:4rem; border-radius:3rem; display:flex; flex-direction:column;">
-            <h2 class="text-4xl font-black italic mb-10 text-white uppercase tracking-tighter" id="t-guide">SP Flow <span class="text-green-500">Guide</span></h2>
+            <h2 class="text-3xl font-display mb-10 text-white uppercase tracking-normal" id="t-guide">SP Flow <span class="text-green-500">Guide</span></h2>
             <div class="space-y-8 text-gray-300 text-sm leading-relaxed overflow-y-auto max-h-[60vh] pr-4">
                 <div class="p-6 rounded-2xl bg-white/5 border border-white/10">
                     <h3 class="text-white font-bold text-lg mb-2" id="t-step1">1. Discord Lanyard Server</h3>
@@ -692,7 +696,7 @@
 
                 <div id="tab-legal" class="hidden">
                     <div class="text-gray-400 text-xs leading-loose space-y-8 pr-4">
-                        <h3 class="text-3xl font-black text-white mb-8 uppercase tracking-tight italic" id="leg-title">Impressum & Rechtliches</h3>
+                        <h3 class="text-2xl font-display text-white mb-8 uppercase tracking-normal" id="leg-title">Impressum & Rechtliches</h3>
                         
                         <div class="space-y-2">
                             <h4 class="text-white font-bold text-sm uppercase tracking-wide border-b border-white/10 pb-2" id="leg-prov">Diensteanbieter</h4>

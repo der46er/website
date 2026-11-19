@@ -10,6 +10,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
+        @font-face { font-family: 'Syncopate'; src: url('/assets/fonts/Syncopate-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+        .font-display { font-family: 'Syncopate', 'Lato', system-ui, sans-serif; font-weight: 700; font-style: normal; }
+
+
 /* Lato (self-hosted in assets/fonts) */
 @font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Thin.woff2') format('woff2'); font-weight: 100; font-style: normal; font-display: swap; }
 @font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Light.woff2') format('woff2'); font-weight: 300; font-style: normal; font-display: swap; }
@@ -161,7 +165,7 @@
             <button onclick="closeTutorialModal(true)" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
-            <h2 data-i18n="tutorialTitle" class="font-black italic text-xl uppercase tracking-wide text-white mb-4">How to use</h2>
+            <h2 data-i18n="tutorialTitle" class="font-display text-lg uppercase text-white mb-4 tracking-normal">How to use</h2>
             <ul class="text-zinc-300 text-sm space-y-3 font-medium">
                 <li data-i18n-html="tut1"><strong class="text-white">1.</strong> Type your desired text or URL in the input field.</li>
                 <li data-i18n-html="tut2"><strong class="text-white">2.</strong> Select a social preset for quick profile templates.</li>
@@ -285,7 +289,7 @@
             <button onclick="closePreview(true)" class="absolute top-6 right-6 p-2 text-zinc-500 hover:text-white transition-all">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
-            <h3 data-i18n="previewTitle" class="text-xl md:text-2xl font-black italic uppercase tracking-tighter text-white mb-6">Preview</h3>
+            <h3 data-i18n="previewTitle" class="text-lg md:text-xl font-display uppercase text-white mb-6 tracking-normal">Preview</h3>
             <canvas id="preview-canvas" class="checker-bg mx-auto rounded-xl shadow-2xl mb-6 border border-white/10 w-full" style="max-width: 240px; image-rendering: pixelated;"></canvas>
             
             <div class="mb-6 flex flex-col gap-2 w-full text-left">

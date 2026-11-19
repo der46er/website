@@ -6,6 +6,9 @@
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/der46er/website/main/assets/favicon.png">
 
     <style>
+        @font-face { font-family: 'Syncopate'; src: url('/assets/fonts/Syncopate-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+        .font-display { font-family: 'Syncopate', 'Lato', system-ui, sans-serif; font-weight: 700; font-style: normal; }
+
 /* Lato (self-hosted in assets/fonts) */
 @font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Thin.woff2') format('woff2'); font-weight: 100; font-style: normal; font-display: swap; }
 @font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Light.woff2') format('woff2'); font-weight: 300; font-style: normal; font-display: swap; }
@@ -104,7 +107,7 @@
         
         <!-- Header & Toolbar Container -->
         <div class="w-full text-center shrink-0 mb-6 animate-in relative z-40" style="animation-delay: 0.1s; opacity: 0;">
-            <h1 id="hero-title" class="text-4xl sm:text-5xl md:text-6xl font-black italic uppercase tracking-tighter text-white mb-2">Tutorials</h1>
+            <h1 id="hero-title" class="text-3xl sm:text-5xl md:text-6xl font-display uppercase text-white mb-2 tracking-normal">Tutorials</h1>
             <p id="hero-desc" class="text-zinc-400 text-xs sm:text-sm md:text-base font-medium max-w-xl mx-auto tracking-wide mb-6">Step by step guides and tutorials</p>
 
             <!-- Filter / Search Toolbar -->
@@ -408,7 +411,7 @@
                     
                     <div class="flex flex-col flex-grow justify-between min-w-0">
                         <div>
-                            <h2 class="text-base sm:text-lg font-black text-white tracking-tight italic uppercase leading-snug truncate pr-1 mb-1 group-hover:text-purple-400 transition-colors">${title}</h2>
+                            <h2 class="text-sm sm:text-base font-display text-white uppercase leading-snug line-clamp-2 break-words pr-1 mb-1 group-hover:text-purple-400 transition-colors tracking-normal">${title}</h2>
                             <p class="text-zinc-500 text-[10px] sm:text-xs font-bold uppercase tracking-widest line-clamp-2 leading-relaxed mb-3">${desc}</p>
                         </div>
                         

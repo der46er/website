@@ -113,6 +113,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
+        @font-face { font-family: 'Syncopate'; src: url('/assets/fonts/Syncopate-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+        .font-display { font-family: 'Syncopate', 'Lato', system-ui, sans-serif; font-weight: 700; font-style: normal; }
+
 /* Lato (self-hosted in assets/fonts) */
 @font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Thin.woff2') format('woff2'); font-weight: 100; font-style: normal; font-display: swap; }
 @font-face { font-family: 'Lato'; src: url('/assets/fonts/Lato-Light.woff2') format('woff2'); font-weight: 300; font-style: normal; font-display: swap; }
@@ -189,7 +192,7 @@
             </div>
 
             <!-- Title & Status Text -->
-            <h1 id="status-title" class="text-base sm:text-lg font-black italic uppercase tracking-tight text-white mt-1">
+            <h1 id="status-title" class="text-sm sm:text-base font-display uppercase text-white mt-1 tracking-normal">
                 Link Error
             </h1>
 

@@ -10,6 +10,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
+        @font-face { font-family: 'Syncopate'; src: url('/assets/fonts/Syncopate-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+        .font-display { font-family: 'Syncopate', 'Lato', system-ui, sans-serif; font-weight: 700; font-style: normal; }
+
         /* Lato self-hosted font definitions from the repository */
         @font-face {
             font-family: 'Lato';
@@ -137,7 +140,7 @@
 
         <!-- Header -->
         <div class="w-full text-center shrink-0 pt-2 animate-in" style="animation-delay: 0.1s; opacity: 0;">
-            <h1 id="legal-title" class="text-3xl sm:text-5xl md:text-6xl font-black italic uppercase tracking-tight text-white mb-2"></h1>
+            <h1 id="legal-title" class="text-2xl sm:text-5xl md:text-6xl font-display uppercase text-white mb-2 tracking-normal"></h1>
             <p id="legal-desc" class="text-zinc-400 text-xs sm:text-sm md:text-base font-medium max-w-xl mx-auto tracking-wide"></p>
         </div>
 
@@ -156,7 +159,7 @@
         <!-- 1. Legal Notice Card -->
         <section class="glass-box rounded-[1.2rem] p-6 sm:p-8 space-y-4 hover:border-blue-500/80 transition-all duration-300 animate-in" style="animation-delay: 0.2s; opacity: 0;">
             <div class="flex items-center justify-between border-b border-white/10 pb-4">
-                <h2 id="sec-impressum-title" class="text-xl sm:text-2xl font-black italic uppercase tracking-tight text-white"></h2>
+                <h2 id="sec-impressum-title" class="text-lg sm:text-xl font-display uppercase text-white tracking-normal"></h2>
                 <span class="text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-zinc-400 uppercase tracking-widest">§ 5 ECG</span>
             </div>
             <p id="sec-impressum-sub" class="text-xs sm:text-sm text-zinc-300 leading-relaxed font-medium"></p>
@@ -185,7 +188,7 @@
         <!-- 2. Privacy Policy Card -->
         <section class="glass-box rounded-[1.2rem] p-6 sm:p-8 space-y-6 hover:border-emerald-500/80 transition-all duration-300 animate-in" style="animation-delay: 0.3s; opacity: 0;">
             <div class="flex items-center justify-between border-b border-white/10 pb-4">
-                <h2 id="sec-privacy-title" class="text-xl sm:text-2xl font-black italic uppercase tracking-tight text-white"></h2>
+                <h2 id="sec-privacy-title" class="text-lg sm:text-xl font-display uppercase text-white tracking-normal"></h2>
                 <span class="text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-zinc-400 uppercase tracking-widest">DSGVO / GDPR</span>
             </div>
 
@@ -195,7 +198,7 @@
         <!-- 3. Terms of Use Card -->
         <section class="glass-box rounded-[1.2rem] p-6 sm:p-8 space-y-6 hover:border-purple-500/80 transition-all duration-300 animate-in" style="animation-delay: 0.4s; opacity: 0;">
             <div class="flex items-center justify-between border-b border-white/10 pb-4">
-                <h2 id="sec-terms-title" class="text-xl sm:text-2xl font-black italic uppercase tracking-tight text-white"></h2>
+                <h2 id="sec-terms-title" class="text-lg sm:text-xl font-display uppercase text-white tracking-normal"></h2>
                 <span class="text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-zinc-400 uppercase tracking-widest">TERMS</span>
             </div>
 
